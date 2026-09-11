@@ -56,3 +56,14 @@ Copyright (c) 2026 Paperclip Community.
 The Paperclip **software** is open source — see the main [paperclip](https://github.com/paperclipai/paperclip) repository for its license.
 
 The **documentation in this repository** is licensed under [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/). You may read and share it for non-commercial purposes with attribution. Commercial use of any kind requires prior written permission from the copyright holders. See [`LICENSE`](LICENSE) for the full text.
+
+### Unlisted hosted beta guide
+
+`docs/hosted-beta.md` is built at `/hosted-beta/` by `site/build-unlisted.mjs`.
+It reuses the article stylesheet without booting the navigation/search SPA.
+Keep it out of `site/content.json`: it is deliberately absent from navigation,
+search, homepage listings, previous/next links, and the sitemap. It has a
+`noindex` meta tag; this is a public page, not an access-controlled document.
+
+Run `node scripts/verify-unlisted-beta.mjs` to verify root/subpath builds and
+exclusion from discovery. Preview with `npm run docs:build` and `npm run docs:serve`.

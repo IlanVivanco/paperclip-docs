@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import { transform } from "esbuild";
 import { marked } from "marked";
+import { buildUnlistedPages } from "./build-unlisted.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1741,6 +1742,8 @@ async function main() {
     const screenshotTargetDir = path.join(options.outDir, "user-guides", "screenshots");
     await copyDirRecursive(screenshotsSourceDir, screenshotTargetDir);
   }
+
+  await buildUnlistedPages({ repoRoot, outDir: options.outDir, basePath: options.basePath, stylesName });
 
   const missingNavTargets = [];
   for (const { page } of flattenNavPages(releaseNav)) {
