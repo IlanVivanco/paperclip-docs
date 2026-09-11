@@ -385,8 +385,8 @@ function findHeadingTarget(article, targetHeading) {
   );
 }
 
-function decorateHeadings(article, file) {
-  const page = allPages.find(candidate => candidate.file === file);
+function decorateHeadings(article, file, unlistedPage = null) {
+  const page = unlistedPage || allPages.find(candidate => candidate.file === file);
   if (!page) return;
 
   const usedIds = new Set();
@@ -888,6 +888,23 @@ async function init() {
   buildMobileDrawer();
   initSearch();
 
+  const unlistedArticle = document.querySelector('article[data-unlisted-page]');
+  if (unlistedArticle) {
+    const page = { file: 'hosted-beta.md', slug: 'hosted-beta', title: 'Hosted beta', sectionTitle: 'Closed beta', navTrail: ['Hosted beta'] };
+    currentFile = page.file;
+    showArticleView();
+    insertMetaRow(unlistedArticle, page);
+    decorateHeadings(unlistedArticle, page.file, page);
+    buildToc(unlistedArticle, page.file, page);
+    hideLoading();
+    const heading = getCurrentHeadingRoute();
+    if (heading) {
+      const target = findHeadingTarget(unlistedArticle, heading);
+      if (target) focusHeading(target);
+    }
+    return;
+  }
+
   const pathRoute = getPathRoute();
   const rawRoute = applyRedirect(pathRoute || getLegacyRoute());
   const initialRoute = parseRoute(rawRoute);
@@ -1090,6 +1107,10 @@ function buildFlatList() {
 /* ─── Load page ─────────────────────────────────────────────────────────── */
 async function loadPage(file, targetHeading = null, historyMode = 'push', options = {}) {
   const page = allPages.find(candidate => candidate.file === file);
+  if (document.querySelector('article[data-unlisted-page]') && page) {
+    location.assign(targetHeading ? getPageHeadingUrl(page, targetHeading) : getPageUrl(page));
+    return;
+  }
   currentFile = file;
   showArticleView();
   setActiveState(file);
@@ -1721,7 +1742,7 @@ function headingLabel(heading) {
   return clone.textContent.trim();
 }
 
-function buildToc(article, file) {
+function buildToc(article, file, unlistedPage = null) {
   resetToc();
 
   const metaRow = article.querySelector('.meta-row');
@@ -1732,7 +1753,7 @@ function buildToc(article, file) {
   const headings = [...article.querySelectorAll('h2, h3')];
   if (headings.length < 2) return;
 
-  const page = allPages.find(candidate => candidate.file === file);
+  const page = unlistedPage || allPages.find(candidate => candidate.file === file);
 
   const CHEVRON_SVG = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 4.5 3 3 3-3"/></svg>';
   const TOC_SVG = '<svg class="toc-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M3 8h7M3 12h9"/></svg>';

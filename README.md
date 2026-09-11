@@ -59,8 +59,8 @@ The **documentation in this repository** is licensed under [Creative Commons Att
 
 ### Unlisted hosted beta guide
 
-`docs/hosted-beta.md` is built at `/hosted-beta/` by `site/build-unlisted.mjs`.
-It reuses the article stylesheet without booting the navigation/search SPA.
+`docs/hosted-beta.md` is built at `/hosted-beta/` by `site/build-release.mjs`.
+It reuses the full docs shell and initializes page tools without adding the page to the navigation/search manifest.
 Keep it out of `site/content.json`: it is deliberately absent from navigation,
 search, homepage listings, previous/next links, and the sitemap. It has a
 `noindex` meta tag; this is a public page, not an access-controlled document.

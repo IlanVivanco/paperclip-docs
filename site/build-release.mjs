@@ -8,7 +8,6 @@ import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import { transform } from "esbuild";
 import { marked } from "marked";
-import { buildUnlistedPages } from "./build-unlisted.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1743,7 +1742,18 @@ async function main() {
     await copyDirRecursive(screenshotsSourceDir, screenshotTargetDir);
   }
 
-  await buildUnlistedPages({ repoRoot, outDir: options.outDir, basePath: options.basePath, stylesName });
+  // Unlisted routes reuse the full docs shell, but never enter the discovery manifest.
+  const betaMarkdown = await fs.readFile(path.join(docsRoot, "hosted-beta.md"), "utf8");
+  const betaPage = { file: "hosted-beta.md", slug: "hosted-beta", title: "Hosted beta", navTrail: ["Hosted beta"] };
+  const betaMetadata = { ...rootMetadata, title: "Welcome to the Paperclip hosted beta", description: markdownDescription(betaMarkdown), url: siteUrlForPath(options.siteUrl, options.basePath, "hosted-beta/"), page: betaPage };
+  const betaHtml = buildStaticPageHtml(
+    withStaticChrome(sourceIndex, releaseNav, options.basePath, sectionIconPaths, betaMetadata),
+    betaMetadata, betaMarkdown, options.basePath, releaseStyles, null, null,
+  ).replace("</head>", '<meta name="robots" content="noindex, follow" /></head>')
+    .replace('<article id="article">', '<article id="article" data-unlisted-page="hosted-beta">');
+  await ensureDir(path.join(options.outDir, "hosted-beta"));
+  await fs.writeFile(path.join(options.outDir, "hosted-beta/index.html"), betaHtml);
+  await fs.writeFile(path.join(options.outDir, "hosted-beta.md"), betaMarkdown);
 
   const missingNavTargets = [];
   for (const { page } of flattenNavPages(releaseNav)) {

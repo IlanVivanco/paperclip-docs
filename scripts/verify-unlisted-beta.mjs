@@ -10,8 +10,10 @@ try {
     const html = await fs.readFile(path.join(out, 'hosted-beta/index.html'), 'utf8');
     assert.match(html, /name="robots" content="noindex, follow"/);
     assert.equal((html.match(/<h1(?:\s[^>]*)?>/g) || []).length, 1);
-    assert.ok(html.includes(`href="${base}styles.`));
-    assert.ok(!html.includes('<script'), 'Unlisted page must not boot the manifest-based SPA');
+    assert.ok(html.includes(`<base data-seo-base href="${base}"`));
+    assert.ok(html.includes('data-unlisted-page="hosted-beta"'));
+    assert.ok(html.includes('id="sb-sections" data-server-rendered="true"'));
+    assert.ok(html.includes('id="breadcrumb"'));
     for (const file of ['content.json', 'index.html', 'sitemap.xml']) {
       assert.ok(!(await fs.readFile(path.join(out, file), 'utf8')).includes('hosted-beta'), file);
     }
