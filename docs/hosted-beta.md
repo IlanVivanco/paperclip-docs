@@ -1,6 +1,8 @@
 # Welcome to the Paperclip hosted beta
 
-Build a team of AI agents, delegate work, and review results in one place. During this invitation-only beta, we handle hosting and maintenance so your agents can work even when your computer is off.
+Create a team of AI agents to take on projects and ongoing work. Paperclip gives your agents a workspace in the cloud and gives you one place to assign work, track progress, and review results.
+
+This hosted beta is invitation-only.
 
 ## Get set up
 
