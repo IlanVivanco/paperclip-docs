@@ -30,19 +30,36 @@ Thanks for helping us build Paperclip.
 
 ## Frequently asked questions
 
-**What carries over when I connect Claude or OpenAI?**
+<details class="accordion">
+<summary>What carries over when I connect Claude or OpenAI?</summary>
+<div class="accordion-body">
 
 Connecting Claude or OpenAI lets Paperclip use your account to run agents. It doesn’t import your existing conversations, local files, skills, or MCP connections. Add the context and connections your agents need.
 
-**Will my agents keep working when I close my browser?**
+</div>
+</details>
+
+<details class="accordion">
+<summary>Will my agents keep working when I close my browser?</summary>
+<div class="accordion-body">
 
 Yes. Agents run in a hosted environment, so your computer can be off or offline while they work. Tasks can still pause for input, approvals, or usage limits.
 
-**Is the hosted beta free?**
+</div>
+</details>
+
+<details class="accordion">
+<summary>Is the hosted beta free?</summary>
+<div class="accordion-body">
 
 Yes. We won’t charge for hosting or agent environments during the beta. Your model provider’s charges and usage limits still apply.
 
-**How much model usage should I expect?**
+</div>
+</details>
+
+<details class="accordion">
+<summary>How much model usage should I expect?</summary>
+<div class="accordion-body">
 
 Usage depends on the model, task, context, and how often agents run. Scheduled work also uses your provider allowance or API credits.
 
@@ -50,14 +67,32 @@ Check your provider account for billing and subscription limits. Paperclip’s s
 
 See [Costs and Budgets](https://docs.paperclip.ing/guides/day-to-day/costs/) and [Heartbeats and Routines](https://docs.paperclip.ing/guides/projects-workflow/routines/) to understand costs and when agents run.
 
-**Can I connect my tools and repositories?**
+</div>
+</details>
+
+<details class="accordion">
+<summary>Can I connect my tools and repositories?</summary>
+<div class="accordion-body">
 
 Use **Connectors** to see the available connections and authorize access. Set them up in your hosted organization; connections from your local installation don’t carry over.
 
-**Can I import an existing company?**
+</div>
+</details>
+
+<details class="accordion">
+<summary>Can I import an existing company?</summary>
+<div class="accordion-body">
 
 Company import isn’t available in this beta. Create a new organization and set up its agents and connections.
 
-**Does the existing documentation apply to the hosted beta?**
+</div>
+</details>
+
+<details class="accordion">
+<summary>Does the existing documentation apply to the hosted beta?</summary>
+<div class="accordion-body">
 
 Use the [documentation](https://docs.paperclip.ing/) for product capabilities and workflows. You can skip self-hosted installation and runtime setup—we manage those for you.
+
+</div>
+</details>
