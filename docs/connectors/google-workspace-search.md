@@ -1,20 +1,20 @@
 ---
 seo_title: Google Workspace Search Connector
-seo_description: Search Gmail, Drive, Calendar, and Chat through one read-only Google Workspace search tool. Set it up in Paperclip with browser sign-in, then choose which.
+seo_description: One read-only search across Gmail, Drive, Calendar, and Chat in a Google account, for when an agent needs to find something without knowing where it is.
 ---
 
 # Google Workspace Search
 
-Search Gmail, Drive, Calendar, and Chat through one read-only Google Workspace search tool.
+One read-only search that spans Gmail, Drive, Calendar, and Chat in a single Google account. Use it when an agent needs to find something without knowing which app holds it.
 
 ## What this connector does
 
-Google Workspace Search is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Google Workspace Search is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `google-workspace-search` |
-| Category | Data, Productivity |
+| Category | Data and analytics, Productivity and collaboration |
 | Transport | `mcp_remote` |
 | Highest risk tier | S3 — account data that can be changed. |
 
@@ -33,7 +33,7 @@ Open **Connectors**, find **Google Workspace Search**, and select **Connect**. P
 
 Use Paperclip-managed OAuth for cross-product Workspace search.
 
-- Sign-in style: Browser sign-in
+- Connection method: Connect with Paperclip
 - OAuth client: Paperclip's managed client
 - Capability group: **Search Workspace**
 - Risk tier: S3
@@ -48,7 +48,7 @@ Use Paperclip-managed OAuth for cross-product Workspace search.
 
 Use a customer-owned OAuth client for cross-product Workspace search.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Capability group: **Search Workspace**
 - Risk tier: S3

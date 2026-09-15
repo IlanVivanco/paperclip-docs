@@ -1,20 +1,20 @@
 ---
 seo_title: ClickHouse Connector
-seo_description: Connect ClickHouse's provider-hosted MCP server. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Columnar database built for analytical queries over very large datasets. Agents query the ClickHouse Cloud service you name, and nothing else.
 ---
 
 # ClickHouse
 
-Connect ClickHouse's provider-hosted MCP server.
+Columnar database built for analytical queries over very large datasets. Agents query the ClickHouse Cloud service you name.
 
 ## What this connector does
 
-ClickHouse is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+ClickHouse is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `clickhouse` |
-| Category | Data |
+| Category | Data and analytics |
 | Transport | `mcp_remote` |
 | Highest risk tier | S4 — money, production data, or irreversible actions. |
 | Provider research | wave 2, auth mode `dcr`, verified 2026-08-26 |
@@ -31,7 +31,7 @@ Open **Connectors**, find **ClickHouse**, and select **Connect**. Paperclip offe
 
 Use browser sign-in for the provider-hosted MCP server.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider
 - OAuth client: registered on demand by Paperclip
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.clickhouse.cloud/clickstack`

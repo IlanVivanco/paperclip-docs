@@ -1,20 +1,20 @@
 ---
 seo_title: Notion Connector
-seo_description: Read and update pages in your Notion workspace. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Workspace for notes, documents, and databases. Agents read and update the pages and databases you share with the connection, and only those.
 ---
 
 # Notion
 
-Read and update pages in your Notion workspace.
+Workspace for notes, documents, and databases. Agents read and update the pages and databases you share with the connection — and only those.
 
 ## What this connector does
 
-Notion is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Notion is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `notion` |
-| Category | Content and files |
+| Category | Content and design |
 | Transport | `mcp_remote` |
 | Highest risk tier | S3 — account data that can be changed. |
 | Provider research | wave 1, auth mode `dcr`, verified 2026-08-26 |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Notion**, and select **Connect**. Paperclip offers e
 
 Use the provider-hosted connection for the quickest setup.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider, or your own OAuth app
 - OAuth client: registered on demand, or your own OAuth app if the provider refuses dynamic registration
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.notion.com/mcp`

@@ -1,20 +1,20 @@
 ---
 seo_title: Mem0 Connector
-seo_description: Connect Mem0's provider-hosted MCP server. Set it up in Paperclip with an API key, then choose which agents and actions are allowed.
+seo_description: Hosted long-term memory for AI applications. Agents store and recall facts across runs in your Mem0 project, under permissions you set.
 ---
 
 # Mem0
 
-Connect Mem0's provider-hosted MCP server.
+Hosted long-term memory for AI applications. Agents store and recall facts across runs in your Mem0 project.
 
 ## What this connector does
 
-Mem0 is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Mem0 is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `mem0` |
-| Category | AI and models |
+| Category | AI tools |
 | Transport | `mcp_remote` |
 | Highest risk tier | S3 — account data that can be changed. |
 | Provider research | wave 3, auth mode `api_key`, verified 2026-08-26 |
@@ -31,8 +31,7 @@ Open **Connectors**, find **Mem0**, and select **Connect**. Paperclip offers exa
 
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: API key
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.mem0.ai/mcp/`
 

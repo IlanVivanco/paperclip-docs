@@ -1,20 +1,20 @@
 ---
 seo_title: Google Drive Connector
-seo_description: Search, read, create, and copy files in Google Drive. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Google's file storage. Agents search and read files, and on a write connection create and copy them. Set up access and permissions in Paperclip.
 ---
 
 # Google Drive
 
-Search, read, create, and copy files in Google Drive.
+Google's file storage. Agents search and read files, and on a write connection create and copy them.
 
 ## What this connector does
 
-Google Drive is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Google Drive is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `google-drive` |
-| Category | Content and files, Productivity |
+| Category | Content and design, Productivity and collaboration |
 | Transport | `mcp_remote` |
 | Highest risk tier | S4 — money, production data, or irreversible actions. |
 
@@ -33,7 +33,7 @@ Open **Connectors**, find **Google Drive**, and select **Connect**. Paperclip of
 
 Use Paperclip-managed OAuth for read-only Drive access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Connect with Paperclip
 - OAuth client: Paperclip's managed client
 - Capability group: **Read only**
 - Risk tier: S3
@@ -45,7 +45,7 @@ Use Paperclip-managed OAuth for read-only Drive access.
 
 Use a customer-owned OAuth client for read-only Drive access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Capability group: **Read only**
 - Risk tier: S3
@@ -59,7 +59,7 @@ Provider console: [register an app](https://console.cloud.google.com/auth/client
 
 Use Paperclip-managed OAuth for Drive read and create access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Connect with Paperclip
 - OAuth client: Paperclip's managed client
 - Capability group: **Read & create**
 - Risk tier: S4
@@ -72,7 +72,7 @@ Use Paperclip-managed OAuth for Drive read and create access.
 
 Use a customer-owned OAuth client for Drive read and create access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Capability group: **Read & create**
 - Risk tier: S4

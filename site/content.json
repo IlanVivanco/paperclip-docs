@@ -140,7 +140,7 @@
       "tier": "Learn",
       "title": "Connectors",
       "icon": "unplug",
-      "desc": "Connect outside services to your agents: the catalog, the access model, per-action permissions, and a setup guide for every connector.",
+      "desc": "Connect outside services to your agents: app integrations, model providers, and chat channels, plus the access model, per-action permissions, and a setup guide for each one.",
       "pages": [
         {
           "title": "Connectors Overview",
@@ -186,6 +186,10 @@
               "file": "../docs/connectors/custom-mcp-servers.md"
             }
           ]
+        },
+        {
+          "title": "Recognized but Unlisted",
+          "file": "../docs/connectors/recognized-providers.md"
         },
         {
           "title": "Connector Catalog",

@@ -1,11 +1,11 @@
 ---
 seo_title: Connect Your First Connector
-seo_description: Connect one read-only service to Paperclip and give an agent a task that uses it, in about ten minutes, without granting write access to anything.
+seo_description: Connect one read-only service to Paperclip and give an agent a task that uses it, without granting write access to anything.
 ---
 
 # Connect your first connector
 
-By the end of this you will have one connector set up, one agent allowed to use it, every write action switched off, and one finished task where the agent actually called the service. Budget about ten minutes, most of it waiting on a browser sign-in.
+By the end of this you will have one connector set up, one agent allowed to use it, every write action switched off, and one finished task where the agent actually called the service. Most of the elapsed time is the provider's sign-in screen and the agent's own run.
 
 The worked example is **Hugging Face**, chosen because it is the shortest honest path: a free account, a browser sign-in with no OAuth app to register, no administrator approval, and a provider scope (`read-mcp`) that cannot write anything. Substitute a different connector if you prefer — the four steps are the same, and the provider page for your choice lists whatever extra prerequisites it has.
 

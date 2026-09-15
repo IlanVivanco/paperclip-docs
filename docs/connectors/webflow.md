@@ -1,20 +1,20 @@
 ---
 seo_title: Webflow Connector
-seo_description: Connect Webflow's provider-hosted MCP server. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Visual website builder with a CMS behind it. Agents work with the sites and CMS collections your Webflow workspace roles allow.
 ---
 
 # Webflow
 
-Connect Webflow's provider-hosted MCP server.
+Visual website builder with a CMS behind it. Agents work with the sites and collections your Webflow roles allow.
 
 ## What this connector does
 
-Webflow is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Webflow is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `webflow` |
-| Category | Content and files |
+| Category | Content and design |
 | Transport | `mcp_remote` |
 | Highest risk tier | S3 — account data that can be changed. |
 | Provider research | wave 1, auth mode `dcr`, verified 2026-08-26 |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Webflow**, and select **Connect**. Paperclip offers 
 
 Use browser sign-in for the provider-hosted MCP server.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider
 - OAuth client: registered on demand by Paperclip
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.webflow.com/mcp`

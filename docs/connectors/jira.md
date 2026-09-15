@@ -1,20 +1,20 @@
 ---
 seo_title: Jira Connector
-seo_description: Connect Jira's provider-hosted MCP server. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Atlassian's issue tracker for software teams. Agents work with the issues on the Jira site you connect, under per-action permissions you set.
 ---
 
 # Jira
 
-Connect Jira's provider-hosted MCP server.
+Atlassian's issue tracker for software teams. Agents work with the issues on the Jira site you connect.
 
 ## What this connector does
 
-Jira is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Jira is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `jira` |
-| Category | Productivity |
+| Category | Productivity and collaboration |
 | Transport | `mcp_remote` |
 | Highest risk tier | S3 — account data that can be changed. |
 | Provider research | wave 1, auth mode `dcr_cimd`, verified 2026-08-26 |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Jira**, and select **Connect**. Paperclip offers exa
 
 Use browser sign-in for the provider-hosted MCP server.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider
 - OAuth client: registered on demand by Paperclip
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.atlassian.com/v1/mcp/authv2`

@@ -1,20 +1,20 @@
 ---
 seo_title: Supabase Connector
-seo_description: Connect Supabase's provider-hosted MCP server. Set it up in Paperclip with browser sign-in or an API key, then choose which agents and actions are allowed.
+seo_description: Hosted Postgres with authentication, storage, and edge functions. Agents work with the projects you pick in your Supabase organization.
 ---
 
 # Supabase
 
-Connect Supabase's provider-hosted MCP server.
+Hosted Postgres with authentication, storage, and edge functions. Agents work with the projects you pick in your Supabase organization.
 
 ## What this connector does
 
-Supabase is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Supabase is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `supabase` |
-| Category | Data |
+| Category | Data and analytics |
 | Transport | `mcp_remote` |
 | Highest risk tier | S4 — money, production data, or irreversible actions. |
 | Provider research | wave 2, auth mode `dcr_or_api_key`, verified 2026-08-26 |
@@ -32,7 +32,7 @@ Open **Connectors**, find **Supabase**, and select **Connect**. Paperclip offers
 
 Use browser sign-in for the provider-hosted MCP server.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider
 - OAuth client: registered on demand by Paperclip
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.supabase.com/mcp`
@@ -49,8 +49,7 @@ Provider console: [provider docs](https://supabase.com/docs/guides/ai-tools/mcp)
 
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: API key
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.supabase.com/mcp`
 

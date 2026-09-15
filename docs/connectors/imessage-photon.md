@@ -1,15 +1,15 @@
 ---
 seo_title: iMessage Photon Connector
-seo_description: Message a Paperclip agent from Apple Messages using Photon Cloud. Pro supports DMs; dedicated lines also support groups. Set it up in Paperclip with a.
+seo_description: Lets people message a Paperclip agent from Apple Messages through Photon Cloud. Shared Pro lines carry DMs; a dedicated line also carries groups.
 ---
 
 # iMessage Photon
 
-Message a Paperclip agent from Apple Messages using Photon Cloud. Pro supports DMs; dedicated lines also support groups.
+Message the agent from Apple Messages through a Photon Cloud project. Shared Pro lines carry direct messages; a dedicated line also carries groups you enable.
 
 ## What this connector does
 
-iMessage Photon is a **chat connector**. It gives people a place to talk to a Paperclip agent; it does not give agents tools to call. Chat connector setup is behind the **Chat connectors** instance flag, which is off by default.
+iMessage Photon is a **chat channel**. It gives people a place to talk to a Paperclip agent; it does not give agents tools to call. Chat channel setup is behind the **Chat connectors** instance flag, which is off by default.
 
 | Property | Value |
 | --- | --- |
@@ -30,8 +30,7 @@ Open **Connectors**, find **iMessage Photon**, and select **Connect**. Paperclip
 
 Let people in iMessage Photon start and continue work with one Paperclip agent.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: Provider app registration
 - Risk tier: S3
 
 | Field | Required | What it is |
@@ -46,7 +45,7 @@ iMessage Photon follows the standard connector access model. At setup you choose
 
 ## Actions
 
-None. A chat connector carries messages between a person and an agent; it does not publish an action list.
+None. A chat channel carries messages between a person and an agent; it does not publish an action list.
 
 ## Authorization sequence
 

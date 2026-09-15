@@ -1,20 +1,20 @@
 ---
 seo_title: Box Connector
-seo_description: Connect Box's provider-hosted MCP server. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Enterprise file storage and sharing. Agents work with the files and folders your Box integration can reach, under per-action permissions.
 ---
 
 # Box
 
-Connect Box's provider-hosted MCP server.
+Enterprise file storage and sharing. Agents work with the files and folders your Box integration can reach.
 
 ## What this connector does
 
-Box is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Box is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `box` |
-| Category | Content and files |
+| Category | Content and design |
 | Transport | `mcp_remote` |
 | Highest risk tier | S3 — account data that can be changed. |
 | Provider research | wave 3, auth mode `customer_oauth`, verified 2026-08-26 |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Box**, and select **Connect**. Paperclip offers exac
 
 Register an OAuth app with Box, then enter its client ID and secret.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.box.com`

@@ -110,7 +110,11 @@ function normalizeRouteKey(value) {
   return String(value || "").replace(/^\/+/, "").replace(/\/+$/, "");
 }
 
-function normalizeDocPath(value) {
+// The three functions below define what a relative markdown href means. They
+// have a twin in site/app.js, between its DOC-LINK-RESOLVER markers, because
+// app.js ships as a standalone browser script and cannot import from here.
+// scripts/verify-doc-link-resolution.mjs pins both copies to one case table.
+export function normalizeDocPath(value) {
   const normalized = [];
   for (const segment of value.split("/")) {
     if (!segment || segment === ".") continue;
@@ -125,6 +129,26 @@ function normalizeDocPath(value) {
     normalized.push(segment);
   }
   return normalized.join("/");
+}
+
+/**
+ * Directory a relative href inside `sourceFile` resolves against.
+ *
+ * A document at the docs root has no directory, so the base is empty. A
+ * `/`-anchored trim matches nothing for those files and leaves the filename in
+ * the base, which is how `connectors.md` + `connectors/access-model.md` once
+ * became `connectors.mdconnectors/access-model.md` (PAP-18407).
+ */
+export function docLinkBaseDir(sourceFile) {
+  return typeof sourceFile === "string" && sourceFile.includes("/")
+    ? sourceFile.replace(/\/[^/]*$/, "")
+    : "";
+}
+
+/** Docs-root-relative path a markdown href points at, with `.`/`..` collapsed. */
+export function resolveDocLinkTarget(docHref, sourceFile) {
+  const baseDir = docLinkBaseDir(sourceFile);
+  return normalizeDocPath(baseDir ? `${baseDir}/${docHref}` : docHref);
 }
 
 function derivePageSlug(file) {
@@ -1174,16 +1198,53 @@ export function resolveDocHref(href, sourceFile, routeMap) {
   const hash = hashIndex === -1 ? "" : href.slice(hashIndex);
   if (!docHref.endsWith(".md")) return null;
 
-  const sourceDir = sourceFile.includes("/") ? sourceFile.replace(/\/[^/]*$/, "") : "";
-  const targetFile = normalizeDocPath(sourceDir ? `${sourceDir}/${docHref}` : docHref);
+  const targetFile = resolveDocLinkTarget(docHref, sourceFile);
   const route = routeMap.get(targetFile);
   return { targetFile, route: route ? `${route}${hash}` : null };
+}
+
+// Keep in sync with CATALOG_TABLE_HEADINGS and postProcessTables in site/app.js.
+// The client tags these tables after it renders markdown at runtime; the
+// pre-render has to emit the same markup so a crawler, a no-JS reader, and the
+// first paint before app.js runs all get the catalog's column layout.
+const CATALOG_TABLE_HEADINGS = ["connector", "what you can do", "connection methods"];
+
+function tagCatalogTable(header, body) {
+  const headingLabels = [...header.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)]
+    .map((match) => match[1].replace(/<[^>]*>/g, "").trim());
+  const isCatalog = headingLabels.length === CATALOG_TABLE_HEADINGS.length
+    && headingLabels.every((label, index) => label.toLowerCase() === CATALOG_TABLE_HEADINGS[index]);
+  if (!isCatalog) return null;
+
+  const withRoles = (html, tag, role) =>
+    html.replace(new RegExp(`<${tag}(\\s[^>]*)?>`, "g"), (_match, attrs) => `<${tag}${attrs ?? ""} role="${role}">`);
+
+  let taggedHeader = withRoles(header, "tr", "row");
+  taggedHeader = withRoles(taggedHeader, "th", "columnheader");
+
+  let cellIndex = 0;
+  const taggedBody = withRoles(body, "tr", "row")
+    .replace(/<tr[^>]*>|<td(\s[^>]*)?>/g, (match, attrs) => {
+      if (match.startsWith("<tr")) {
+        cellIndex = 0;
+        return match;
+      }
+      const label = headingLabels[cellIndex++] ?? "";
+      return `<td${attrs ?? ""} role="cell" data-label="${escapeAttr(label)}">`;
+    });
+
+  return `<div class="table-wrap table-wrap-catalog"><table class="catalog-table" role="table">\n`
+    + `<thead role="rowgroup">\n${taggedHeader}</thead>\n`
+    + `<tbody role="rowgroup">\n${taggedBody}</tbody>\n`
+    + `</table></div>\n`;
 }
 
 export function renderStaticMarkdown(markdown, { sourceFile = null, routeMap = null, onUnresolvedLink = null } = {}) {
   const renderer = new marked.Renderer();
   const usedHeadingIds = new Set();
   renderer.image = releaseMarkdownImage;
+  const defaultTable = renderer.table.bind(renderer);
+  renderer.table = (header, body) => tagCatalogTable(header, body) ?? defaultTable(header, body);
   // Emit canonical route hrefs into the static HTML. app.js repairs these at
   // runtime too, but crawlers index the pre-render, so the bytes we ship have
   // to already be correct.

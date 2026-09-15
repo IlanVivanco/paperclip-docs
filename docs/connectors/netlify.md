@@ -1,15 +1,15 @@
 ---
 seo_title: Netlify Connector
-seo_description: Connect Netlify's provider-hosted MCP server. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Hosting and deploys for web front ends. Agents work with the teams and sites your Netlify account can reach, under permissions you set.
 ---
 
 # Netlify
 
-Connect Netlify's provider-hosted MCP server.
+Hosting and deploys for web front ends. Agents work with the teams and sites your Netlify account can reach.
 
 ## What this connector does
 
-Netlify is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Netlify is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Netlify**, and select **Connect**. Paperclip offers 
 
 Use browser sign-in for the provider-hosted MCP server.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider
 - OAuth client: registered on demand by Paperclip
 - Risk tier: S3
 - Endpoints: MCP server `https://netlify-mcp.netlify.app/mcp`

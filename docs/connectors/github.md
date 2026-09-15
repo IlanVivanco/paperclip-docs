@@ -1,11 +1,11 @@
 ---
 seo_title: GitHub Connector
-seo_description: The GitHub connector gives agents repository tools and, for a dedicated identity, the account that shell Git and gh use for the whole run.
+seo_description: Code hosting and review, with two separate purposes: agents acting on the repositories you pick, and people working with one agent from GitHub comments.
 ---
 
 # GitHub
 
-Give agents repository tools or let people work with an agent from GitHub issues and pull requests.
+Code hosting and review. Two separate purposes: as an app integration agents read and act on the organizations and repositories you pick; as a chat channel people work with one agent from issue and pull-request comments.
 
 GitHub is the connector with the widest reach, and the one whose enforcement boundary is most often misread. Read the exception below before you grant an agent a dedicated GitHub identity.
 

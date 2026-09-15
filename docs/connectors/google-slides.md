@@ -1,20 +1,20 @@
 ---
 seo_title: Google Slides Connector
-seo_description: Read and update Google Slides presentations. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Google's presentations. Agents read decks, and on a write connection edit them. Set up access and per-action permissions in Paperclip.
 ---
 
 # Google Slides
 
-Read and update Google Slides presentations.
+Google's presentations. Agents read decks, and on a write connection edit them.
 
 ## What this connector does
 
-Google Slides is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Google Slides is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `google-slides` |
-| Category | Content and files, Productivity |
+| Category | Content and design, Productivity and collaboration |
 | Transport | `mcp_remote` |
 | Highest risk tier | S4 — money, production data, or irreversible actions. |
 
@@ -33,7 +33,7 @@ Open **Connectors**, find **Google Slides**, and select **Connect**. Paperclip o
 
 Use Paperclip-managed OAuth for read-only Slides access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Connect with Paperclip
 - OAuth client: Paperclip's managed client
 - Capability group: **Read only**
 - Risk tier: S3
@@ -46,7 +46,7 @@ Use Paperclip-managed OAuth for read-only Slides access.
 
 Use a customer-owned OAuth client for read-only Slides access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Capability group: **Read only**
 - Risk tier: S3
@@ -61,7 +61,7 @@ Provider console: [register an app](https://console.cloud.google.com/auth/client
 
 Use Paperclip-managed OAuth to read and update Slides.
 
-- Sign-in style: Browser sign-in
+- Connection method: Connect with Paperclip
 - OAuth client: Paperclip's managed client
 - Capability group: **Read & edit**
 - Risk tier: S4
@@ -75,7 +75,7 @@ Use Paperclip-managed OAuth to read and update Slides.
 
 Use a customer-owned OAuth client to read and update Slides.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Capability group: **Read & edit**
 - Risk tier: S4

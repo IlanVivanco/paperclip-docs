@@ -1,15 +1,15 @@
 ---
 seo_title: Sentry Connector
-seo_description: Investigate errors, releases, and production issues. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Error and performance monitoring. Agents investigate errors, releases, and production issues in the organizations, projects, and environments you pick.
 ---
 
 # Sentry
 
-Investigate errors, releases, and production issues.
+Error and performance monitoring. Agents investigate errors, releases, and production issues in the organizations, projects, and environments you pick.
 
 ## What this connector does
 
-Sentry is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Sentry is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Sentry**, and select **Connect**. Paperclip offers e
 
 Use the provider-hosted connection for the quickest setup.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider, or your own OAuth app
 - OAuth client: registered on demand, or your own OAuth app if the provider refuses dynamic registration
 - Risk tier: S2
 - Endpoints: MCP server `https://mcp.sentry.dev/mcp`

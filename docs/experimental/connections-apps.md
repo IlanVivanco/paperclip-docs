@@ -18,7 +18,7 @@ seo_description: The rebuilt connection storage and authorization layer under Pa
 | A Wave 1 catalog, described as plumbing rather than a store. | A full catalog with setup flows, per-action permissions, and a review queue. See [Connectors](../connectors.md). |
 | "Setup flows are partial." | Setup flows are the product surface. Each provider page documents the exact paths Paperclip supports for it. |
 
-One experimental flag in this area is still real and still off by default: **Chat connectors**, described as *"Show experimental chat connector setup and Board surfaces. Existing connections keep running when hidden; GitHub and other tool connectors are unaffected."* That flag governs the chat-style connectors — Slack, Discord, Microsoft Teams, Telegram, iMessage, AgentMail — not agent tool connectors.
+One experimental flag in this area is still real and still off by default: **Chat connectors**, described as *"Show experimental chat connector setup and Board surfaces. Existing connections keep running when hidden; GitHub and other tool connectors are unaffected."* That flag governs the [chat channels](../connectors.md#chat-channels) — Slack, Discord, Microsoft Teams, Telegram, iMessage — and AgentMail's email inboxes with them. It does not govern app integrations, so the Slack and GitHub agent tools are unaffected even when their chat halves are hidden.
 
 ## The model
 

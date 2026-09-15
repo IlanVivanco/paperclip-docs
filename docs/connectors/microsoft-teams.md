@@ -1,15 +1,15 @@
 ---
 seo_title: Microsoft Teams Connector
-seo_description: Let people start and continue Paperclip work with an agent from Microsoft Teams. Set it up in Paperclip with a chat app registration, then choose which.
+seo_description: Lets people work with a Paperclip agent from Microsoft Teams. Needs a work or school Microsoft 365 organization; personal accounts cannot set it up.
 ---
 
 # Microsoft Teams
 
-Let people start and continue Paperclip work with an agent from Microsoft Teams.
+Message the agent in a chat, a team channel, or a group chat. Needs a work or school Microsoft 365 organization; personal Teams accounts cannot complete the setup.
 
 ## What this connector does
 
-Microsoft Teams is a **chat connector**. It gives people a place to talk to a Paperclip agent; it does not give agents tools to call. Chat connector setup is behind the **Chat connectors** instance flag, which is off by default.
+Microsoft Teams is a **chat channel**. It gives people a place to talk to a Paperclip agent; it does not give agents tools to call. Chat channel setup is behind the **Chat connectors** instance flag, which is off by default.
 
 | Property | Value |
 | --- | --- |
@@ -30,8 +30,7 @@ Open **Connectors**, find **Microsoft Teams**, and select **Connect**. Paperclip
 
 Let people in Microsoft Teams start and continue work with one Paperclip agent.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: Provider app registration
 - Risk tier: S3
 
 | Field | Required | What it is |
@@ -48,7 +47,7 @@ Microsoft Teams follows the standard connector access model. At setup you choose
 
 ## Actions
 
-None. A chat connector carries messages between a person and an agent; it does not publish an action list.
+None. A chat channel carries messages between a person and an agent; it does not publish an action list.
 
 ## Authorization sequence
 

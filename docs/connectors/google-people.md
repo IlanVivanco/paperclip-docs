@@ -1,20 +1,20 @@
 ---
 seo_title: Google People Connector
-seo_description: Search contacts and directory profiles with the Google People API. Set it up in Paperclip with browser sign-in, then choose which agents and actions are.
+seo_description: The contacts and directory behind a Google account. Agents look up people and profiles. Read-only: this connector has no write connection at all.
 ---
 
 # Google People
 
-Search contacts and directory profiles with the Google People API.
+The contacts and directory behind a Google account. Agents look up people and profiles. Read-only; there is no write connection.
 
 ## What this connector does
 
-Google People is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Google People is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `google-people` |
-| Category | Communication, Productivity |
+| Category | Communication, Productivity and collaboration |
 | Transport | `mcp_remote` |
 | Highest risk tier | S3 — account data that can be changed. |
 
@@ -33,7 +33,7 @@ Open **Connectors**, find **Google People**, and select **Connect**. Paperclip o
 
 Use Paperclip-managed OAuth for Google People access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Connect with Paperclip
 - OAuth client: Paperclip's managed client
 - Capability group: **Read contacts**
 - Risk tier: S3
@@ -47,7 +47,7 @@ Use Paperclip-managed OAuth for Google People access.
 
 Use a customer-owned OAuth client for Google People access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Capability group: **Read contacts**
 - Risk tier: S3

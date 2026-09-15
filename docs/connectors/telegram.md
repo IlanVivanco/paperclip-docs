@@ -1,15 +1,15 @@
 ---
 seo_title: Telegram Connector
-seo_description: Let people start and continue Paperclip work with an agent from Telegram. Set it up in Paperclip with a chat app registration, then choose which agents.
+seo_description: Lets people work with a Paperclip agent from Telegram, through a bot you create with BotFather and connect to Paperclip's webhook.
 ---
 
 # Telegram
 
-Let people start and continue Paperclip work with an agent from Telegram.
+Message the agent through a bot you create with BotFather.
 
 ## What this connector does
 
-Telegram is a **chat connector**. It gives people a place to talk to a Paperclip agent; it does not give agents tools to call. Chat connector setup is behind the **Chat connectors** instance flag, which is off by default.
+Telegram is a **chat channel**. It gives people a place to talk to a Paperclip agent; it does not give agents tools to call. Chat channel setup is behind the **Chat connectors** instance flag, which is off by default.
 
 | Property | Value |
 | --- | --- |
@@ -30,8 +30,7 @@ Open **Connectors**, find **Telegram**, and select **Connect**. Paperclip offers
 
 Let people in Telegram start and continue work with one Paperclip agent.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: Provider app registration
 - Risk tier: S3
 
 | Field | Required | What it is |
@@ -46,7 +45,7 @@ Telegram follows the standard connector access model. At setup you choose the id
 
 ## Actions
 
-None. A chat connector carries messages between a person and an agent; it does not publish an action list.
+None. A chat channel carries messages between a person and an agent; it does not publish an action list.
 
 ## Authorization sequence
 

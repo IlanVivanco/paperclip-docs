@@ -1,20 +1,20 @@
 ---
 seo_title: PostHog Connector
-seo_description: Analyze product usage, errors, feature flags, and experiments with PostHog's hosted MCP server. Set it up in Paperclip with browser sign-in or an API key.
+seo_description: Product analytics with session replay, feature flags, and experiments. Agents analyse product usage, errors, feature flags, and experiments.
 ---
 
 # PostHog
 
-Analyze product usage, errors, feature flags, and experiments with PostHog's hosted MCP server.
+Product analytics with session replay, feature flags, and experiments. Agents analyse product usage, errors, flags, and experiments.
 
 ## What this connector does
 
-PostHog is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+PostHog is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `posthog` |
-| Category | Analytics |
+| Category | Data and analytics |
 | Transport | `mcp_remote` |
 | Highest risk tier | S3 — account data that can be changed. |
 | Provider research | wave 1, auth mode `dcr_or_api_key`, verified 2026-08-26 |
@@ -31,7 +31,7 @@ Open **Connectors**, find **PostHog**, and select **Connect**. Paperclip offers 
 
 Sign in with PostHog in the browser. Recommended for hosted PostHog accounts.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider, or your own OAuth app
 - OAuth client: registered on demand, or your own OAuth app if the provider refuses dynamic registration
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.posthog.com/mcp`
@@ -49,8 +49,7 @@ Provider console: [provider docs](https://posthog.com/docs/model-context-protoco
 
 Use a PostHog personal API key when browser sign-in is not suitable.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: API key
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.posthog.com/mcp`
 

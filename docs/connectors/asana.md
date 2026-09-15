@@ -1,20 +1,20 @@
 ---
 seo_title: Asana Connector
-seo_description: Connect Asana's provider-hosted MCP server. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Work management for team projects, tasks, and goals. Agents work with the projects and tasks your own Asana OAuth app is allowed to reach.
 ---
 
 # Asana
 
-Connect Asana's provider-hosted MCP server.
+Work management for team projects, tasks, and goals. Agents work with the projects and tasks your Asana app can reach.
 
 ## What this connector does
 
-Asana is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Asana is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `asana` |
-| Category | Productivity |
+| Category | Productivity and collaboration |
 | Transport | `mcp_remote` |
 | Highest risk tier | S3 — account data that can be changed. |
 | Provider research | wave 3, auth mode `customer_oauth`, verified 2026-08-26 |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Asana**, and select **Connect**. Paperclip offers ex
 
 Register an OAuth app with Asana, then enter its client ID and secret.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.asana.com/v2/mcp`

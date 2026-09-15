@@ -1,20 +1,20 @@
 ---
 seo_title: Google Docs Connector
-seo_description: Read and update Google Docs documents. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Google's word processor. Agents read documents, and on a write connection edit them. Set up access and per-action permissions in Paperclip.
 ---
 
 # Google Docs
 
-Read and update Google Docs documents.
+Google's word processor. Agents read documents, and on a write connection edit them.
 
 ## What this connector does
 
-Google Docs is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Google Docs is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `google-docs` |
-| Category | Content and files, Productivity |
+| Category | Content and design, Productivity and collaboration |
 | Transport | `mcp_remote` |
 | Highest risk tier | S4 — money, production data, or irreversible actions. |
 
@@ -33,7 +33,7 @@ Open **Connectors**, find **Google Docs**, and select **Connect**. Paperclip off
 
 Use Paperclip-managed OAuth for read-only Docs access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Connect with Paperclip
 - OAuth client: Paperclip's managed client
 - Capability group: **Read only**
 - Risk tier: S3
@@ -46,7 +46,7 @@ Use Paperclip-managed OAuth for read-only Docs access.
 
 Use a customer-owned OAuth client for read-only Docs access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Capability group: **Read only**
 - Risk tier: S3
@@ -61,7 +61,7 @@ Provider console: [register an app](https://console.cloud.google.com/auth/client
 
 Use Paperclip-managed OAuth to read and update Docs.
 
-- Sign-in style: Browser sign-in
+- Connection method: Connect with Paperclip
 - OAuth client: Paperclip's managed client
 - Capability group: **Read & edit**
 - Risk tier: S4
@@ -75,7 +75,7 @@ Use Paperclip-managed OAuth to read and update Docs.
 
 Use a customer-owned OAuth client to read and update Docs.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Capability group: **Read & edit**
 - Risk tier: S4

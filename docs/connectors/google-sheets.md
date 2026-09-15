@@ -1,20 +1,20 @@
 ---
 seo_title: Google Sheets Connector
-seo_description: Read and update Google Sheets spreadsheets. Set it up in Paperclip with browser sign-in or no sign-in, then choose which agents and actions are allowed.
+seo_description: Google's spreadsheets. Agents read sheets, or update them on a write connection, or reach only the files you share with a Paperclip robot account.
 ---
 
 # Google Sheets
 
-Read and update Google Sheets spreadsheets.
+Google's spreadsheets. Agents read sheets, and on a write connection update them. A third path shares individual spreadsheets with a Paperclip robot account instead of connecting a Google identity at all.
 
 ## What this connector does
 
-Google Sheets is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Google Sheets is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `google-sheets` |
-| Category | Data, Productivity |
+| Category | Data and analytics, Productivity and collaboration |
 | Transport | `mcp_remote`, `local_stdio` |
 | Highest risk tier | S4 — money, production data, or irreversible actions. |
 
@@ -33,7 +33,7 @@ Open **Connectors**, find **Google Sheets**, and select **Connect**. Paperclip o
 
 Use Paperclip-managed OAuth for read-only Sheets access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Connect with Paperclip
 - OAuth client: Paperclip's managed client
 - Capability group: **Read only**
 - Risk tier: S3
@@ -46,7 +46,7 @@ Use Paperclip-managed OAuth for read-only Sheets access.
 
 Use a customer-owned OAuth client for read-only Sheets access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Capability group: **Read only**
 - Risk tier: S3
@@ -61,7 +61,7 @@ Provider console: [register an app](https://console.cloud.google.com/auth/client
 
 Use Paperclip-managed OAuth to read and update Sheets.
 
-- Sign-in style: Browser sign-in
+- Connection method: Connect with Paperclip
 - OAuth client: Paperclip's managed client
 - Capability group: **Read & edit**
 - Risk tier: S4
@@ -75,7 +75,7 @@ Use Paperclip-managed OAuth to read and update Sheets.
 
 Use a customer-owned OAuth client to read and update Sheets.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Capability group: **Read & edit**
 - Risk tier: S4
@@ -91,8 +91,7 @@ Provider console: [register an app](https://console.cloud.google.com/auth/client
 
 Share selected spreadsheets with the Paperclip robot account instead of connecting a Google identity.
 
-- Sign-in style: No sign-in
-- OAuth client: yours to register and supply
+- Connection method: No credential
 - Capability group: **Share selected sheets**
 - Risk tier: S3
 

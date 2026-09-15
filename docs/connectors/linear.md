@@ -1,20 +1,20 @@
 ---
 seo_title: Linear Connector
-seo_description: Create, update, and read Linear issues. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Issue tracking for product and engineering teams. Agents create, update, and read issues in the workspace, teams, and projects you pick.
 ---
 
 # Linear
 
-Create, update, and read Linear issues.
+Issue tracking for product and engineering teams. Agents create, update, and read issues, scoped to the workspace, teams, and projects you pick.
 
 ## What this connector does
 
-Linear is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Linear is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `linear` |
-| Category | Productivity |
+| Category | Productivity and collaboration |
 | Transport | `mcp_remote` |
 | Highest risk tier | S2 — account data with limited blast radius. |
 
@@ -30,7 +30,7 @@ Open **Connectors**, find **Linear**, and select **Connect**. Paperclip offers e
 
 Use the provider-hosted connection for the quickest setup.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Risk tier: S2
 - Endpoints: MCP server `https://mcp.linear.app/mcp`; authorization `https://linear.app/oauth/authorize`; token `https://api.linear.app/oauth/token`

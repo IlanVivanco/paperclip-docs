@@ -107,6 +107,18 @@ function resolveScreenshotSrc(src) {
   return src;
 }
 
+/* ─── Shared markdown link resolution ───────────────────────────────────── */
+// The three functions between the DOC-LINK-RESOLVER markers define what a
+// relative markdown href means, and they have a twin in site/build-release.mjs
+// (normalizeDocPath / docLinkBaseDir / resolveDocLinkTarget, used by
+// resolveDocHref). The build rewrites links into canonical routes so crawlers
+// index correct bytes; this client resolves the same links again at runtime
+// against markdown it fetched itself. When the two disagree, a link looks
+// right in the pre-render and breaks on click.
+//
+// scripts/verify-doc-link-resolution.mjs lifts this block straight out of the
+// source and pins both copies to one shared case table.
+// DOC-LINK-RESOLVER:BEGIN
 function normalizeDocPath(path) {
   const normalized = [];
   for (const segment of path.split('/')) {
@@ -123,6 +135,22 @@ function normalizeDocPath(path) {
   }
   return normalized.join('/');
 }
+
+function docLinkBaseDir(sourceFile) {
+  // A document at the docs root has no directory to resolve against. Trimming
+  // with a `/`-anchored pattern matched nothing for those files and left the
+  // filename in the base, so `connectors.md` + `connectors/access-model.md`
+  // resolved to `connectors.mdconnectors/access-model.md` (PAP-18407).
+  return typeof sourceFile === 'string' && sourceFile.includes('/')
+    ? sourceFile.replace(/\/[^/]*$/, '')
+    : '';
+}
+
+function resolveDocLinkTarget(docHref, sourceFile) {
+  const baseDir = docLinkBaseDir(sourceFile);
+  return normalizeDocPath(baseDir ? `${baseDir}/${docHref}` : docHref);
+}
+// DOC-LINK-RESOLVER:END
 
 function normalizeRouteKey(value) {
   return value.replace(/^\/+/, '').replace(/\/+$/, '');
@@ -1623,11 +1651,49 @@ function postProcessImages(root) {
   });
 }
 
+// The connector catalog is one logical table split across category headings.
+// Tagging each of those tables lets CSS give them identical column widths, so
+// a reader scanning down the page reads one set of columns rather than eleven
+// differently proportioned ones. Detection is by header row, not by page, so
+// the rule follows the content if it moves.
+const CATALOG_TABLE_HEADINGS = ['connector', 'what you can do', 'connection methods'];
+
+function isCatalogTable(headings) {
+  return headings.length === CATALOG_TABLE_HEADINGS.length
+    && headings.every((heading, index) => heading === CATALOG_TABLE_HEADINGS[index]);
+}
+
+// Below the stacking breakpoint these tables render as blocks, which drops the
+// implicit table semantics a browser infers from display: table. Stating the
+// roles keeps the structure in the accessibility tree at every width, so the
+// visually hidden header row is still what a screen reader announces per cell.
+function applyExplicitTableRoles(table) {
+  table.setAttribute('role', 'table');
+  table.querySelectorAll('thead, tbody, tfoot').forEach(group => group.setAttribute('role', 'rowgroup'));
+  table.querySelectorAll('tr').forEach(row => row.setAttribute('role', 'row'));
+  table.querySelectorAll('thead th').forEach(cell => cell.setAttribute('role', 'columnheader'));
+  table.querySelectorAll('tbody td').forEach(cell => cell.setAttribute('role', 'cell'));
+}
+
 function postProcessTables(root) {
   root.querySelectorAll('table').forEach(table => {
+    const headingLabels = [...table.querySelectorAll('thead th')]
+      .map(cell => (cell.textContent || '').trim());
+    if (isCatalogTable(headingLabels.map(label => label.toLowerCase()))) {
+      table.classList.add('catalog-table');
+      applyExplicitTableRoles(table);
+      // Stacked cells lose their column, so each one carries its own label.
+      table.querySelectorAll('tbody tr').forEach(row => {
+        [...row.children].forEach((cell, index) => {
+          if (headingLabels[index]) cell.setAttribute('data-label', headingLabels[index]);
+        });
+      });
+    }
+
     if (table.parentElement && table.parentElement.classList.contains('table-wrap')) return;
     const wrap = document.createElement('div');
     wrap.className = 'table-wrap';
+    if (table.classList.contains('catalog-table')) wrap.classList.add('table-wrap-catalog');
     table.parentNode.insertBefore(wrap, table);
     wrap.appendChild(table);
   });
@@ -1693,13 +1759,13 @@ function postProcessInternalLinks(root) {
     // Legacy relative markdown links, still present when the SPA renders
     // markdown it fetched at runtime.
     if (docHref && docHref.endsWith('.md')) {
-      const baseDir = currentFile.replace(/\/[^/]+$/, '/');
-      const targetFile = normalizeDocPath(baseDir + docHref);
+      const targetFile = resolveDocLinkTarget(docHref, currentFile);
       const targetPage = allPages.find(candidate => candidate.file === targetFile);
       if (targetPage) {
         a.href = headingHref ? getPageHeadingUrl(targetPage, headingHref) : getPageUrl(targetPage);
       }
       a.addEventListener('click', e => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
         e.preventDefault();
         loadPage(targetFile, headingHref || null);
       });

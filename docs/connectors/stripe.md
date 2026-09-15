@@ -1,15 +1,15 @@
 ---
 seo_title: Stripe Connector
-seo_description: Connect Stripe's provider-hosted MCP server. Set it up in Paperclip with browser sign-in or an API key, then choose which agents and actions are allowed.
+seo_description: Payments, invoicing, and billing. Agents read customers, invoices, and payouts in the account you connect, under per-action permissions.
 ---
 
 # Stripe
 
-Connect Stripe's provider-hosted MCP server.
+Payments, invoicing, and billing. Agents read customers, invoices, and payouts in the account you connect.
 
 ## What this connector does
 
-Stripe is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Stripe is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
@@ -32,7 +32,7 @@ Open **Connectors**, find **Stripe**, and select **Connect**. Paperclip offers e
 
 Use browser sign-in for the provider-hosted MCP server.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider
 - OAuth client: registered on demand by Paperclip
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.stripe.com`
@@ -43,8 +43,7 @@ Provider console: [provider docs](https://docs.stripe.com/mcp)
 
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: API key
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.stripe.com`
 

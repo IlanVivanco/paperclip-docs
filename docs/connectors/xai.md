@@ -1,20 +1,20 @@
 ---
 seo_title: Grok Connector
-seo_description: Connect Grok accounts for your agents. Set it up in Paperclip with a subscription or API key, then choose which agents and actions are allowed.
+seo_description: Supplies the credential Paperclip uses to run xAI's Grok models. It is not an agent tool, so it adds no actions to any permission list.
 ---
 
 # Grok
 
-Connect Grok accounts for your agents.
+Run xAI's Grok models.
 
 ## What this connector does
 
-Grok is a **model account**, not an agent tool. It supplies the credential an agent's runtime uses to talk to the model provider. It does not add any actions to the **Permissions** tab, and it never appears in a review request.
+Grok is a **model provider**, not an agent tool. It supplies the credential an agent's runtime uses when it runs a model. It does not add any actions to the **Permissions** tab, and it never appears in a review request.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `xai` |
-| Category | AI and models |
+| Category | Model providers |
 | Transport | `runtime_auth` |
 | Highest risk tier | S3 — account data that can be changed. |
 
@@ -30,7 +30,7 @@ Open **Connectors**, find **Grok**, and select **Connect**. Paperclip offers exa
 
 Authenticate an agent with this account.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Risk tier: S3
 
@@ -38,8 +38,7 @@ Authenticate an agent with this account.
 
 Authenticate an agent with this account.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: API key
 - Risk tier: S3
 
 | Field | Required | What it is |
@@ -48,11 +47,11 @@ Authenticate an agent with this account.
 
 ## Accounts and access
 
-A model account is attached to a grant like any other connection, but it is consumed by the agent runtime rather than by the tool gateway. Choose **Just me** to keep the credential to your own runs, or **Any human in the company** to let every eligible agent use it. See [Use separate accounts for people and agents](separate-accounts.md).
+A model provider connection is attached to a grant like any other connection, but it is consumed by the agent runtime rather than by the tool gateway. Choose **Just me** to keep the credential to your own runs, or **Any human in the company** to let every eligible agent use it. See [Use separate accounts for people and agents](separate-accounts.md).
 
 ## Actions
 
-None. A model account exposes no callable actions.
+None. A model provider connection exposes no callable actions.
 
 ## Check that it works
 

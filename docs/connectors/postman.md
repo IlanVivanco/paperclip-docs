@@ -1,15 +1,15 @@
 ---
 seo_title: Postman Connector
-seo_description: Connect Postman's provider-hosted MCP server. Set it up in Paperclip with browser sign-in or an API key, then choose which agents and actions are allowed.
+seo_description: API development and testing workspace. Agents work with your collections and APIs, at read-only, code-generation, or full-write access.
 ---
 
 # Postman
 
-Connect Postman's provider-hosted MCP server.
+API development and testing workspace. Agents work with the collections and APIs your Postman account can reach. Pick how much access to grant: read-only, code generation, or full write.
 
 ## What this connector does
 
-Postman is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Postman is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Postman**, and select **Connect**. Paperclip offers 
 
 Use browser sign-in for the provider-hosted MCP server.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider
 - OAuth client: registered on demand by Paperclip
 - Capability group: **Minimal**
 - Risk tier: S3
@@ -43,7 +43,7 @@ Provider console: [provider docs](https://learning.postman.com/latest-v-12/docs/
 
 Use browser sign-in for the provider-hosted MCP server.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider
 - OAuth client: registered on demand by Paperclip
 - Capability group: **Code**
 - Risk tier: S3
@@ -55,7 +55,7 @@ Provider console: [provider docs](https://learning.postman.com/latest-v-12/docs/
 
 Use browser sign-in for the provider-hosted MCP server.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider
 - OAuth client: registered on demand by Paperclip
 - Capability group: **Full**
 - Risk tier: S3
@@ -67,8 +67,7 @@ Provider console: [provider docs](https://learning.postman.com/latest-v-12/docs/
 
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: API key
 - Capability group: **Minimal**
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.eu.postman.com/minimal`
@@ -83,8 +82,7 @@ Provider console: [get a key](https://learning.postman.com/latest-v-12/docs/refe
 
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: API key
 - Capability group: **Code**
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.eu.postman.com/code`
@@ -99,8 +97,7 @@ Provider console: [get a key](https://learning.postman.com/latest-v-12/docs/refe
 
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: API key
 - Capability group: **Full**
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.eu.postman.com/mcp`

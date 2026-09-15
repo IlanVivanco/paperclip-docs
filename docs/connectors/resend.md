@@ -1,15 +1,15 @@
 ---
 seo_title: Resend Connector
-seo_description: Connect Resend's provider-hosted MCP server. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Transactional email delivery for developers. Agents work with the sending domains and delivery records your Resend account can reach.
 ---
 
 # Resend
 
-Connect Resend's provider-hosted MCP server.
+Transactional email delivery for developers. Agents work with the sending domains and delivery records your Resend account can reach.
 
 ## What this connector does
 
-Resend is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Resend is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Resend**, and select **Connect**. Paperclip offers e
 
 Use browser sign-in for the provider-hosted MCP server.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider
 - OAuth client: registered on demand by Paperclip
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.resend.com/mcp`

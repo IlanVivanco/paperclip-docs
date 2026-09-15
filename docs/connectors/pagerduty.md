@@ -1,15 +1,15 @@
 ---
 seo_title: PagerDuty Connector
-seo_description: Connect PagerDuty's provider-hosted MCP server. Set it up in Paperclip with an API key, then choose which agents and actions are allowed.
+seo_description: On-call scheduling and incident response. Agents work with the incidents, services, and schedules your token can reach in the US or EU region.
 ---
 
 # PagerDuty
 
-Connect PagerDuty's provider-hosted MCP server.
+On-call scheduling and incident response. Agents work with the incidents, services, and schedules your token can reach. Choose the US or EU service region when you connect.
 
 ## What this connector does
 
-PagerDuty is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+PagerDuty is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
@@ -31,8 +31,7 @@ Open **Connectors**, find **PagerDuty**, and select **Connect**. Paperclip offer
 
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: API key
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.pagerduty.com/mcp`
 
@@ -46,8 +45,7 @@ Provider console: [get a key](https://support.pagerduty.com/main/docs/pagerduty-
 
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: API key
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.eu.pagerduty.com/mcp`
 

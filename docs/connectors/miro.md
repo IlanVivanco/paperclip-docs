@@ -1,20 +1,20 @@
 ---
 seo_title: Miro Connector
-seo_description: Connect Miro's provider-hosted MCP server. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Shared online whiteboards for diagrams, planning, and workshops. Agents work with the boards your Miro account can reach, under permissions you set.
 ---
 
 # Miro
 
-Connect Miro's provider-hosted MCP server.
+Shared online whiteboards for diagrams, planning, and workshops. Agents work with the boards your Miro account can reach.
 
 ## What this connector does
 
-Miro is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Miro is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `miro` |
-| Category | Productivity |
+| Category | Productivity and collaboration |
 | Transport | `mcp_remote` |
 | Highest risk tier | S3 — account data that can be changed. |
 | Provider research | wave 1, auth mode `dcr`, verified 2026-08-26 |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Miro**, and select **Connect**. Paperclip offers exa
 
 Use browser sign-in for the provider-hosted MCP server.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider
 - OAuth client: registered on demand by Paperclip
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.miro.com/`

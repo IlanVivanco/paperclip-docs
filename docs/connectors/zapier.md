@@ -1,20 +1,20 @@
 ---
 seo_title: Zapier Connector
-seo_description: Reach thousands of apps through your Zapier account. Set it up in Paperclip with no sign-in, then choose which agents and actions are allowed.
+seo_description: Automation that wires thousands of apps together. You choose the actions in Zapier and paste one generated URL, so agents get those actions and no others.
 ---
 
 # Zapier
 
-Reach thousands of apps through your Zapier account.
+Automation service that wires thousands of apps together. You choose the actions in Zapier and paste one generated URL, so the agent gets exactly the actions you put in it and nothing else.
 
 ## What this connector does
 
-Zapier is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Zapier is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `zapier` |
-| Category | Productivity |
+| Category | Productivity and collaboration |
 | Transport | `mcp_remote` |
 | Highest risk tier | S3 — account data that can be changed. |
 | Provider research | wave 3, auth mode `generated_url`, verified 2026-08-26 |
@@ -31,8 +31,7 @@ Open **Connectors**, find **Zapier**, and select **Connect**. Paperclip offers e
 
 Use the complete provider-generated MCP URL from Zapier.
 
-- Sign-in style: No sign-in
-- OAuth client: yours to register and supply
+- Connection method: No credential
 - Risk tier: S3
 
 ## Accounts and access

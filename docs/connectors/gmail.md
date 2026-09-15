@@ -1,11 +1,11 @@
 ---
 seo_title: Gmail Connector
-seo_description: Gmail in Paperclip reads and searches mail and can create a draft. Sending, trashing, and relabelling are permanently blocked and cannot be enabled.
+seo_description: Google's email service. Agents search and read mail and can draft replies for your review; sending and deleting mail are never enabled.
 ---
 
 # Gmail
 
-Search and read Gmail messages and create drafts without enabling mail sending.
+Google's email service. Agents search and read mail, and on a draft connection create drafts for you to review in Gmail. Sending, deleting, and relabelling mail are never enabled.
 
 The boundary is the point of this connector. An agent with Gmail can find a thread, read it, and leave a draft in your Gmail drafts folder for you to send. It cannot send, cannot trash, cannot mark spam, and cannot change labels — and no permission setting in Paperclip turns any of that on.
 
@@ -16,7 +16,7 @@ For the setup procedure, see [Set up the Gmail connector](gmail-setup.md). This 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `gmail` |
-| Category | Communication, Productivity |
+| Category | Communication, Productivity and collaboration |
 | Transport | `mcp_remote` |
 | MCP server | `https://gmailmcp.googleapis.com/mcp/v1` |
 | Capability groups | **Read only** (S3), **Read & create drafts** (S4) |

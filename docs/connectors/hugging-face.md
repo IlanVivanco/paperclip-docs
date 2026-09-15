@@ -1,20 +1,20 @@
 ---
 seo_title: Hugging Face Connector
-seo_description: Connect Hugging Face's provider-hosted MCP server. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Public hub for open machine-learning models, datasets, and demos. Agents search models, datasets, and Spaces through a read-only sign-in.
 ---
 
 # Hugging Face
 
-Connect Hugging Face's provider-hosted MCP server.
+Public hub for open machine-learning models, datasets, and demos. Agents search models, datasets, and Spaces. The sign-in asks for a read-only scope, which makes this the shortest connector to try first.
 
 ## What this connector does
 
-Hugging Face is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Hugging Face is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `hugging-face` |
-| Category | AI and models |
+| Category | AI tools |
 | Transport | `mcp_remote` |
 | Highest risk tier | S2 — account data with limited blast radius. |
 | Provider research | wave 1, auth mode `dcr_cimd`, verified 2026-08-26 |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Hugging Face**, and select **Connect**. Paperclip of
 
 Use browser sign-in for the provider-hosted MCP server.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider
 - OAuth client: registered on demand by Paperclip
 - Risk tier: S2
 - Endpoints: MCP server `https://huggingface.co/mcp?login&gradio=none`

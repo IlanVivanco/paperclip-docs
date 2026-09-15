@@ -1,15 +1,15 @@
 ---
 seo_title: Slack Connector
-seo_description: Give agents Slack tools or let people start and continue Paperclip work from Slack. Set it up in Paperclip with browser sign-in or a chat app.
+seo_description: Team messaging, with two separate purposes: agents reading and posting in channels you pick, and people working with one agent from Slack.
 ---
 
 # Slack
 
-Give agents Slack tools or let people start and continue Paperclip work from Slack.
+Team messaging. Two separate purposes: as an app integration agents read and post in the workspace and channels you pick; as a chat channel people work with one agent from Slack.
 
 ## What this connector does
 
-Slack is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Slack is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
@@ -30,7 +30,7 @@ Open **Connectors**, find **Slack**, and select **Connect**. Paperclip offers ex
 
 Use the provider-hosted connection for the quickest setup.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.slack.com/mcp`; authorization `https://slack.com/oauth/v2/authorize`; token `https://slack.com/api/oauth.v2.access`
@@ -43,8 +43,7 @@ Use the provider-hosted connection for the quickest setup.
 
 Let people in Slack start and continue work with one Paperclip agent.
 
-- Sign-in style: API key
-- OAuth client: yours to register and supply
+- Connection method: Provider app registration
 - Risk tier: S3
 
 | Field | Required | What it is |

@@ -1,20 +1,20 @@
 ---
 seo_title: Wix Connector
-seo_description: Connect Wix's provider-hosted MCP server. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Website builder and hosting. Agents work with the sites your Wix account can reach, under per-action permissions you set in Paperclip.
 ---
 
 # Wix
 
-Connect Wix's provider-hosted MCP server.
+Website builder and hosting. Agents work with the sites your Wix account can reach.
 
 ## What this connector does
 
-Wix is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Wix is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `wix` |
-| Category | Content and files |
+| Category | Content and design |
 | Transport | `mcp_remote` |
 | Highest risk tier | S3 — account data that can be changed. |
 | Provider research | wave 1, auth mode `dcr`, verified 2026-08-26 |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Wix**, and select **Connect**. Paperclip offers exac
 
 Use browser sign-in for the provider-hosted MCP server.
 
-- Sign-in style: Browser sign-in
+- Connection method: Sign in with the provider
 - OAuth client: registered on demand by Paperclip
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.wix.com/mcp`

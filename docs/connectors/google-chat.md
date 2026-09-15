@@ -1,20 +1,20 @@
 ---
 seo_title: Google Chat Connector
-seo_description: Search and read Google Chat conversations and send messages. Set it up in Paperclip with browser sign-in, then choose which agents and actions are allowed.
+seo_description: Google Workspace's team messaging. Agents search and read conversations, and on a write connection post messages. It is an agent tool, not a chat channel.
 ---
 
 # Google Chat
 
-Search and read Google Chat conversations and send messages.
+Google Workspace's team messaging. Agents search and read conversations, and on a write connection post messages. This is an agent tool, not a way for people to talk to an agent.
 
 ## What this connector does
 
-Google Chat is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+Google Chat is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
 
 | Property | Value |
 | --- | --- |
 | Catalog slug | `google-chat` |
-| Category | Communication, Productivity |
+| Category | Communication, Productivity and collaboration |
 | Transport | `mcp_remote` |
 | Highest risk tier | S4 — money, production data, or irreversible actions. |
 
@@ -34,7 +34,7 @@ Open **Connectors**, find **Google Chat**, and select **Connect**. Paperclip off
 
 Use Paperclip-managed OAuth for read-only Chat access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Connect with Paperclip
 - OAuth client: Paperclip's managed client
 - Capability group: **Read only**
 - Risk tier: S3
@@ -49,7 +49,7 @@ Use Paperclip-managed OAuth for read-only Chat access.
 
 Use a customer-owned OAuth client for read-only Chat access.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Capability group: **Read only**
 - Risk tier: S3
@@ -66,7 +66,7 @@ Provider console: [register an app](https://console.cloud.google.com/auth/client
 
 Use Paperclip-managed OAuth to read Chat and send messages.
 
-- Sign-in style: Browser sign-in
+- Connection method: Connect with Paperclip
 - OAuth client: Paperclip's managed client
 - Capability group: **Read & send**
 - Risk tier: S4
@@ -82,7 +82,7 @@ Use Paperclip-managed OAuth to read Chat and send messages.
 
 Use a customer-owned OAuth client to read Chat and send messages.
 
-- Sign-in style: Browser sign-in
+- Connection method: Your own OAuth app
 - OAuth client: yours to register and supply
 - Capability group: **Read & send**
 - Risk tier: S4
