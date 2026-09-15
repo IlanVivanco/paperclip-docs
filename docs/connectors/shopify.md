@@ -11,7 +11,7 @@ Search a store's products and policies, and manage shopping carts.
 
 Shopify is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `shopify` |
 | Category | Commerce and finance |
@@ -35,7 +35,7 @@ Open **Connectors**, find **Shopify**, and select **Connect**. Paperclip offers 
 Recommended for Shopify's current UCP catalog, cart, and checkout tools.
 
 - Sign-in style: No sign-in
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S3
 - Endpoints: MCP server `https://{storeDomain}/api/ucp/mcp`
 
@@ -50,7 +50,7 @@ Provider console: [provider docs](https://shopify.dev/docs/agents/catalog/storef
 Use Shopify's compatibility server when agents need storefront policy and FAQ search.
 
 - Sign-in style: No sign-in
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S3
 - Endpoints: MCP server `https://{storeDomain}/api/mcp`
 

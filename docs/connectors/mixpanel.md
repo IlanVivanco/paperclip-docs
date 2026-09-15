@@ -11,7 +11,7 @@ Connect Mixpanel's provider-hosted MCP server.
 
 Mixpanel is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `mixpanel` |
 | Category | Analytics |
@@ -21,7 +21,6 @@ Mixpanel is an **agent tool** connector. Once it is connected, the provider's MC
 
 ## Before you start
 
-- A Mixpanel account; the hosted MCP server is currently beta.
 - A Mixpanel account; the hosted MCP server is currently beta.
 - This provider's hosted MCP server is currently beta or preview.
 
@@ -34,7 +33,7 @@ Open **Connectors**, find **Mixpanel**, and select **Connect**. Paperclip offers
 Use browser sign-in for the provider-hosted MCP server.
 
 - Sign-in style: Browser sign-in
-- OAuth client: registered on demand
+- OAuth client: registered on demand by Paperclip
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.mixpanel.com/mcp`
 
@@ -53,19 +52,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      Mixpanel
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               Mixpanel
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 ## Check that it works

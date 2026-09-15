@@ -11,7 +11,7 @@ Search Gmail, Drive, Calendar, and Chat through one read-only Google Workspace s
 
 Google Workspace Search is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `google-workspace-search` |
 | Category | Data, Productivity |
@@ -34,7 +34,7 @@ Open **Connectors**, find **Google Workspace Search**, and select **Connect**. P
 Use Paperclip-managed OAuth for cross-product Workspace search.
 
 - Sign-in style: Browser sign-in
-- OAuth client: Paperclip-managed client
+- OAuth client: Paperclip's managed client
 - Capability group: **Search Workspace**
 - Risk tier: S3
 - Endpoints: MCP server `https://workspacemcp.googleapis.com/mcp/v1`
@@ -49,7 +49,7 @@ Use Paperclip-managed OAuth for cross-product Workspace search.
 Use a customer-owned OAuth client for cross-product Workspace search.
 
 - Sign-in style: Browser sign-in
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Capability group: **Search Workspace**
 - Risk tier: S3
 - Endpoints: MCP server `https://workspacemcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
@@ -74,19 +74,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      Google Workspace Search
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               Google Workspace Se~
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 The Paperclip-managed path returns through `GET /api/tools/oauth/cloud-connector/callback` instead of the generic callback.

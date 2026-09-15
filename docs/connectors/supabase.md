@@ -11,7 +11,7 @@ Connect Supabase's provider-hosted MCP server.
 
 Supabase is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `supabase` |
 | Category | Data |
@@ -21,7 +21,6 @@ Supabase is an **agent tool** connector. Once it is connected, the provider's MC
 
 ## Before you start
 
-- A Supabase account; use a development project and review write actions before connecting production data.
 - A Supabase account; use a development project and review write actions before connecting production data.
 - Do not connect production data unless you have reviewed Supabase's MCP security guidance.
 
@@ -34,7 +33,7 @@ Open **Connectors**, find **Supabase**, and select **Connect**. Paperclip offers
 Use browser sign-in for the provider-hosted MCP server.
 
 - Sign-in style: Browser sign-in
-- OAuth client: registered on demand
+- OAuth client: registered on demand by Paperclip
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.supabase.com/mcp`
 
@@ -51,7 +50,7 @@ Provider console: [provider docs](https://supabase.com/docs/guides/ai-tools/mcp)
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.supabase.com/mcp`
 
@@ -77,19 +76,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      Supabase
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               Supabase
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 ## Check that it works

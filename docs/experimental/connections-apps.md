@@ -7,7 +7,7 @@ seo_description: The rebuilt connection storage and authorization layer under Pa
 
 **Connections v3** is the layer that stores, authorizes, and hands out connections to outside services. It is what [Connectors](../connectors.md) is built on.
 
-> **This page is no longer about an experimental flag.** When it was first written, the connection surface shipped behind an **Apps** toggle in experimental settings and the catalog was a small Wave 1 cut. Neither is true now. The surface is always on, the toggle is gone, and the catalog is the full list on [Connectors](../connectors.md). What remains here is the underlying model and the one operator-facing rename — the parts that are still worth looking up.
+> **Note:** This page is no longer about an experimental flag. When it was first written, the connection surface shipped behind an **Apps** toggle in experimental settings and the catalog was a small Wave 1 cut. Neither is true now. The surface is always on, the toggle is gone, and the catalog is the full list on [Connectors](../connectors.md). What remains here is the underlying model and the one operator-facing rename — the parts that are still worth looking up.
 
 ## What changed since this page was first published
 

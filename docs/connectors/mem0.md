@@ -11,7 +11,7 @@ Connect Mem0's provider-hosted MCP server.
 
 Mem0 is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `mem0` |
 | Category | AI and models |
@@ -21,7 +21,6 @@ Mem0 is an **agent tool** connector. Once it is connected, the provider's MCP se
 
 ## Before you start
 
-- A Mem0 API key; the live server currently requires the slash-normalized endpoint.
 - A Mem0 API key; the live server currently requires the slash-normalized endpoint.
 
 ## Supported setup paths
@@ -33,7 +32,7 @@ Open **Connectors**, find **Mem0**, and select **Connect**. Paperclip offers exa
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.mem0.ai/mcp/`
 

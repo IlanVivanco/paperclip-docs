@@ -11,7 +11,7 @@ Analyze product usage, errors, feature flags, and experiments with PostHog's hos
 
 PostHog is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `posthog` |
 | Category | Analytics |
@@ -32,7 +32,7 @@ Open **Connectors**, find **PostHog**, and select **Connect**. Paperclip offers 
 Sign in with PostHog in the browser. Recommended for hosted PostHog accounts.
 
 - Sign-in style: Browser sign-in
-- OAuth client: registered on demand
+- OAuth client: registered on demand, or your own OAuth app if the provider refuses dynamic registration
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.posthog.com/mcp`
 
@@ -50,7 +50,7 @@ Provider console: [provider docs](https://posthog.com/docs/model-context-protoco
 Use a PostHog personal API key when browser sign-in is not suitable.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.posthog.com/mcp`
 
@@ -77,19 +77,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      PostHog
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               PostHog
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 ## Check that it works

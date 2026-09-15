@@ -11,7 +11,7 @@ Connect Hugging Face's provider-hosted MCP server.
 
 Hugging Face is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `hugging-face` |
 | Category | AI and models |
@@ -21,7 +21,6 @@ Hugging Face is an **agent tool** connector. Once it is connected, the provider'
 
 ## Before you start
 
-- A Hugging Face account.
 - A Hugging Face account.
 
 ## Supported setup paths
@@ -33,7 +32,7 @@ Open **Connectors**, find **Hugging Face**, and select **Connect**. Paperclip of
 Use browser sign-in for the provider-hosted MCP server.
 
 - Sign-in style: Browser sign-in
-- OAuth client: registered on demand
+- OAuth client: registered on demand by Paperclip
 - Risk tier: S2
 - Endpoints: MCP server `https://huggingface.co/mcp?login&gradio=none`
 - Requested scopes:
@@ -54,19 +53,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      Hugging Face
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               Hugging Face
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 ## Check that it works

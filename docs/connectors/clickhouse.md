@@ -11,7 +11,7 @@ Connect ClickHouse's provider-hosted MCP server.
 
 ClickHouse is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `clickhouse` |
 | Category | Data |
@@ -21,7 +21,6 @@ ClickHouse is an **agent tool** connector. Once it is connected, the provider's 
 
 ## Before you start
 
-- A ClickHouse Cloud ClickStack service and its service ID.
 - A ClickHouse Cloud ClickStack service and its service ID.
 
 ## Supported setup paths
@@ -33,7 +32,7 @@ Open **Connectors**, find **ClickHouse**, and select **Connect**. Paperclip offe
 Use browser sign-in for the provider-hosted MCP server.
 
 - Sign-in style: Browser sign-in
-- OAuth client: registered on demand
+- OAuth client: registered on demand by Paperclip
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.clickhouse.cloud/clickstack`
 
@@ -56,19 +55,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      ClickHouse
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               ClickHouse
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 ## Check that it works

@@ -11,7 +11,7 @@ Message a Paperclip agent from Apple Messages using Photon Cloud. Pro supports D
 
 iMessage Photon is a **chat connector**. It gives people a place to talk to a Paperclip agent; it does not give agents tools to call. Chat connector setup is behind the **Chat connectors** instance flag, which is off by default.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `imessage-photon` |
 | Category | Communication |
@@ -31,7 +31,7 @@ Open **Connectors**, find **iMessage Photon**, and select **Connect**. Paperclip
 Let people in iMessage Photon start and continue work with one Paperclip agent.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S3
 
 | Field | Required | What it is |

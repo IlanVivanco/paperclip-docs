@@ -11,7 +11,7 @@ Search, read, create, and copy files in Google Drive.
 
 Google Drive is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `google-drive` |
 | Category | Content and files, Productivity |
@@ -34,7 +34,7 @@ Open **Connectors**, find **Google Drive**, and select **Connect**. Paperclip of
 Use Paperclip-managed OAuth for read-only Drive access.
 
 - Sign-in style: Browser sign-in
-- OAuth client: Paperclip-managed client
+- OAuth client: Paperclip's managed client
 - Capability group: **Read only**
 - Risk tier: S3
 - Endpoints: MCP server `https://drivemcp.googleapis.com/mcp/v1`
@@ -46,7 +46,7 @@ Use Paperclip-managed OAuth for read-only Drive access.
 Use a customer-owned OAuth client for read-only Drive access.
 
 - Sign-in style: Browser sign-in
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Capability group: **Read only**
 - Risk tier: S3
 - Endpoints: MCP server `https://drivemcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
@@ -60,7 +60,7 @@ Provider console: [register an app](https://console.cloud.google.com/auth/client
 Use Paperclip-managed OAuth for Drive read and create access.
 
 - Sign-in style: Browser sign-in
-- OAuth client: Paperclip-managed client
+- OAuth client: Paperclip's managed client
 - Capability group: **Read & create**
 - Risk tier: S4
 - Endpoints: MCP server `https://drivemcp.googleapis.com/mcp/v1`
@@ -73,7 +73,7 @@ Use Paperclip-managed OAuth for Drive read and create access.
 Use a customer-owned OAuth client for Drive read and create access.
 
 - Sign-in style: Browser sign-in
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Capability group: **Read & create**
 - Risk tier: S4
 - Endpoints: MCP server `https://drivemcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
@@ -96,19 +96,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      Google Drive
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               Google Drive
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 The Paperclip-managed path returns through `GET /api/tools/oauth/cloud-connector/callback` instead of the generic callback.

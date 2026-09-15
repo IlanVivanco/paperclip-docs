@@ -11,7 +11,7 @@ Connect PagerDuty's provider-hosted MCP server.
 
 PagerDuty is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `pagerduty` |
 | Category | Developer tools |
@@ -21,7 +21,6 @@ PagerDuty is an **agent tool** connector. Once it is connected, the provider's M
 
 ## Before you start
 
-- A PagerDuty API token; choose the regional endpoint that hosts the account.
 - A PagerDuty API token; choose the regional endpoint that hosts the account.
 
 ## Supported setup paths
@@ -33,7 +32,7 @@ Open **Connectors**, find **PagerDuty**, and select **Connect**. Paperclip offer
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.pagerduty.com/mcp`
 
@@ -48,7 +47,7 @@ Provider console: [get a key](https://support.pagerduty.com/main/docs/pagerduty-
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.eu.pagerduty.com/mcp`
 

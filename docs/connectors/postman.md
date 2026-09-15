@@ -11,7 +11,7 @@ Connect Postman's provider-hosted MCP server.
 
 Postman is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `postman` |
 | Category | Developer tools |
@@ -21,7 +21,6 @@ Postman is an **agent tool** connector. Once it is connected, the provider's MCP
 
 ## Before you start
 
-- A Postman account; OAuth is available for US endpoints and API keys are required for EU endpoints.
 - A Postman account; OAuth is available for US endpoints and API keys are required for EU endpoints.
 
 ## Supported setup paths
@@ -33,7 +32,7 @@ Open **Connectors**, find **Postman**, and select **Connect**. Paperclip offers 
 Use browser sign-in for the provider-hosted MCP server.
 
 - Sign-in style: Browser sign-in
-- OAuth client: registered on demand
+- OAuth client: registered on demand by Paperclip
 - Capability group: **Minimal**
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.postman.com/minimal`
@@ -45,7 +44,7 @@ Provider console: [provider docs](https://learning.postman.com/latest-v-12/docs/
 Use browser sign-in for the provider-hosted MCP server.
 
 - Sign-in style: Browser sign-in
-- OAuth client: registered on demand
+- OAuth client: registered on demand by Paperclip
 - Capability group: **Code**
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.postman.com/code`
@@ -57,7 +56,7 @@ Provider console: [provider docs](https://learning.postman.com/latest-v-12/docs/
 Use browser sign-in for the provider-hosted MCP server.
 
 - Sign-in style: Browser sign-in
-- OAuth client: registered on demand
+- OAuth client: registered on demand by Paperclip
 - Capability group: **Full**
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.postman.com/mcp`
@@ -69,7 +68,7 @@ Provider console: [provider docs](https://learning.postman.com/latest-v-12/docs/
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Capability group: **Minimal**
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.eu.postman.com/minimal`
@@ -85,7 +84,7 @@ Provider console: [get a key](https://learning.postman.com/latest-v-12/docs/refe
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Capability group: **Code**
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.eu.postman.com/code`
@@ -101,7 +100,7 @@ Provider console: [get a key](https://learning.postman.com/latest-v-12/docs/refe
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Capability group: **Full**
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.eu.postman.com/mcp`
@@ -125,19 +124,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      Postman
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               Postman
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 ## Check that it works

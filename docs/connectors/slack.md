@@ -11,7 +11,7 @@ Give agents Slack tools or let people start and continue Paperclip work from Sla
 
 Slack is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `slack` |
 | Category | Communication |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Slack**, and select **Connect**. Paperclip offers ex
 Use the provider-hosted connection for the quickest setup.
 
 - Sign-in style: Browser sign-in
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.slack.com/mcp`; authorization `https://slack.com/oauth/v2/authorize`; token `https://slack.com/api/oauth.v2.access`
 - Requested scopes:
@@ -44,7 +44,7 @@ Use the provider-hosted connection for the quickest setup.
 Let people in Slack start and continue work with one Paperclip agent.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S3
 
 | Field | Required | What it is |
@@ -67,19 +67,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      Slack
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               Slack
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 ## Check that it works

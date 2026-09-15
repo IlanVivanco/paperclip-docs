@@ -11,7 +11,7 @@ Give agents email inboxes and handle each conversation as a task.
 
 AgentMail is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `agentmail` |
 | Category | Communication |
@@ -31,7 +31,7 @@ Open **Connectors**, find **AgentMail**, and select **Connect**. Paperclip offer
 Assign an inbox to an agent and manage email conversations in tasks.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S3
 
 | Field | Required | What it is |

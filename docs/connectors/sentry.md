@@ -11,7 +11,7 @@ Investigate errors, releases, and production issues.
 
 Sentry is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `sentry` |
 | Category | Developer tools |
@@ -27,12 +27,12 @@ Sentry is an **agent tool** connector. Once it is connected, the provider's MCP 
 
 Open **Connectors**, find **Sentry**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
 
-### Sign in with the provider
+### Sign in with Sentry
 
 Use the provider-hosted connection for the quickest setup.
 
 - Sign-in style: Browser sign-in
-- OAuth client: registered on demand
+- OAuth client: registered on demand, or your own OAuth app if the provider refuses dynamic registration
 - Risk tier: S2
 - Endpoints: MCP server `https://mcp.sentry.dev/mcp`
 
@@ -49,19 +49,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      Sentry
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               Sentry
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 ## Check that it works

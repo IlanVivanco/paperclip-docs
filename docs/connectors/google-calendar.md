@@ -11,7 +11,7 @@ Read calendars and manage Google Calendar events.
 
 Google Calendar is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `google-calendar` |
 | Category | Productivity |
@@ -34,7 +34,7 @@ Open **Connectors**, find **Google Calendar**, and select **Connect**. Paperclip
 Use Paperclip-managed OAuth for read-only Calendar access.
 
 - Sign-in style: Browser sign-in
-- OAuth client: Paperclip-managed client
+- OAuth client: Paperclip's managed client
 - Capability group: **Read only**
 - Risk tier: S3
 - Endpoints: MCP server `https://calendarmcp.googleapis.com/mcp/v1`
@@ -48,7 +48,7 @@ Use Paperclip-managed OAuth for read-only Calendar access.
 Use a customer-owned OAuth client for read-only Calendar access.
 
 - Sign-in style: Browser sign-in
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Capability group: **Read only**
 - Risk tier: S3
 - Endpoints: MCP server `https://calendarmcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
@@ -64,7 +64,7 @@ Provider console: [register an app](https://console.cloud.google.com/auth/client
 Use Paperclip-managed OAuth to read and manage Calendar events.
 
 - Sign-in style: Browser sign-in
-- OAuth client: Paperclip-managed client
+- OAuth client: Paperclip's managed client
 - Capability group: **Read & manage**
 - Risk tier: S4
 - Endpoints: MCP server `https://calendarmcp.googleapis.com/mcp/v1`
@@ -78,7 +78,7 @@ Use Paperclip-managed OAuth to read and manage Calendar events.
 Use a customer-owned OAuth client to read and manage Calendar events.
 
 - Sign-in style: Browser sign-in
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Capability group: **Read & manage**
 - Risk tier: S4
 - Endpoints: MCP server `https://calendarmcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
@@ -102,19 +102,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      Google Calendar
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               Google Calendar
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 The Paperclip-managed path returns through `GET /api/tools/oauth/cloud-connector/callback` instead of the generic callback.

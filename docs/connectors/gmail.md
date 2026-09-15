@@ -13,7 +13,7 @@ For the setup procedure, see [Set up the Gmail connector](gmail-setup.md). This 
 
 ## What this connector does
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `gmail` |
 | Category | Communication, Productivity |
@@ -57,7 +57,7 @@ The reviewed Gmail tool set at the pinned snapshot:
 
 Tool names are normalized before matching, so a provider naming variant such as `google.gmail/get_message` resolves to the same entry.
 
-> **Snapshot, not a contract.** This table is Paperclip's reviewed list as of 13 September 2026. The live list for your connection comes from Google's server. Read it on the **Permissions** tab, or with `GET /api/tool-connections/{connectionId}/catalog`; **Refresh actions** re-reads it. Newly discovered actions arrive switched off.
+> **Note:** Snapshot, not a contract. This table is Paperclip's reviewed list as of 13 September 2026. The live list for your connection comes from Google's server. Read it on the **Permissions** tab, or with `GET /api/tool-connections/{connectionId}/catalog`; **Refresh actions** re-reads it. Newly discovered actions arrive switched off.
 
 ## Limits worth stating plainly
 

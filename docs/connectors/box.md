@@ -11,7 +11,7 @@ Connect Box's provider-hosted MCP server.
 
 Box is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `box` |
 | Category | Content and files |
@@ -21,7 +21,6 @@ Box is an **agent tool** connector. Once it is connected, the provider's MCP ser
 
 ## Before you start
 
-- A Box administrator creates the OAuth integration and enables AI access.
 - A Box administrator creates the OAuth integration and enables AI access.
 
 ## Supported setup paths
@@ -33,7 +32,7 @@ Open **Connectors**, find **Box**, and select **Connect**. Paperclip offers exac
 Register an OAuth app with Box, then enter its client ID and secret.
 
 - Sign-in style: Browser sign-in
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S3
 - Endpoints: MCP server `https://mcp.box.com`
 
@@ -52,19 +51,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      Box
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               Box
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 ## Check that it works

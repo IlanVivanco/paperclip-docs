@@ -11,7 +11,7 @@ Let people start and continue Paperclip work with an agent from Telegram.
 
 Telegram is a **chat connector**. It gives people a place to talk to a Paperclip agent; it does not give agents tools to call. Chat connector setup is behind the **Chat connectors** instance flag, which is off by default.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `telegram` |
 | Category | Communication |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Telegram**, and select **Connect**. Paperclip offers
 Let people in Telegram start and continue work with one Paperclip agent.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S3
 
 | Field | Required | What it is |

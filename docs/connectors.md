@@ -7,7 +7,7 @@ seo_description: Every connector Paperclip can set up today, grouped by what it 
 
 A **connector** is a saved connection to an outside service that your agents can use: a Gmail mailbox, a GitHub organization, a Notion workspace, a PostHog project. You set one up once, decide who and what it is for, and Paperclip carries that decision into every run.
 
-> **Draft against an unreleased snapshot.** These pages document the connector surface at Paperclip App commit `13368c51` (13 September 2026). The most recent tagged release, [v2026.831.1](reference/changelog.md), shipped a much smaller catalog. Do not treat this page as a list of what your installed version can do — open **Connectors** in your own instance and compare.
+> **Warning:** Draft against an unreleased snapshot. These pages document the connector surface at Paperclip App commit `13368c51` (13 September 2026). The most recent tagged release, [v2026.831.1](reference/changelog.md), shipped a much smaller catalog. Do not treat this page as a list of what your installed version can do — open **Connectors** in your own instance and compare.
 
 Three things are worth knowing before you connect anything.
 

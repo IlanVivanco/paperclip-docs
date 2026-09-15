@@ -11,7 +11,7 @@ Connect Stripe's provider-hosted MCP server.
 
 Stripe is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `stripe` |
 | Category | Commerce and finance |
@@ -21,7 +21,6 @@ Stripe is an **agent tool** connector. Once it is connected, the provider's MCP 
 
 ## Before you start
 
-- A Stripe account; the server is public preview and payment actions require explicit approval.
 - A Stripe account; the server is public preview and payment actions require explicit approval.
 - Financial or destructive actions must be explicitly approved before execution.
 
@@ -34,7 +33,7 @@ Open **Connectors**, find **Stripe**, and select **Connect**. Paperclip offers e
 Use browser sign-in for the provider-hosted MCP server.
 
 - Sign-in style: Browser sign-in
-- OAuth client: registered on demand
+- OAuth client: registered on demand by Paperclip
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.stripe.com`
 
@@ -45,7 +44,7 @@ Provider console: [provider docs](https://docs.stripe.com/mcp)
 Use a restricted customer-owned key when browser sign-in is not suitable.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S4
 - Endpoints: MCP server `https://mcp.stripe.com`
 
@@ -68,19 +67,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      Stripe
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               Stripe
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 ## Check that it works

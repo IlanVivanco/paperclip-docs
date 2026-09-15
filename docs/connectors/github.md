@@ -13,7 +13,7 @@ For the setup procedure, see [Set up the GitHub connector](github-setup.md).
 
 ## What this connector does
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `github` |
 | Category | Developer tools |
@@ -36,7 +36,7 @@ Paperclip's per-action **Allowed / Ask first / Off** switches govern tool calls 
 
 Paperclip says this at the moment you change a GitHub permission:
 
-> Shell Git and gh use this account for the run and are not constrained by per-tool Ask-first controls.
+> **Danger:** Shell Git and gh use this account for the run and are not constrained by per-tool Ask-first controls.
 
 The catalog states the same thing about the managed method: *"Shell Git and gh receive this identity for the run and are not constrained by per-tool Ask-first controls."*
 
@@ -94,7 +94,7 @@ POST /api/tool-connections/{connectionId}/catalog/refresh
 
 Actions are classified read, write, or destructive, and each can be set **Allowed**, **Ask first**, or **Off**. Newly discovered actions arrive switched off. Remember the shell exception when you reason about what those settings actually bound.
 
-> **Snapshot note.** Any list of GitHub tool names in documentation is dated the moment GitHub changes its server. Use **Refresh actions** and read your own connection's catalog rather than trusting a table here.
+> **Note:** Any list of GitHub tool names in documentation is dated the moment GitHub changes its server. Use **Refresh actions** and read your own connection's catalog rather than trusting a table here.
 
 ## Authorization sequence
 

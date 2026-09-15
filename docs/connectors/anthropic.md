@@ -11,7 +11,7 @@ Use Anthropic APIs with a restricted key.
 
 Anthropic is a **model account**, not an agent tool. It supplies the credential an agent's runtime uses to talk to the model provider. It does not add any actions to the **Permissions** tab, and it never appears in a review request.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `anthropic` |
 | Category | AI and models |
@@ -31,7 +31,7 @@ Open **Connectors**, find **Anthropic**, and select **Connect**. Paperclip offer
 Authenticate an agent with this account.
 
 - Sign-in style: Browser sign-in
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S3
 
 ### Claude API key (`ai-api_key`)
@@ -39,7 +39,7 @@ Authenticate an agent with this account.
 Authenticate an agent with this account.
 
 - Sign-in style: API key
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S3
 
 | Field | Required | What it is |

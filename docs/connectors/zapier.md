@@ -11,7 +11,7 @@ Reach thousands of apps through your Zapier account.
 
 Zapier is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `zapier` |
 | Category | Productivity |
@@ -32,7 +32,7 @@ Open **Connectors**, find **Zapier**, and select **Connect**. Paperclip offers e
 Use the complete provider-generated MCP URL from Zapier.
 
 - Sign-in style: No sign-in
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Risk tier: S3
 
 ## Accounts and access

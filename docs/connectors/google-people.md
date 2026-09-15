@@ -11,7 +11,7 @@ Search contacts and directory profiles with the Google People API.
 
 Google People is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
 
-| | |
+| Property | Value |
 | --- | --- |
 | Catalog slug | `google-people` |
 | Category | Communication, Productivity |
@@ -34,7 +34,7 @@ Open **Connectors**, find **Google People**, and select **Connect**. Paperclip o
 Use Paperclip-managed OAuth for Google People access.
 
 - Sign-in style: Browser sign-in
-- OAuth client: Paperclip-managed client
+- OAuth client: Paperclip's managed client
 - Capability group: **Read contacts**
 - Risk tier: S3
 - Endpoints: MCP server `https://people.googleapis.com/mcp/v1`
@@ -48,7 +48,7 @@ Use Paperclip-managed OAuth for Google People access.
 Use a customer-owned OAuth client for Google People access.
 
 - Sign-in style: Browser sign-in
-- OAuth client: your own client or key
+- OAuth client: yours to register and supply
 - Capability group: **Read contacts**
 - Risk tier: S3
 - Endpoints: MCP server `https://people.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
@@ -72,19 +72,20 @@ Every discovered action is classified **read**, **write**, or **destructive**, a
 ## Authorization sequence
 
 ```txt
-You                 Paperclip                      Google People
- │  Connect            │                                │
- ├────────────────────▶│ POST /api/companies/{id}/      │
- │                     │      tools/apps/connect        │
- │                     ├───────────────────────────────▶│  authorization request
- │  sign in + consent  │                                │
- ├─────────────────────┼───────────────────────────────▶│
- │                     │◀───────────────────────────────┤  redirect with code
- │                     │ GET /api/tools/oauth/callback  │
- │                     ├───────────────────────────────▶│  code → token
- │  choose access      │                                │
- ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
- │                     │                                │
+You             Paperclip               Google People
+|               |                       |
++--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
+|               |                       |
+|               +----------------------->  authorization request
+|               |                       |
++--------------------------------------->  sign in and consent
+|               |                       |
+|               <-----------------------+  redirect with code
+|               |                       |
+|               +----------------------->  GET /api/tools/oauth/callback, code to token
+|               |                       |
++--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
+|               |                       |
 ```
 
 The Paperclip-managed path returns through `GET /api/tools/oauth/cloud-connector/callback` instead of the generic callback.
