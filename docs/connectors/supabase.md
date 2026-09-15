@@ -1,0 +1,116 @@
+---
+seo_title: Supabase Connector
+seo_description: Connect Supabase's provider-hosted MCP server. Set it up in Paperclip with browser sign-in or an API key, then choose which agents and actions are allowed.
+---
+
+# Supabase
+
+Connect Supabase's provider-hosted MCP server.
+
+## What this connector does
+
+Supabase is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+
+| | |
+| --- | --- |
+| Catalog slug | `supabase` |
+| Category | Data |
+| Transport | `mcp_remote` |
+| Highest risk tier | S4 — money, production data, or irreversible actions. |
+| Provider research | wave 2, auth mode `dcr_or_api_key`, verified 2026-08-26 |
+
+## Before you start
+
+- A Supabase account; use a development project and review write actions before connecting production data.
+- A Supabase account; use a development project and review write actions before connecting production data.
+- Do not connect production data unless you have reviewed Supabase's MCP security guidance.
+
+## Supported setup paths
+
+Open **Connectors**, find **Supabase**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+
+### Sign in with Supabase (`mcp-oauth`)
+
+Use browser sign-in for the provider-hosted MCP server.
+
+- Sign-in style: Browser sign-in
+- OAuth client: registered on demand
+- Risk tier: S4
+- Endpoints: MCP server `https://mcp.supabase.com/mcp`
+
+| Field | Required | What it is |
+| --- | --- | --- |
+| **Project reference** | Yes | Scope the connection to one development project. |
+| **Read-only mode** | No | Enable this to prevent the connection from changing the database. |
+| **Feature groups** | No | Optional comma-separated feature groups. |
+
+Provider console: [provider docs](https://supabase.com/docs/guides/ai-tools/mcp)
+
+### Use an API key (`mcp-api-key`)
+
+Use a restricted customer-owned key when browser sign-in is not suitable.
+
+- Sign-in style: API key
+- OAuth client: your own client or key
+- Risk tier: S4
+- Endpoints: MCP server `https://mcp.supabase.com/mcp`
+
+| Field | Required | What it is |
+| --- | --- | --- |
+| **Supabase API key** | Yes | Credential value; Paperclip stores it as a secret. |
+| **Project reference** | Yes | Scope the connection to one development project. |
+| **Read-only mode** | No | Enable this to prevent the connection from changing the database. |
+| **Feature groups** | No | Optional comma-separated feature groups. |
+
+Provider console: [get a key](https://supabase.com/docs/guides/ai-tools/mcp) · [provider docs](https://supabase.com/docs/guides/ai-tools/mcp)
+
+## Accounts and access
+
+Supabase follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
+
+## Actions
+
+Supabase's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
+
+Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
+
+## Authorization sequence
+
+```txt
+You                 Paperclip                      Supabase
+ │  Connect            │                                │
+ ├────────────────────▶│ POST /api/companies/{id}/      │
+ │                     │      tools/apps/connect        │
+ │                     ├───────────────────────────────▶│  authorization request
+ │  sign in + consent  │                                │
+ ├─────────────────────┼───────────────────────────────▶│
+ │                     │◀───────────────────────────────┤  redirect with code
+ │                     │ GET /api/tools/oauth/callback  │
+ │                     ├───────────────────────────────▶│  code → token
+ │  choose access      │                                │
+ ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
+ │                     │                                │
+```
+
+## Check that it works
+
+Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+
+## If something goes wrong
+
+| What you see | What it means |
+| --- | --- |
+| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
+| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
+| **Paused** | Agents cannot use the connection right now. |
+| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+
+[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+
+## Related
+
+- [Connectors](../connectors.md)
+- [How connector access works](access-model.md)
+- [Set action permissions](action-permissions.md)
+- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
+- [Supabase provider documentation](https://supabase.com/docs/guides/ai-tools/mcp)

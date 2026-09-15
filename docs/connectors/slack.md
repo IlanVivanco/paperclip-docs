@@ -1,0 +1,104 @@
+---
+seo_title: Slack Connector
+seo_description: Give agents Slack tools or let people start and continue Paperclip work from Slack. Set it up in Paperclip with browser sign-in or a chat app.
+---
+
+# Slack
+
+Give agents Slack tools or let people start and continue Paperclip work from Slack.
+
+## What this connector does
+
+Slack is an **agent tool** connector. Once it is connected, the provider's MCP server supplies the action list, and Paperclip governs which agents may call which actions.
+
+| | |
+| --- | --- |
+| Catalog slug | `slack` |
+| Category | Communication |
+| Transport | `mcp_remote`, `chat_sdk` |
+| Highest risk tier | S3 — account data that can be changed. |
+
+## Before you start
+
+- An account with the provider, and permission in Paperclip to create a connection. Sharing one with the whole company or with a dedicated agent identity additionally needs the connection-manager permission.
+
+## Supported setup paths
+
+Open **Connectors**, find **Slack**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+
+### Use this connection as an agent tool (`mcp-oauth`)
+
+Use the provider-hosted connection for the quickest setup.
+
+- Sign-in style: Browser sign-in
+- OAuth client: your own client or key
+- Risk tier: S3
+- Endpoints: MCP server `https://mcp.slack.com/mcp`; authorization `https://slack.com/oauth/v2/authorize`; token `https://slack.com/api/oauth.v2.access`
+- Requested scopes:
+  - `channels:read`
+  - `chat:write`
+  - `search:read`
+
+### Chat with an agent (`chat-agent`)
+
+Let people in Slack start and continue work with one Paperclip agent.
+
+- Sign-in style: API key
+- OAuth client: your own client or key
+- Risk tier: S3
+
+| Field | Required | What it is |
+| --- | --- | --- |
+| **Bot User OAuth Token** | Yes | Credential value; Paperclip stores it as a secret. |
+| **Signing Secret** | Yes | Credential value; Paperclip stores it as a secret. |
+
+Provider console: [register an app](https://api.slack.com/apps) · [provider docs](https://api.slack.com/start/quickstart)
+
+## Accounts and access
+
+Slack follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
+
+## Actions
+
+Slack's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
+
+Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
+
+## Authorization sequence
+
+```txt
+You                 Paperclip                      Slack
+ │  Connect            │                                │
+ ├────────────────────▶│ POST /api/companies/{id}/      │
+ │                     │      tools/apps/connect        │
+ │                     ├───────────────────────────────▶│  authorization request
+ │  sign in + consent  │                                │
+ ├─────────────────────┼───────────────────────────────▶│
+ │                     │◀───────────────────────────────┤  redirect with code
+ │                     │ GET /api/tools/oauth/callback  │
+ │                     ├───────────────────────────────▶│  code → token
+ │  choose access      │                                │
+ ├────────────────────▶│ POST …/tools/apps/{id}/finish  │
+ │                     │                                │
+```
+
+## Check that it works
+
+Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+
+## If something goes wrong
+
+| What you see | What it means |
+| --- | --- |
+| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
+| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
+| **Paused** | Agents cannot use the connection right now. |
+
+[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+
+## Related
+
+- [Connectors](../connectors.md)
+- [How connector access works](access-model.md)
+- [Set action permissions](action-permissions.md)
+- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)

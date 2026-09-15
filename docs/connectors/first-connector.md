@@ -1,0 +1,78 @@
+---
+seo_title: Connect Your First Connector
+seo_description: Connect one read-only service to Paperclip and give an agent a task that uses it, in about ten minutes, without granting write access to anything.
+---
+
+# Connect your first connector
+
+By the end of this you will have one connector set up, one agent allowed to use it, every write action switched off, and one finished task where the agent actually called the service. Budget about ten minutes, most of it waiting on a browser sign-in.
+
+The worked example is **Hugging Face**, chosen because it is the shortest honest path: a free account, a browser sign-in with no OAuth app to register, no administrator approval, and a provider scope (`read-mcp`) that cannot write anything. Substitute a different connector if you prefer — the four steps are the same, and the provider page for your choice lists whatever extra prerequisites it has.
+
+## Before you start
+
+- Paperclip running, with a company you can administer. See [Installation](../guides/getting-started/installation.md).
+- At least one hired agent. See [Hire your first agent](../guides/getting-started/your-first-agent.md).
+- A free [Hugging Face](https://huggingface.co) account, signed in to in the same browser.
+
+## 1. Open the catalog
+
+In the left sidebar, select **Connectors**.
+
+The page lists every connector Paperclip can set up. Use **Search connectors** to find **Hugging Face**, then select **Connect**.
+
+## 2. Sign in
+
+Paperclip shows the setup paths this connector supports. Hugging Face has one: **Sign in with Hugging Face**.
+
+Select it. Paperclip registers itself with Hugging Face's authorization server, opens the provider's consent screen, and asks for the `read-mcp` scope. Approve it there.
+
+You do not create an OAuth app, and you do not paste a token. If the provider ever refuses that automatic registration, Paperclip stops and asks you for a client instead of silently failing — that path is in [Connect a custom MCP server](custom-mcp-servers.md).
+
+## 3. Choose who it is for
+
+Back in Paperclip, under **Identity**, choose **Just me**.
+
+This makes it your personal credential: agents use it only on runs where you are the responsible person. It is the right default for a first connector, because nothing you do here affects anyone else in the company. [Use separate accounts for people and agents](separate-accounts.md) explains when to pick something broader.
+
+Under **Which agents can use this connection**, choose **Just agents I pick** and select the one agent you plan to test with.
+
+## 4. Turn off everything that is not a read
+
+Open the connector's **Permissions** tab. You will see the action list Hugging Face published, each row classified **read**, **write**, or **destructive**, and each one set to **Allowed**, **Ask first**, or **Off**.
+
+Set every non-read action to **Off**. On a `read-mcp` connection there may be none to change — check rather than assume, because the list comes from the provider and can change when they change it.
+
+Leave the reads **Allowed**. You now have a connector that can only look things up.
+
+## 5. Give an agent one task
+
+Create a task and assign it to the agent you selected. Something narrow and verifiable:
+
+```txt
+Using the Hugging Face connector, find the three most-downloaded
+text-classification models published in the last month. For each one,
+report the model id, the download count, and the license.
+Do not create, modify, or delete anything.
+```
+
+When the run finishes, the agent's answer should contain model ids you can check by hand on huggingface.co. That is the point of a read-only first task: you can tell whether the connector worked without trusting the agent's summary of its own behaviour.
+
+## 6. Confirm it was the connector doing the work
+
+Two places to look:
+
+- The connector's **Permissions** tab shows the action list and which entries are enabled.
+- The connector's activity shows the calls the agent made against this connection.
+
+If the run produced nothing, or the connector row shows **Needs attention**, go to [Verify a connector and fix a broken one](verify-and-troubleshoot.md).
+
+## What you have now
+
+One connection, scoped to you, usable by one agent, restricted to reads. That is a deliberately small blast radius, and it is the shape to keep while you are learning what an agent does with a new tool.
+
+## Next
+
+- [How connector access works](access-model.md) — what the choices in steps 3 and 4 actually control.
+- [Set action permissions](action-permissions.md) — turning on a write, with **Ask first** as the middle setting.
+- [Connectors](../connectors.md) — the rest of the catalog.
