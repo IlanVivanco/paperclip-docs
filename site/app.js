@@ -1657,6 +1657,26 @@ function postProcessImages(root) {
 // differently proportioned ones. Detection is by header row, not by page, so
 // the rule follows the content if it moves.
 const CATALOG_TABLE_HEADINGS = ['connector', 'what you can do', 'connection methods'];
+const METHODS_COLUMN = 2;
+
+// Authors write a connector's methods as "A · B". In a narrow column that
+// wraps wherever the words run out ("Connect with Paperclip · Your / own OAuth
+// app"), which reads as one broken phrase instead of two methods. Giving each
+// method its own line is the fix that cannot overflow: nowrap would push a
+// long method past the column at intermediate widths.
+function splitMethodList(cell) {
+  if (cell.children.length > 0 || cell.dataset.methodsSplit === 'true') return;
+  const parts = (cell.textContent || '').split('·').map(part => part.trim()).filter(Boolean);
+  if (parts.length < 2) return;
+  cell.dataset.methodsSplit = 'true';
+  cell.textContent = '';
+  for (const part of parts) {
+    const item = document.createElement('span');
+    item.className = 'method-item';
+    item.textContent = part;
+    cell.appendChild(item);
+  }
+}
 
 function isCatalogTable(headings) {
   return headings.length === CATALOG_TABLE_HEADINGS.length
@@ -1686,6 +1706,7 @@ function postProcessTables(root) {
       table.querySelectorAll('tbody tr').forEach(row => {
         [...row.children].forEach((cell, index) => {
           if (headingLabels[index]) cell.setAttribute('data-label', headingLabels[index]);
+          if (index === METHODS_COLUMN) splitMethodList(cell);
         });
       });
     }

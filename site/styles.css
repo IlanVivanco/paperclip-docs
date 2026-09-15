@@ -1115,6 +1115,10 @@
       overflow-wrap: break-word;
     }
     #article table.catalog-table td:first-child { font-weight: 500; }
+    /* One method per line, so the column breaks between methods instead of
+       inside one. Set by splitMethodList in app.js and build-release.mjs. */
+    #article table.catalog-table .method-item { display: block; }
+    #article table.catalog-table .method-item + .method-item { margin-top: 2px; }
     /* --linen and --white are the same white in light theme, so the inherited
        hover reads as nothing. A parchment tint works in both themes. */
     #article table.catalog-table tbody tr:hover td { background: var(--parchment); }
@@ -1136,6 +1140,15 @@
         display: block;
         width: auto;
       }
+      /* The percentage widths above are set per column, so they outrank the
+         blanket `width: auto` and would keep a stacked description in a 52%
+         gutter. Release each column by the same selector that claimed it. */
+      #article table.catalog-table th:nth-child(1),
+      #article table.catalog-table td:nth-child(1),
+      #article table.catalog-table th:nth-child(2),
+      #article table.catalog-table td:nth-child(2),
+      #article table.catalog-table th:nth-child(3),
+      #article table.catalog-table td:nth-child(3) { width: auto; }
       #article table.catalog-table thead {
         position: absolute;
         width: 1px;

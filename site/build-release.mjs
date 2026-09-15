@@ -1208,6 +1208,16 @@ export function resolveDocHref(href, sourceFile, routeMap) {
 // pre-render has to emit the same markup so a crawler, a no-JS reader, and the
 // first paint before app.js runs all get the catalog's column layout.
 const CATALOG_TABLE_HEADINGS = ["connector", "what you can do", "connection methods"];
+const METHODS_COLUMN = 2;
+
+// Mirror of splitMethodList in site/app.js: "A · B" becomes one element per
+// method so a narrow column breaks between methods rather than inside one.
+function splitMethodList(cellHtml) {
+  if (/<[a-z]/i.test(cellHtml)) return cellHtml;
+  const parts = cellHtml.split("·").map((part) => part.trim()).filter(Boolean);
+  if (parts.length < 2) return cellHtml;
+  return parts.map((part) => `<span class="method-item">${part}</span>`).join("");
+}
 
 function tagCatalogTable(header, body) {
   const headingLabels = [...header.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)]
@@ -1224,13 +1234,15 @@ function tagCatalogTable(header, body) {
 
   let cellIndex = 0;
   const taggedBody = withRoles(body, "tr", "row")
-    .replace(/<tr[^>]*>|<td(\s[^>]*)?>/g, (match, attrs) => {
+    .replace(/<tr[^>]*>|<td(\s[^>]*)?>([\s\S]*?)<\/td>/g, (match, attrs, content) => {
       if (match.startsWith("<tr")) {
         cellIndex = 0;
         return match;
       }
-      const label = headingLabels[cellIndex++] ?? "";
-      return `<td${attrs ?? ""} role="cell" data-label="${escapeAttr(label)}">`;
+      const index = cellIndex++;
+      const label = headingLabels[index] ?? "";
+      const inner = index === METHODS_COLUMN ? splitMethodList(content) : content;
+      return `<td${attrs ?? ""} role="cell" data-label="${escapeAttr(label)}">${inner}</td>`;
     });
 
   return `<div class="table-wrap table-wrap-catalog"><table class="catalog-table" role="table">\n`

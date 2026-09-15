@@ -139,12 +139,28 @@ const context = await browser.newContext({ viewport: { width: 1280, height: 900 
 const page = await context.newPage();
 
 // One collector for the whole run; snapshot its length around each navigation.
+// Third-party requests are out of scope: the page asks api.github.com for a
+// star count, which is unauthenticated and rate-limited, so whether it answers
+// says nothing about this site's navigation. Same-origin failures are the
+// signal, and those are never ignored.
+const THIRD_PARTY = /^https?:\/\/(?!127\.0\.0\.1|localhost)/i;
 const problems = [];
 page.on("console", (message) => {
-  if (message.type() === "error") problems.push(`console: ${message.text()}`);
+  if (message.type() !== "error") return;
+  const text = message.text();
+  const url = message.location()?.url ?? "";
+  if (THIRD_PARTY.test(url) || /api\.github\.com/.test(text)) return;
+  problems.push(`console: ${text}`);
 });
 page.on("pageerror", (error) => problems.push(`pageerror: ${error.message}`));
-page.on("requestfailed", (request) => problems.push(`requestfailed: ${request.url()}`));
+page.on("requestfailed", (request) => {
+  if (THIRD_PARTY.test(request.url())) return;
+  problems.push(`requestfailed: ${request.url()}`);
+});
+page.on("response", (response) => {
+  if (THIRD_PARTY.test(response.url()) || response.status() < 400) return;
+  problems.push(`http ${response.status()}: ${response.url()}`);
+});
 
 function takeProblems() {
   return problems.splice(0, problems.length);
