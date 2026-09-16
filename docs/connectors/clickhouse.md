@@ -1,95 +1,69 @@
 ---
 seo_title: ClickHouse Connector
-seo_description: Columnar database built for analytical queries over very large datasets. Agents query the ClickHouse Cloud service you name, and nothing else.
+seo_description: Let agents query a ClickHouse Cloud ClickStack service. Finding the service ID, why self-hosted is not supported, bounded query testing, and troubleshooting.
 ---
 
 # ClickHouse
 
-Columnar database built for analytical queries over very large datasets. Agents query the ClickHouse Cloud service you name.
+Agents can query a ClickHouse Cloud ClickStack service — useful for letting an agent answer questions from observability or analytics data.
 
-## What this connector does
+> **Warning:** This is ClickHouse Cloud's managed ClickStack server. A self-hosted or self-managed ClickHouse cluster is not reachable through this connector. If you run your own ClickHouse, [connect your own MCP server](custom-mcp-servers.md) instead.
 
-ClickHouse is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+## Before you connect
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `clickhouse` |
-| Category | Data and analytics |
-| Transport | `mcp_remote` |
-| Highest risk tier | S4 — money, production data, or irreversible actions. |
-| Provider research | wave 2, auth mode `dcr`, verified 2026-08-26 |
+- A ClickHouse Cloud account with a ClickStack service.
+- The **ClickHouse Cloud service ID** for that service. Copy it from **ClickStack → Team Settings → API & Agents**. It looks like `11e1031f-9a13-4cac-9bc7-d4ec9286ec17`.
+- Database grants on the account you sign in with. What an agent can query is decided by ClickHouse's own users and grants, so decide those before connecting rather than after.
 
-## Before you start
+## Connect ClickHouse
 
-- A ClickHouse Cloud ClickStack service and its service ID.
+1. Open **Connectors** and select **ClickHouse**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Sign in with ClickHouse** and complete browser sign-in.
+4. Enter the **ClickHouse Cloud service ID**.
+5. Finish setup.
 
-## Supported setup paths
+## Choose access
 
-Open **Connectors**, find **ClickHouse**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+The real control is on the ClickHouse side. Reach is whatever the signed-in account's database users and grants permit — Paperclip does not add a table or database filter on top.
 
-### Sign in with ClickHouse
+If an agent should only read, grant only read. A read-only ClickHouse user is a stronger and clearer boundary than relying on action settings alone, and it survives changes to the tool catalog.
 
-Use browser sign-in for the provider-hosted MCP server.
+> **Warning:** ClickHouse queries can be expensive. A poorly bounded query over a large table costs real compute and can affect the service for everyone using it. Keep agent queries bounded, and prefer a service or user with sensible quotas.
 
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Risk tier: S4
-- Endpoints: MCP server `https://mcp.clickhouse.cloud/clickstack`
+Any schema-changing or data-changing operations should stay **Off** unless you have a specific reason. See [Set action permissions](action-permissions.md).
 
-| Field | Required | What it is |
-| --- | --- | --- |
-| **ClickHouse Cloud service ID** | Yes | Copy the service ID from ClickStack → Team Settings → API & Agents. |
+## Try it
 
-Provider console: [provider docs](https://clickhouse.com/blog/announcing-managed-clickstack-mcp-server)
-
-## Accounts and access
-
-ClickHouse follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-ClickHouse's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+Run something deliberately cheap and bounded:
 
 ```txt
-You             Paperclip               ClickHouse
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+List the tables in the ClickHouse service, then tell me the row count of the smallest one. Do not run any query without a limit, and do not change anything.
 ```
 
-## Check that it works
+Expect a table list matching what you see in ClickStack. Asking for structure first, and only then a narrow count, keeps the verification inexpensive.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+Do not verify with a full scan of a production table, and do not verify with DDL.
 
-## If something goes wrong
+> **Note:** Illustrative task, not a recorded test result.
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+## Troubleshooting and limitations
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Setup will not complete | The service ID is missing or malformed | Copy it from **ClickStack → Team Settings → API & Agents** |
+| You cannot find a service ID | The account has no ClickStack service, or it is self-hosted | ClickStack on ClickHouse Cloud is required |
+| Authorization succeeds but no tables appear | The signed-in user has no grants on any database | Grant access to the user in ClickHouse |
+| Some tables are missing | Grants cover only some databases | Adjust the grants; no reconnect needed |
+| A query is refused | The user is read-only and the query writes | Expected if you configured it that way |
+| A query is slow or expensive | It was unbounded over a large table | Add limits, and set quotas on the ClickHouse user |
+| **Needs attention** | The sign-in expired or the service was removed | Select **Reconnect** and confirm the service still exists |
 
-## Related
+Limitations: one ClickStack service per connection. ClickHouse Cloud only. Access control is ClickHouse's grants, not a Paperclip resource filter.
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+## Related guides
+
+- [Supabase](supabase.md) — another database connector.
+- [Connect your own MCP server](custom-mcp-servers.md) — for self-hosted ClickHouse.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [ClickHouse provider documentation](https://clickhouse.com/blog/announcing-managed-clickstack-mcp-server)
+- [ClickHouse managed ClickStack MCP server](https://clickhouse.com/blog/announcing-managed-clickstack-mcp-server)

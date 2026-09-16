@@ -1,89 +1,63 @@
 ---
 seo_title: Sentry Connector
-seo_description: Error and performance monitoring. Agents investigate errors, releases, and production issues in the organizations, projects, and environments you pick.
+seo_description: Let agents investigate Sentry errors, releases, and production issues. Organization and project reach, a safe read test, and troubleshooting.
 ---
 
 # Sentry
 
-Error and performance monitoring. Agents investigate errors, releases, and production issues in the organizations, projects, and environments you pick.
+Agents can investigate errors in Sentry — reading issues, stack traces, releases, and the context around a production problem.
 
-## What this connector does
+This is a good connector to give a debugging agent, because the useful work is almost entirely reading.
 
-Sentry is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+## Before you connect
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `sentry` |
-| Category | Developer tools |
-| Transport | `mcp_remote` |
-| Highest risk tier | S2 — account data with limited blast radius. |
-| Provider research | wave 1, auth mode `dcr_cimd`, verified 2026-08-26 |
+- A Sentry account with access to the organization and projects you want agents to investigate.
+- If your Sentry organization restricts third-party integrations, an administrator may need to approve the connection first.
 
-## Before you start
+## Connect Sentry
 
-- A Sentry account with access to the relevant organizations and projects.
+1. Open **Connectors** and select **Sentry**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Complete Sentry's browser sign-in and choose the organization when prompted.
 
-## Supported setup paths
+Paperclip registers its client with Sentry automatically for the default path, so there is nothing to configure in a developer console. If your organization requires its own OAuth client, you can supply one during setup instead.
 
-Open **Connectors**, find **Sentry**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+## Choose access
 
-### Sign in with Sentry
+Reach is the authorizing Sentry account's: the organization selected during sign-in, and the projects that account can see within it. Sentry's own team membership and role decide the rest.
 
-Use the provider-hosted connection for the quickest setup.
+> **Note:** The connector's definition mentions organization, project, and environment scope, but those are descriptive — Paperclip does not enforce a project or environment filter on top of what Sentry grants. If an agent should only see one project, authorize with an account whose team membership is limited to it.
 
-- Connection method: Sign in with the provider, or your own OAuth app
-- OAuth client: registered on demand, or your own OAuth app if the provider refuses dynamic registration
-- Risk tier: S2
-- Endpoints: MCP server `https://mcp.sentry.dev/mcp`
+Most Sentry work is reading. Issue mutations — resolving, ignoring, assigning, deleting — change what your on-call engineers see, so keep them on **Ask first** or **Off**. An agent resolving an issue it misdiagnosed hides a live problem. See [Set action permissions](action-permissions.md).
 
-## Accounts and access
+> **Warning:** Stack traces and error context routinely contain user data, request payloads, and sometimes secrets that were logged by accident. An agent reading Sentry can surface those into a task transcript. Prefer **Just agents I pick** over **Any agent** for this connector.
 
-Sentry follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Sentry's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Sentry
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Find the most frequent unresolved Sentry issue from the last 24 hours and summarize the error and where it happens. Do not resolve or assign anything.
 ```
 
-## Check that it works
+Compare against the Sentry dashboard. Reading a known issue confirms the credential, the organization, and the agent's permission without changing your team's triage state.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Authorization is refused or stays pending | The Sentry organization restricts third-party integrations | Ask a Sentry administrator to approve it |
+| The connection is healthy but finds no issues | The wrong organization was selected during sign-in | Reconnect and choose the correct organization |
+| Some projects are invisible | The authorizing account's team membership does not include them | Add the account to those teams in Sentry |
+| An issue cannot be resolved by the agent | The action is **Off**, or the account's role does not permit it | Check the **Permissions** tab, then the Sentry role |
+| An issue was resolved unexpectedly | A mutation was set to **Allowed** | Re-open it in Sentry and tighten the action settings |
+| **Needs attention** | The grant expired or was revoked | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one organization per connection. No project or environment filter inside Paperclip. Sentry's data retention bounds how far back an agent can look.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [PagerDuty](pagerduty.md) — incident response, often used alongside error tracking.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Sentry provider documentation](https://mcp.sentry.dev/.well-known/oauth-authorization-server)
+- [How connector access works](access-model.md)
+- [Sentry MCP server](https://mcp.sentry.dev/)

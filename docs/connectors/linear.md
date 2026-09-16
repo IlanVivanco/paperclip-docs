@@ -1,89 +1,60 @@
 ---
 seo_title: Linear Connector
-seo_description: Issue tracking for product and engineering teams. Agents create, update, and read issues in the workspace, teams, and projects you pick.
+seo_description: Let agents read, create, and update Linear issues. Registering the OAuth app, what workspace scope really means, a read test, and troubleshooting.
 ---
 
 # Linear
 
-Issue tracking for product and engineering teams. Agents create, update, and read issues, scoped to the workspace, teams, and projects you pick.
+Agents can read Linear issues, create new ones, and update existing ones — useful for keeping engineering work in Linear while agents do the work in Paperclip.
 
-## What this connector does
+## Before you connect
 
-Linear is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+- A Linear account with access to the workspace and teams you want agents to use.
+- You must register your own Linear OAuth app. Linear does not support automatic client registration here, so unlike most connectors there is no path that skips the developer console. Add Paperclip's redirect URI to the app; Paperclip shows the exact URI during setup.
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `linear` |
-| Category | Productivity and collaboration |
-| Transport | `mcp_remote` |
-| Highest risk tier | S2 — account data with limited blast radius. |
+## Connect Linear
 
-## Before you start
+1. In Linear's settings, create an OAuth application and add Paperclip's redirect URI to it. Keep the client ID and secret to hand.
+2. Open **Connectors** and select **Linear**.
+3. On the **Access** step, choose the identity and which agents may use the connection.
+4. Supply the client ID and secret, then authorize in Linear.
 
-- An account with the provider, and permission in Paperclip to create a connection. Sharing one with the whole company or with a dedicated agent identity additionally needs the connection-manager permission.
+## Choose access
 
-## Supported setup paths
+Reach is whatever the authorizing Linear account has. That usually means every team and project that person can see, because Linear workspaces are commonly open internally.
 
-Open **Connectors**, find **Linear**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+> **Note:** There is no team or project picker in Paperclip. Fields describing workspace, team, and project scope exist in the connector's definition, but they do not narrow what an agent can reach — the limit is the authorizing account's own access in Linear. If an agent should only touch one team's issues, authorize with an account restricted to that team, or rely on action settings and clear instructions rather than assuming a resource filter.
 
-### Use your own OAuth app
+Issue creation and updates are writes. Leave them on **Ask first** while you are learning how an agent behaves — an agent that files issues enthusiastically is noisy for the whole team. Reads can stay **Allowed**. See [Set action permissions](action-permissions.md).
 
-Use the provider-hosted connection for the quickest setup.
+Identity matters here for attribution: issues an agent creates or comments on appear under the authorizing account. A dedicated account makes agent activity distinguishable from a person's. See [Use separate accounts for people and agents](separate-accounts.md).
 
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Risk tier: S2
-- Endpoints: MCP server `https://mcp.linear.app/mcp`; authorization `https://linear.app/oauth/authorize`; token `https://api.linear.app/oauth/token`
-- Requested scopes:
-  - `read`
-  - `write`
-
-## Accounts and access
-
-Linear follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Linear's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Linear
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Find Linear issue ENG-142 and tell me its status, assignee, and latest comment. Do not change it.
 ```
 
-## Check that it works
+Compare against the issue in Linear. A read of a known issue confirms the credential and the agent's permission without adding anything to your team's board.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result. Substitute an issue key from your own workspace.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Setup asks for a client ID and secret | Expected — Linear requires your own OAuth app | Register the app in Linear's settings |
+| Authorization fails with a redirect error | The redirect URI on the Linear app does not match the one Paperclip shows | Copy the URI exactly and retry |
+| An issue cannot be found | The authorizing account cannot see that team or project | Grant access in Linear; no reconnect needed |
+| The agent reaches more teams than expected | Reach follows the authorizing account, not a Paperclip filter | Authorize with a more limited account |
+| Agent-created issues look like they came from a person | The connection uses a personal identity | Use a dedicated agent account |
+| **Needs attention** | The grant was revoked in Linear | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one workspace per connection. No team or project restriction inside Paperclip. Linear's own rate limits apply.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [Jira](jira.md), [Asana](asana.md), [Todoist](todoist.md) — other work tracking connectors.
+- [Use separate accounts for people and agents](separate-accounts.md)
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
+- [Linear API documentation](https://developers.linear.app/)

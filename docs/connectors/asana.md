@@ -1,90 +1,61 @@
 ---
 seo_title: Asana Connector
-seo_description: Work management for team projects, tasks, and goals. Agents work with the projects and tasks your own Asana OAuth app is allowed to reach.
+seo_description: Let agents read and update Asana tasks. Registering the required OAuth app, workspace and project reach, a read test, and troubleshooting.
 ---
 
 # Asana
 
-Work management for team projects, tasks, and goals. Agents work with the projects and tasks your Asana app can reach.
+Agents can work with Asana tasks — finding them, reading details, and updating or creating them.
 
-## What this connector does
+## Before you connect
 
-Asana is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+- An Asana account with access to the workspace and projects you want agents to use.
+- You must register your own Asana OAuth app. Asana does not support automatic client registration for this server, so there is no path that skips the developer console. Add Paperclip's callback URI to the app; Paperclip shows the exact URI during setup.
+- Some Asana organizations restrict who may create or authorize apps. If you are not an administrator, check before you start rather than after.
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `asana` |
-| Category | Productivity and collaboration |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
-| Provider research | wave 3, auth mode `customer_oauth`, verified 2026-08-26 |
+## Connect Asana
 
-## Before you start
+1. Create an Asana MCP OAuth app in Asana's developer console and register Paperclip's callback URI on it. Keep the client ID and secret to hand.
+2. Open **Connectors** and select **Asana**.
+3. On the **Access** step, choose the identity and which agents may use the connection.
+4. Select **Use your own OAuth app**, supply the client ID and secret, then authorize in Asana.
 
-- Create an Asana MCP OAuth app and register Paperclip's callback URI; DCR is not supported.
+## Choose access
 
-## Supported setup paths
+Reach is the authorizing Asana account's: the workspaces it belongs to and the projects it can open. Private projects the account is not a member of stay invisible, which is often the simplest way to keep something out of reach.
 
-Open **Connectors**, find **Asana**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+There is no workspace or project picker in Paperclip. To narrow access, authorize with an account that is a member of fewer projects.
 
-### Use your own OAuth app
+Task creation, updates, and comments are writes that your team will see. Leave them on **Ask first** until the workflow is proven. Reads can stay **Allowed**. See [Set action permissions](action-permissions.md).
 
-Register an OAuth app with Asana, then enter its client ID and secret.
+Attribution follows the authorizing account, so a dedicated account makes agent activity distinguishable. See [Use separate accounts for people and agents](separate-accounts.md).
 
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.asana.com/v2/mcp`
-
-Provider console: [register an app](https://developers.asana.com/docs/integrating-with-asanas-mcp-server) · [provider docs](https://developers.asana.com/docs/integrating-with-asanas-mcp-server)
-
-## Accounts and access
-
-Asana follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Asana's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Asana
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Find the Asana task called "Update onboarding checklist" and tell me its assignee, due date, and current status. Do not change it.
 ```
 
-## Check that it works
+Compare against the task in Asana. A lookup of a task you can already see confirms the credential and the agent's permission without touching your team's board.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result. Substitute a task name from your own workspace.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Setup asks for a client ID and secret | Expected — Asana requires your own OAuth app | Register one in Asana's developer console |
+| Authorization fails with a redirect or URI error | The callback URI on the Asana app does not match the one Paperclip shows | Copy the URI exactly and retry |
+| You cannot create the app | The Asana organization restricts app creation | Ask an Asana administrator |
+| A project's tasks are invisible | The authorizing account is not a member of that project | Add it to the project in Asana; no reconnect needed |
+| An update is rejected | Asana's own field rules or permissions on that project | Check the task and project settings in Asana |
+| **Needs attention** | The grant was revoked in Asana | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one Asana account per connection. No workspace or project restriction inside Paperclip. Asana's rate limits apply.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [Jira](jira.md), [Linear](linear.md), [Todoist](todoist.md) — other work tracking connectors.
+- [Use separate accounts for people and agents](separate-accounts.md)
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Asana provider documentation](https://developers.asana.com/docs/integrating-with-asanas-mcp-server)
+- [Asana MCP server documentation](https://developers.asana.com/docs/integrating-with-asanas-mcp-server)

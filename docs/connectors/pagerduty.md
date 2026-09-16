@@ -1,92 +1,75 @@
 ---
 seo_title: PagerDuty Connector
-seo_description: On-call scheduling and incident response. Agents work with the incidents, services, and schedules your token can reach in the US or EU region.
+seo_description: Let agents read PagerDuty incidents, services, and schedules. Choosing the right service region, token scope, a safe read test, and troubleshooting.
 ---
 
 # PagerDuty
 
-On-call scheduling and incident response. Agents work with the incidents, services, and schedules your token can reach. Choose the US or EU service region when you connect.
+Agents can work with PagerDuty incidents, services, schedules, and on-call information — useful for letting an agent summarize an incident or check who is on call.
 
-## What this connector does
+## Choose your region first
 
-PagerDuty is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+PagerDuty hosts accounts in separate service regions, and they are different endpoints with no cross-region access. Pick the one that hosts your account:
 
-| Property | Value |
+| Option | Use it when |
 | --- | --- |
-| Catalog slug | `pagerduty` |
-| Category | Developer tools |
-| Transport | `mcp_remote` |
-| Highest risk tier | S4 — money, production data, or irreversible actions. |
-| Provider research | wave 3, auth mode `api_key`, verified 2026-08-26 |
+| **US service region** | The PagerDuty account is hosted in the US |
+| **EU service region** | The PagerDuty account is hosted in the EU |
 
-## Before you start
+Choosing the wrong region is the most common setup failure, and it does not look like a region problem: authentication simply fails, or the account appears empty. If you are unsure, check the domain you use to sign in to PagerDuty.
 
-- A PagerDuty API token; choose the regional endpoint that hosts the account.
+## Before you connect
 
-## Supported setup paths
+- A PagerDuty account, and a **user API token** from it.
+- Confirmation of which region hosts the account.
 
-Open **Connectors**, find **PagerDuty**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+The token carries that user's permissions. If an agent should only read, issue the token from an account whose role is read-only — that is a stronger boundary than action settings alone.
 
-### US service region (`mcp-api-key-us`)
+## Connect PagerDuty
 
-Use a restricted customer-owned key when browser sign-in is not suitable.
+1. Open **Connectors** and select **PagerDuty**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Choose **US service region** or **EU service region**.
+4. Paste the **PagerDuty API key**. Paperclip stores it as a secret.
 
-- Connection method: API key
-- Risk tier: S4
-- Endpoints: MCP server `https://mcp.pagerduty.com/mcp`
+## Choose access
 
-| Field | Required | What it is |
+Reach is the token's: the services, teams, and incidents the issuing user can see, subject to PagerDuty's own roles and team membership. There is no service or team picker in Paperclip.
+
+Incident operations are consequential in a way that is easy to underestimate. Acknowledging or resolving an incident changes who gets paged and stops escalation — during a real outage that has immediate human consequences.
+
+> **Warning:** Keep incident mutations — acknowledge, resolve, reassign, and anything that creates or triggers an incident — on **Ask first** or **Off**. An agent resolving an incident it did not understand silently ends an escalation.
+
+Reads are safe to leave **Allowed**. See [Set action permissions](action-permissions.md).
+
+## Try it
+
+```txt
+Show me the most recent PagerDuty incident and tell me its status, service, and who it is assigned to. Do not acknowledge or resolve anything.
+```
+
+Compare against PagerDuty. Reading an existing incident confirms the token, the region, and the agent's permission without paging anyone or interfering with an escalation.
+
+Do not verify by creating a test incident — that pages whoever is on call.
+
+> **Note:** Illustrative task, not a recorded test result.
+
+## Troubleshooting and limitations
+
+| Problem | Likely cause | Fix |
 | --- | --- | --- |
-| **PagerDuty API key** | Yes | Credential value; Paperclip stores it as a secret. |
+| Authentication fails with a valid token | The wrong service region was selected | Make a connection with the other region |
+| It connects but no incidents or services appear | Wrong region, or the token's user has no team access | Check the region first, then the user's teams in PagerDuty |
+| Some services are invisible | PagerDuty team membership and role restrict the token's user | Adjust the user's teams or role in PagerDuty |
+| A write action is refused | The token's user role is read-only | Expected if you configured it that way |
+| An incident was resolved unexpectedly | A mutation was set to **Allowed** | Re-open it in PagerDuty and tighten the action settings |
+| **Needs attention** | The token was revoked | Issue a new token and reconnect |
 
-Provider console: [get a key](https://support.pagerduty.com/main/docs/pagerduty-mcp-server) · [provider docs](https://support.pagerduty.com/main/docs/pagerduty-mcp-server)
+Limitations: one account and one region per connection. No service or team filter inside Paperclip. PagerDuty's API rate limits apply.
 
-### EU service region (`mcp-api-key-eu`)
+## Related guides
 
-Use a restricted customer-owned key when browser sign-in is not suitable.
-
-- Connection method: API key
-- Risk tier: S4
-- Endpoints: MCP server `https://mcp.eu.pagerduty.com/mcp`
-
-| Field | Required | What it is |
-| --- | --- | --- |
-| **PagerDuty API key** | Yes | Credential value; Paperclip stores it as a secret. |
-
-Provider console: [get a key](https://support.pagerduty.com/main/docs/pagerduty-mcp-server) · [provider docs](https://support.pagerduty.com/main/docs/pagerduty-mcp-server)
-
-## Accounts and access
-
-PagerDuty follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-PagerDuty's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
-
-There is no browser handshake. Paperclip stores the value you supply as a secret and presents it to the server on each call; the connection is created by `POST /api/companies/{companyId}/tools/apps/connect` and completed by `POST /api/companies/{companyId}/tools/apps/{connectionId}/finish`.
-
-## Check that it works
-
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
-
-## If something goes wrong
-
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
-
-## Related
-
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [Sentry](sentry.md) — error tracking, often used alongside incident response.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [PagerDuty provider documentation](https://support.pagerduty.com/main/docs/pagerduty-mcp-server)
+- [Answer a connector review request](review-requests.md)
+- [PagerDuty MCP server documentation](https://support.pagerduty.com/main/docs/pagerduty-mcp-server)

@@ -1,114 +1,65 @@
 ---
 seo_title: Jira Connector
-seo_description: Atlassian's issue tracker for software teams. Agents work with the issues on the Jira site you connect, under per-action permissions you set.
+seo_description: Let agents read and update Jira issues through Atlassian's hosted MCP server. Site selection, admin approval, why an authorized connection can still find nothing, and fixes.
 ---
 
 # Jira
 
-Atlassian's issue tracker for software teams. Agents work with the issues on the Jira site you connect.
+Agents can work with Jira issues through Atlassian's hosted server — searching, reading, commenting, and updating.
 
-## What this connector does
+The same Atlassian server also covers Confluence, so a connection made here may expose Confluence tools as well as Jira ones. Read the connection's action list to see what you actually got.
 
-Jira is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+## Before you connect
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `jira` |
-| Category | Productivity and collaboration |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
-| Provider research | wave 1, auth mode `dcr_cimd`, verified 2026-08-26 |
+- An active Jira Cloud site, and an Atlassian account with access to the projects you want agents to use.
+- Your Atlassian tenant may require an administrator to approve the client before anyone can connect. If authorization is refused or left pending, that is usually why.
+- Jira Data Center and Server deployments are not what this hosted server addresses. It is the Atlassian Cloud remote MCP server.
 
-## Before you start
+## Connect Jira
 
-- An active Jira or Confluence site; tenant policy may require an administrator to approve the client.
+1. Open **Connectors** and select **Jira**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Sign in with Jira** and complete Atlassian's authorization in the browser.
+4. If your Atlassian account has more than one site, choose the site you want during Atlassian's flow. This is the decision to get right — it is made at Atlassian, not in Paperclip.
 
-## Supported setup paths
+Paperclip registers its client with Atlassian automatically, so there is nothing to configure in a developer console.
 
-Open **Connectors**, find **Jira**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+## Choose access
 
-### Sign in with Jira
+Project and issue reach is Atlassian's decision: the connection sees what the authorizing account can see on the selected site, subject to Jira project permissions and issue-level security.
 
-Use browser sign-in for the provider-hosted MCP server.
+> **Note:** A successful authorization does not mean an agent can see your issues. If the wrong site was selected, or the account lacks browse permission on a project, searches return nothing while the connection reports healthy. Missing results after a clean setup is nearly always site or project permission, not a broken connection.
 
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.atlassian.com/v1/mcp/authv2`
-- Requested scopes:
-  - `read:me`
-  - `read:account`
-  - `offline_access`
-  - `email`
-  - `read:jira-work`
-  - `write:jira-work`
-  - `search:confluence`
-  - `read:confluence-user`
-  - `read:page:confluence`
-  - `write:page:confluence`
-  - `read:comment:confluence`
-  - `write:comment:confluence`
-  - `read:space:confluence`
-  - `read:hierarchical-content:confluence`
-  - `write:component:compass`
-  - `read:component:compass`
-  - `read:scorecard:compass`
-  - `write:scorecard:compass`
-  - `read:event:compass`
-  - `read:metric:compass`
-  - `read:all:twg`
-  - `write:all:twg`
+Issue creation, transitions, and comments are writes, and they are visible to your whole team. Leave them on **Ask first** until you trust the workflow. See [Set action permissions](action-permissions.md).
 
-Provider console: [provider docs](https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/)
+Attribution follows the authorizing account, so agent comments appear under that person unless you use a dedicated account. See [Use separate accounts for people and agents](separate-accounts.md).
 
-## Accounts and access
-
-Jira follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Jira's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Jira
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Find Jira issue PROJ-123 and tell me its status, assignee, and most recent comment. Do not change it.
 ```
 
-## Check that it works
+Compare against the issue in Jira. If it comes back empty, check the site first.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result. Substitute an issue key you can open yourself.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Authorization is refused or stays pending | The Atlassian tenant requires administrator approval of the client | Ask an Atlassian administrator to approve it |
+| The connection is healthy but finds no issues | The wrong site was selected during authorization | Reconnect and choose the correct site |
+| Some projects are invisible | The authorizing account lacks browse permission, or issue-level security applies | Grant permission in Jira; no reconnect needed |
+| Confluence tools appear unexpectedly | The Atlassian server covers both products | Switch off the ones you do not want on the **Permissions** tab |
+| A transition is rejected | The Jira workflow does not allow that transition for this account | Check the workflow in Jira |
+| **Needs attention** | The Atlassian grant expired or was revoked | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one Atlassian site per connection. Atlassian Cloud only. No project picker in Paperclip — reach follows the account.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [Linear](linear.md), [Asana](asana.md), [Todoist](todoist.md) — other work tracking connectors.
+- [Use separate accounts for people and agents](separate-accounts.md)
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Jira provider documentation](https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/)
+- [Atlassian remote MCP server documentation](https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/)

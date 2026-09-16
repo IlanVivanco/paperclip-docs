@@ -1,91 +1,67 @@
 ---
 seo_title: Netlify Connector
-seo_description: Hosting and deploys for web front ends. Agents work with the teams and sites your Netlify account can reach, under permissions you set.
+seo_description: Let agents work with Netlify teams and sites. Reading deploy status versus starting a deploy, team scope, a read test, and troubleshooting.
 ---
 
 # Netlify
 
-Hosting and deploys for web front ends. Agents work with the teams and sites your Netlify account can reach.
+Agents can work with your Netlify teams and sites — checking deploy status, inspecting configuration, and investigating build failures.
 
-## What this connector does
+## Before you connect
 
-Netlify is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+- A Netlify account with access to the team and sites you want agents to use.
+- If you belong to several Netlify teams, know which one you want. Reach follows the account, and there is no team picker in Paperclip.
 
-| Property | Value |
+## Connect Netlify
+
+1. Open **Connectors** and select **Netlify**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Sign in with Netlify** and complete browser sign-in.
+
+Paperclip registers its client with Netlify automatically, so there is nothing to set up in a developer console.
+
+## Choose access
+
+Reach is the authorizing Netlify account's: the teams it belongs to and the sites within them, subject to Netlify's own role permissions.
+
+The distinction that matters here is between observing a deploy and causing one:
+
+| What an agent does | Consequence |
 | --- | --- |
-| Catalog slug | `netlify` |
-| Category | Developer tools |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
-| Provider research | wave 1, auth mode `dcr`, verified 2026-08-26 |
+| Reads deploy status, logs, and build history | Nothing changes. Safe to leave **Allowed** |
+| Reads site and environment configuration | May expose environment variable names, and sometimes values |
+| Starts a deploy, or changes site configuration | Changes what is live |
 
-## Before you start
+> **Warning:** A deploy puts code in front of real users, and a configuration change can break a production site. Keep deploy and configuration actions on **Ask first** or **Off**. Reading build logs to diagnose a failure is the common, safe use of this connector; triggering the rebuild is the part a person should approve.
 
-- A Netlify account with access to the relevant team and sites.
+Netlify environment variables frequently hold API keys. An agent that can read site configuration may surface them, so prefer **Just agents I pick** for a connection with configuration access. See [Set action permissions](action-permissions.md).
 
-## Supported setup paths
-
-Open **Connectors**, find **Netlify**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
-
-### Sign in with Netlify
-
-Use browser sign-in for the provider-hosted MCP server.
-
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Risk tier: S3
-- Endpoints: MCP server `https://netlify-mcp.netlify.app/mcp`
-
-Provider console: [provider docs](https://docs.netlify.com/build/build-with-ai/agent-setup-guides/agent-setup-overview/)
-
-## Accounts and access
-
-Netlify follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Netlify's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Netlify
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+List the Netlify sites this account can see, and tell me the status and time of the most recent deploy for one of them. Do not start a deploy.
 ```
 
-## Check that it works
+Compare against the Netlify dashboard. A deploy-status read is the natural first check because it is also the connector's most common real use.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| A site is missing | The authorizing account is not a member of that team | Add it to the team in Netlify; no reconnect needed |
+| An action is refused | The account's Netlify role does not permit it | Adjust the role in Netlify, or leave the capability off |
+| A deploy started unexpectedly | A deploy action was set to **Allowed** | Set it to **Ask first**, and cancel or roll back in Netlify |
+| Build logs are truncated | Netlify's own log retention and size limits | Check the full log in the Netlify dashboard |
+| An expected capability is absent | Netlify's server does not expose it | Use **Refresh actions**; otherwise it is unavailable |
+| **Needs attention** | The grant expired or was revoked | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one Netlify account per connection. No team or site filter inside Paperclip. Paperclip cannot roll back a deploy — do that in Netlify.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [Cloudflare](cloudflare.md) — another hosting and infrastructure connector.
+- [GitHub](github.md) — the repository side of a deploy workflow.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Netlify provider documentation](https://docs.netlify.com/build/build-with-ai/agent-setup-guides/agent-setup-overview/)
+- [Netlify agent setup guides](https://docs.netlify.com/build/build-with-ai/agent-setup-guides/agent-setup-overview/)
