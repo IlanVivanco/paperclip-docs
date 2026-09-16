@@ -33,11 +33,13 @@ Reach is Cloudflare's decision: the account, zones, and resources the credential
 
 Three categories of action worth separating, because they carry very different consequences:
 
-| Category | Examples | Suggested setting |
+| Category | Kind of action | Suggested setting |
 | --- | --- | --- |
-| Reads | Listing zones, reading DNS records, reading analytics | **Allowed** |
-| Configuration writes | Changing DNS, firewall, or cache rules | **Ask first** |
+| Reads | Listing and reading configuration or analytics | **Allowed** |
+| Configuration writes | Changing how traffic is routed, filtered, or cached | **Ask first** |
 | Provisioning and deletion | Creating or removing resources | **Off** unless specifically needed |
+
+> **Note:** Cloudflare's hosted endpoint covers a wide product surface and its tool list is the provider's to change. Sort the live list on the **Permissions** tab into these three categories for the connection you actually made, rather than assuming a particular DNS or firewall tool is present — availability also depends on the permission groups on your token.
 
 > **Warning:** Configuration changes here take effect on live traffic. A DNS or firewall edit can take a site off the internet within seconds, and provisioning new resources can incur charges on the account. Keep writes behind approval.
 
@@ -49,7 +51,9 @@ See [Set action permissions](action-permissions.md).
 List the Cloudflare zones this account can see and tell me the DNS record count for one of them. Do not change any record.
 ```
 
-Compare against the Cloudflare dashboard. A zone listing confirms the credential and shows you the scope at the same time, which is useful when you are checking a token was scoped the way you intended.
+Compare the zone list against the Cloudflare dashboard, and check it contains exactly the zones you meant the token to cover — no more. A zone listing confirms the credential and shows you the scope at the same time, which is the quickest way to catch a token that was scoped more broadly than you intended.
+
+Then confirm the calls appear in the connection's activity, so you know the list came from Cloudflare rather than from the agent's recollection.
 
 Do not verify with a DNS or firewall change on a live zone.
 

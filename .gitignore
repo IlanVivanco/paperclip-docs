@@ -10,3 +10,6 @@ scripts/screenshots/.seed-ids.json
 
 # Local scratch area (probe scripts, throwaway captures)
 scratchpad/
+
+# Internal evidence ledgers are delivered as private task artifacts, not in the repo
+.artifacts/

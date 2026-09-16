@@ -7,7 +7,9 @@ seo_description: Every service Paperclip can connect, grouped by what it is for,
 
 A **connector** is a saved connection to an outside service: a Gmail mailbox, a GitHub organization, a Notion workspace, a PostHog project. You set one up once, decide who and what it is for, and Paperclip carries that decision into every run.
 
-> **Warning:** Draft against an unreleased snapshot. These pages document the connector surface at Paperclip App commit `ae063299` (15 September 2026). The most recent tagged release, [v2026.831.1](reference/changelog.md), shipped a much smaller catalog. Nothing here tells you what your installed version can do — open **Connectors** in your own instance and compare.
+> **Warning:** Draft against an unreleased snapshot. These pages document the connector surface at Paperclip App commit `ae063299` (15 September 2026), which is tagged `canary/v2026.916.0-canary.0`. The most recent **stable** release, [v2026.831.1](reference/changelog.md), shipped a much smaller catalog. Nothing here tells you what your installed version can do — open **Connectors** in your own instance and compare.
+
+> **Note:** Development has continued past that snapshot. Two changes are worth knowing about, and neither is in any release tag. A **Railway** connector was added and is visible in the catalog on the development branch; it is not documented here and you will not have it. Google connectors were briefly hidden from the catalog and that change was **reverted the same day** — so Gmail and the eight Google Workspace connectors remain listed, and no release ever shipped without them. If a future release does change Google availability, these pages will not be right until they are updated; check your own instance.
 
 ## Start here
 
