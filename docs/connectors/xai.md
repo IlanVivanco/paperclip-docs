@@ -57,7 +57,16 @@ When both exist Paperclip shows a **Sign-in environment** selector. The sign-in 
 
 If server-host sign-in is unavailable you will see *"Server-host subscription sign-in is unavailable on this hosted instance. Choose a supported sign-in environment or use an API key."* That restricts signing in **on the host**, not subscription authentication generally.
 
+**In a supported sandbox:**
+
+1. Select the sandbox in **Sign-in environment**, if a selector is shown, and choose subscription authentication.
+2. Wait for Paperclip to prepare the sign-in link, then use **Sign in to Grok** to open it.
+3. If Paperclip displays a device code, enter it on the provider's sign-in page. Complete authorization and return to Paperclip.
+4. Wait for Paperclip to finish the connection. If the attempt expires or fails, start a new attempt; an open provider page alone does not establish that the credential was saved.
+
 ## Assign the credential
+
+Open the saved connection and use **Make default** under **Personal default** for your own account. In the agent's **AI connection** selector, choose **Responsible user’s connection** to use each responsible person's default, or select a named compatible company-shared account. Save the agent configuration.
 
 - **Set it as your default** for the provider, and agents configured to use the responsible user's connection draw on each person's own account.
 - **Bind a specific shared connection** to the agent so eligible runs use that account.
@@ -72,7 +81,7 @@ A specific binding is not unconditional. Each run through it must satisfy all th
 
 A binding therefore **cannot substitute for a responsible user**.
 
-**Personal** keeps the credential yours; **Company shared** makes one account available to eligible agents on any run. The model is chosen in the agent's configuration.
+**Personal** keeps the credential yours; **Company shared** makes one account available to eligible agents on runs whose responsible person is in its human audience. The model is chosen in the agent's configuration.
 
 ## Try it
 

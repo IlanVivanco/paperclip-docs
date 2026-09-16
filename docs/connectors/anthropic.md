@@ -59,7 +59,16 @@ If more than one is available, Paperclip shows a **Sign-in environment** selecto
 
 If server-host sign-in is unavailable you will see *"Server-host subscription sign-in is unavailable on this hosted instance. Choose a supported sign-in environment or use an API key."* That restriction applies to signing in **on the host**, not to subscription authentication generally — a sandbox sign-in environment, where configured, remains available. It is applied on publicly exposed authenticated deployments unless an administrator has configured a trusted runtime host.
 
+**In a supported sandbox:**
+
+1. Select the sandbox in **Sign-in environment**, if a selector is shown, and choose subscription authentication.
+2. Wait for Paperclip to prepare the sign-in link, then use **Sign in to Claude** to open it.
+3. Complete the provider sign-in, then return the authorization code to the code field shown in Paperclip. Do not paste it into a task or chat.
+4. Wait for Paperclip to finish the connection. If the attempt expires or fails, start a new attempt; an open provider page alone does not establish that the credential was saved.
+
 ## Assign the credential
+
+Open the saved connection and use **Make default** under **Personal default** for your own account. In the agent's **AI connection** selector, choose **Responsible user’s connection** to use each responsible person's default, or select a named compatible company-shared account. Save the agent configuration.
 
 A connected account is not yet the account a run uses. Two ways to bind it:
 
@@ -76,7 +85,7 @@ Binding a specific connection is not unconditional. Every run through it must st
 
 The practical consequence: **a binding cannot substitute for a responsible user.** If a run has no responsible person, there is no one for the permission check to evaluate, and the run is refused whichever binding is set.
 
-A **Personal** connection stays yours; **Company shared** makes one account available to eligible agents on any run. The model itself is chosen in the agent's configuration, not here.
+A **Personal** connection stays yours; **Company shared** makes one account available to eligible agents on runs whose responsible person is in its human audience. The model itself is chosen in the agent's configuration, not here.
 
 ## Try it
 

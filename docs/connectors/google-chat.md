@@ -5,6 +5,8 @@ seo_description: Let agents search and read Google Chat conversations, and optio
 
 # Google Chat
 
+> **Warning:** New Google connector setup is paused while Paperclip completes Google verification, as [announced on September 16, 2026](https://x.com/papercliping/status/2100341600098693205). The setup instructions below are reference material, not a workaround for the pause. Check that announcement for updates or contact [support@paperclip.ing](mailto:support@paperclip.ing) before starting a new connection.
+
 Agents can search Google Chat conversations and read messages, and on a sending connection post messages to spaces the authorizing account belongs to.
 
 This is a tool connector: an agent reads and writes Chat using *your* Google account. It is not a channel for people to start work by messaging an agent — Google Chat is not one of Paperclip's conversation channels. If that is what you want, see [Slack](slack.md), [Discord](discord.md), [Microsoft Teams](microsoft-teams.md), or [Telegram](telegram.md).

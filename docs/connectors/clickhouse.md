@@ -35,7 +35,7 @@ Any schema-changing or data-changing operations should stay **Off** unless you h
 
 ### `LIMIT` is not a cost control
 
-This is the trap worth internalising before you let an agent near a large table. `LIMIT` caps the rows a query *returns*. It does nothing about the rows it *reads* to produce them — a `LIMIT 10` over an unfiltered table can still scan the whole table.
+This is the trap worth internalising before you let an agent near a large table. `LIMIT` caps the rows a query *returns*. It does not reliably bound the rows it *reads* to produce them — a `LIMIT 10` over an unfiltered table can still scan the whole table.
 
 ClickHouse says so directly in its guidance for agent-generated queries: "ALWAYS bound scan size with `max_rows_to_read` or `max_bytes_to_read` — `LIMIT` alone does not prevent a full scan."
 
@@ -52,7 +52,7 @@ Set these as quotas or profile settings on the ClickHouse user the connection si
 
 ## Try it
 
-Verify with **metadata only**. A metadata read confirms the credential and the grants without scanning table data at all, which is the one check you can run against an unfamiliar service without thinking about cost:
+Verify with **metadata only**. A metadata read confirms the credential and the grants without scanning table data at all, which avoids a query against application table contents but still uses provider requests and resources:
 
 ```txt
 List the databases and tables the ClickHouse connection can see. Do not query
@@ -63,7 +63,7 @@ Expect a list matching what you see in ClickStack for that user's grants.
 
 Only once that works, and only against a table you know is small, try a bounded read — and rely on the user's scan limits rather than a `LIMIT` clause to keep it bounded.
 
-Do not verify with a count over a production table. "The smallest table" is not a safe instruction: an agent has to scan to find out which one that is.
+Do not verify with a count over a production table. "The smallest table" is not a sufficient cost limit: the agent may run additional queries to identify it.
 
 > **Note:** Illustrative task, not a recorded test result. No query was executed against any ClickHouse service for this documentation.
 

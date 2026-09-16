@@ -85,7 +85,7 @@ Microsoft's own walkthrough is [Create a bot for Teams](https://learn.microsoft.
 | In Teams | In Paperclip |
 | --- | --- |
 | Someone messages the bot in a personal chat | A task is created for the connected agent |
-| Someone posts in a team channel or group chat where the app is installed | Paperclip receives the message and routes it to the connected agent |
+| A supported message reaches the bot in an installed team channel or group chat | Paperclip applies its trigger and sender-authorization checks before starting agent work |
 | The conversation continues | Replies continue the same task |
 
 ## Choose access
@@ -94,7 +94,7 @@ Reach is decided by where the app is installed, in Teams, not in Paperclip. Ther
 
 One team installation covers that team's **standard** channels. **Private and shared channels need their own installation and are not supported in this release** — an agent will not see messages in them, so do not plan work around a private channel.
 
-The connection's identity and agent settings work as for any connector; see [How connector access works](access-model.md). The answering agent is set on the connection.
+External installation is not the whole permission boundary. Paperclip also checks the sender's linked identity and membership, or the configured policy for unlinked people. Review these settings and the answering agent on the connection before inviting users. See [How connector access works](access-model.md).
 
 ## Try it
 

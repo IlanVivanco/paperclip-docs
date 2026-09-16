@@ -59,12 +59,12 @@ Secrets are never part of the connection record you can read back. Credential va
 
 ## The grant: who the credential belongs to
 
-A grant answers "whose account is this?". Paperclip supports three kinds, chosen during setup under **Identity**:
+A grant answers "whose account is this?". Paperclip supports three kinds. Available choices and UI labels depend on the connector and method; this table describes the data model, not three options offered by every setup screen:
 
 | Setup choice | Grant kind | Credential policy | What it means |
 | --- | --- | --- | --- |
 | **Just me** | `user` | `per_user` | Your account. Agents use it only for runs where you are the responsible person. |
-| **Organization identity** | `organization` | shared | One account for the company. Eligible agents use it regardless of who started the run. |
+| **Organization identity** | `organization` | shared | One account for the company. Eligible agents use it for runs whose responsible person is in the credential's human audience. |
 | **Dedicated agent identity** | `agent` | `per_agent` | An account that belongs to one agent and is always used by that agent, regardless of who started the run. |
 
 Creating a personal connection is available to any active member. Creating an organization or dedicated-agent grant is a manager operation — Paperclip rejects the request with *"Only a connection manager can share this credential with the organization"* if you lack the permission, and it enforces that on the server rather than trusting the browser.

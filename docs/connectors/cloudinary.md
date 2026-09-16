@@ -46,7 +46,7 @@ See [Set action permissions](action-permissions.md).
 Search Cloudinary for assets tagged "product-hero" and tell me how many there are and the public ID of the newest one. Do not upload, transform, or delete anything.
 ```
 
-Compare against the Cloudinary media library. A search confirms the credential and the environment without touching quota in a way that matters.
+Compare against the Cloudinary media library. Check the returned IDs against known assets and inspect the task's connector activity. Searches do not change assets, but still consume provider requests and may count toward usage limits.
 
 > **Note:** Illustrative task, not a recorded test result. Substitute a tag from your own library.
 

@@ -5,6 +5,8 @@ seo_description: Let agents look up contacts and Workspace directory profiles. R
 
 # Google People
 
+> **Warning:** New Google connector setup is paused while Paperclip completes Google verification, as [announced on September 16, 2026](https://x.com/papercliping/status/2100341600098693205). The setup instructions below are reference material, not a workaround for the pause. Check that announcement for updates or contact [support@paperclip.ing](mailto:support@paperclip.ing) before starting a new connection.
+
 Agents can search your Google contacts, search your organization's Workspace directory, and read your own profile.
 
 This connector is read-only. There is no capability group that writes, so an agent cannot create, edit, or delete a contact.

@@ -5,7 +5,7 @@ seo_description: Choose which people a connector credential covers and which age
 
 # Share a connector with people and agents
 
-A connector has two separate audiences: the people the credential belongs to, and the agents allowed to call through it. Widening one does not widen the other.
+For credentialed app-tool connections, there are two separate audiences: the people the credential belongs to, and the agents allowed to call through it. Widening one does not widen the other.
 
 ## Choose the human audience
 
@@ -28,7 +28,7 @@ Creating or changing an organization identity requires the connection-manager pe
 
 ## Choose which agents may use it
 
-On the **Permissions** tab, under **Which agents can use this connection**:
+For an app-tool connection, open the **Permissions** tab and find **Which agents can use this connection**. Model credentials and chat channels use their own assignment controls; see their provider guides.
 
 | Choice | Effect |
 | --- | --- |
@@ -37,7 +37,7 @@ On the **Permissions** tab, under **Which agents can use this connection**:
 
 If the control is disabled with *"Unavailable while this connection is installed for every agent,"* the connection has a company-wide install that supersedes the per-agent list. Change the install first.
 
-A new connection starts at **Any agent**. That is not a permission to act — the action list still decides what any of those agents may actually call. See [Set action permissions](action-permissions.md).
+Check the selected audience during setup; availability and defaults depend on the method, your permissions, and whether setup was opened for a particular agent. That is not a permission to act — the action list still decides what any of those agents may actually call. See [Set action permissions](action-permissions.md).
 
 ## Why these are two lists
 

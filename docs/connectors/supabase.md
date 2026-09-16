@@ -73,7 +73,7 @@ Use a metadata read, not a query against real data:
 List the tables in the Supabase project and tell me how many there are. Do not query any row data or change anything.
 ```
 
-Expect a table list matching the project. A metadata read confirms the credential and the project scope without pulling customer data into a task transcript, and without running anything expensive.
+Expect a table list matching the project. A metadata read confirms the credential and the project scope without requesting row contents. Schema and table names may still be sensitive, and metadata requests still use provider resources.
 
 Do not verify with a migration, a schema change, or a privileged SQL statement.
 

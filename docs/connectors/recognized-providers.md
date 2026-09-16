@@ -9,9 +9,7 @@ Reference for the inventory behind the catalog. If you are looking for a connect
 
 Two separate things get confused here, so they are listed separately. A **withheld** provider has a complete definition that Paperclip still recognizes, but it is deliberately kept out of the customer-facing list. A **provider-gated** one is not offered because the provider itself will not let an independently registered client connect.
 
-> **Warning:** Snapshot, not a release. This is the inventory at Paperclip App commit `ae063299` (15 September 2026), tagged `canary/v2026.916.0-canary.0` and ahead of every stable release. Membership of both lists is a product decision that can change in either direction, and a name appearing here is not a commitment to list it later. Check your own instance for what it actually offers.
-
-> **Note:** Since that snapshot, a **Railway** connector has been added on the development branch and is visible in the catalog there. It is in no release tag and has no page in this catalog. Nothing has been withheld or unwithheld.
+> **Note:** Checked against Paperclip **v2026.916.0**. Catalog visibility can change between releases; recognition is not a promise of availability. Existing connections still need to be verified independently.
 
 ## Withheld from the Connectors list
 

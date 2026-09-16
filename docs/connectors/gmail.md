@@ -5,6 +5,8 @@ seo_description: Let agents search and read Gmail, and optionally draft replies.
 
 # Gmail
 
+> **Warning:** New Google connector setup is paused while Paperclip completes Google verification, as [announced on September 16, 2026](https://x.com/papercliping/status/2100341600098693205). The setup instructions below are reference material, not a workaround for the pause. Check that announcement for updates or contact [support@paperclip.ing](mailto:support@paperclip.ing) before starting a new connection.
+
 Agents can search and read your Gmail, and on a draft connection leave drafts in your drafts folder for you to review. Sending is not reachable through this connector.
 
 > **Warning:** Gmail needs Google Workspace Developer Preview registration before it will authorize. Google must register the Workspace email that signs in, and — if you bring your own OAuth client — the Cloud project that owns it. Apply first: [Google Workspace Developer Preview](https://developers.google.com/workspace/preview).
@@ -48,7 +50,7 @@ Operation names are normalized before matching, so a provider variant such as `g
 Gmail is a mailbox, so the identity question is unusually consequential.
 
 - **Just me** is the usual answer. The credential is yours and agents use it only on runs where you are the responsible person.
-- An **Organization identity** makes one mailbox readable by eligible agents on any run, whoever started it. That suits a shared support inbox and not a person's mail. It needs the connection-manager permission.
+- An **Organization identity** makes one mailbox readable by eligible agents on runs whose responsible person is in the credential's human audience. That suits a shared support inbox and not a person's mail. It needs the connection-manager permission.
 
 Under **Which agents can use this connection**, prefer **Just agents I pick**. A mailbox is not a good default for every agent in the company.
 

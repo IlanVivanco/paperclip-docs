@@ -26,19 +26,13 @@ Paperclip registers its client with Notion automatically, so there is nothing to
 
 > **Note:** If your instance routes credentials through Vercel Connect, Notion can also be connected that way; the access and sharing decisions are the same.
 
-### Optional: use your own Notion OAuth app
-
-Notion accepts Paperclip's automatic client registration, so this is not needed for an ordinary setup. Use it only when the connection must appear under a Notion integration your organization owns — for example to satisfy an internal review of installed integrations.
-
-You supply the client ID and secret from your own Notion integration during setup. Sharing and consent work the same way afterwards.
-
 ## Choose access
 
 Three separate decisions govern a Notion call. [How connector access works](access-model.md) explains all three in one place; the Notion-specific parts are:
 
 | Decision | What it means for Notion |
 | --- | --- |
-| Identity | **Just me** uses your Notion account on your own runs. An **Organization identity** shares one Notion account across eligible agents on any run, and needs the connection-manager permission. |
+| Identity | **Just me** uses your Notion account on your own runs. An organization-shared credential makes one Notion account available to eligible agents on runs whose responsible person is in its human audience, and needs the connection-manager permission. |
 | Reachable content | Everything the connected Notion account can open. To narrow it, change that account's permissions in Notion, or reconnect under an account with less access. Paperclip has no page-level filter for Notion. |
 | Actions | Notion's server supplies the action list. Reads and writes are classified separately, so you can leave reads **Allowed** and put writes on **Ask first**. |
 

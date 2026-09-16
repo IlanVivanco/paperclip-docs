@@ -14,7 +14,7 @@ Slack does two unrelated jobs in Paperclip, and they are separate connections wi
 | Agents to search Slack and post messages as part of their own work | **Use this connection as an agent tool** | Slack actions an agent can call, governed by action permissions |
 | People to start and continue work by talking to an agent in Slack | **Chat with an agent** | A Slack app that turns mentions and DMs into Paperclip tasks |
 
-Connecting one does not connect the other. They need different credentials, have different prerequisites, and are tested differently. If you want both, set up both.
+Connecting one does not connect the other. They need different credentials and prerequisites. Check the agent-tool compatibility notice before planning to use both.
 
 ---
 
@@ -22,28 +22,13 @@ Connecting one does not connect the other. They need different credentials, have
 
 An agent uses a Slack workspace credential to search messages, read channel lists, and post — on its own initiative, inside its own task.
 
-### Before you connect
+### Agent-tool compatibility notice
 
-- A Slack workspace, and the ability to create a Slack app in it. Many workspaces restrict this to administrators or require app approval.
-- You must register your own Slack OAuth app for this route. Slack does not support automatic client registration here, so unlike most connectors there is no path that skips the developer console.
+**Do not use the Slack agent-tool setup in v2026.916.0 as a supported production path yet.** That release configures OAuth endpoints and scopes that differ from Slack's current hosted MCP requirements. A successful bot installation does not verify an MCP connection.
 
-### Connect it
+Slack MCP requires a registered internal or marketplace-published app, user-token OAuth endpoints, and the user scopes for the intended tools. See [Slack's MCP authentication requirements](https://docs.slack.dev/ai/slack-mcp-server/). Bot-token setup is for the separate chat-channel path below.
 
-Paperclip supplies the redirect URI, Slack supplies the credentials, so start in Paperclip.
-
-**1. Read Paperclip's redirect URI.** Open **Connectors**, select **Slack**, then **Use this connection as an agent tool**. On the **Access** step choose the identity and which agents may use the connection. Copy the redirect URI Paperclip displays and leave the screen open.
-
-**2. Create the Slack app.** At [Slack API apps](https://api.slack.com/apps), create an app for your workspace. Then in the app's management pages:
-
-- Open **OAuth & Permissions** and add the redirect URI from step 1 under **Redirect URLs**. It must be HTTPS, must contain no anchor, and must match exactly.
-- Still under **OAuth & Permissions**, add the bot token scopes for the work you intend — reading channels, searching, and posting are the three this route uses. Grant the narrowest set that covers it.
-- Copy the app's **Client ID** and **Client Secret** from its credentials.
-
-**3. Finish in Paperclip.** Supply the client ID and secret, then complete Slack's authorization.
-
-> **Note:** Many Slack workspaces require an administrator to approve an app before it can be installed. If authorization stalls at an approval prompt, that is a Slack workspace policy and only an administrator can clear it — check before starting if you are not one.
-
-Slack's own reference is [Installing with OAuth](https://docs.slack.dev/authentication/installing-with-oauth).
+Wait for a release with verified Slack MCP compatibility, or contact [support@paperclip.ing](mailto:support@paperclip.ing) before attempting this route. The access notes below explain the intended tool behavior; they are not a record of successful setup on this release.
 
 ### Access and actions
 
@@ -99,7 +84,7 @@ Paperclip acknowledges with a reaction so people can see a message was picked up
 
 ### Access
 
-Reach is decided by where the app is installed and which channels it is invited to, in Slack. Anyone who can mention the agent in a channel it is in can start work, so channel membership is the control.
+Provider channel or repository access determines where a message can reach the integration; it does not by itself authorize agent work. Paperclip also checks the sender's linked identity and company membership. Linked users must be active non-viewer members. Unlinked senders depend on the connection's **Allow unlinked people** setting and any sponsor requirements. Review these controls before inviting people to use the agent.
 
 ### Try it
 

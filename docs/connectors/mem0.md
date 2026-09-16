@@ -35,19 +35,16 @@ Deletions remove memory permanently; keep them **Off** unless you have a reason.
 
 ## Try it
 
-Use a scoped read rather than writing something you then have to clean up:
+Use a namespace that already contains a known memory. Replace the example identifier with the one you use in Mem0:
 
 ```txt
-Search Mem0 for memories about the onboarding project and tell me what is stored,
-including the user or agent identifier each memory is filed under. Do not add or
-delete any memory.
+Search Mem0 for onboarding memories under user_id "YOUR_KNOWN_USER_ID".
+Return the stored fact and its memory ID. Do not add, update, or delete anything.
 ```
 
-Asking for the identifier matters, because that is what determines which memories a search can see. Without it you cannot tell a correctly scoped empty result from a misconfigured one.
+Compare the result with the existing memory and inspect the task's connector calls. If your integration uses an agent or project identifier instead, supply that exact identifier.
 
-> **Warning:** An empty result proves very little on this connector. It is consistent with a working connection that has nothing stored yet, and equally consistent with the agent searching a different namespace from the one you populated. Confirm the connection by writing one disposable memory and reading it back under the same identifier, on a project you do not mind cluttering — not by concluding from silence.
-
-On a new store this correctly returns nothing, which is still a useful result — it confirms the key and the connection without seeding data. To test writing as well, add one clearly labelled throwaway memory and delete it afterwards.
+An empty result does not establish that the intended namespace was read. Check the identifier, project, and tool result before changing credentials. If the store is empty, defer content verification or explicitly authorize a disposable write/read test in a test project; do not seed production memory just to test the connection.
 
 > **Note:** Illustrative task, not a recorded test result.
 

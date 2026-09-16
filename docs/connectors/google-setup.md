@@ -5,9 +5,11 @@ seo_description: One reusable procedure for connecting any Google Workspace conn
 
 # Set up your own Google OAuth app
 
-Nine connectors in this catalog talk to Google Workspace: Gmail, Calendar, Chat, Docs, Drive, People, Sheets, Slides, and Workspace Search. Connecting any of them with **your own** OAuth client follows the same four steps, and this page is that procedure.
+> **Warning:** New Google connector setup is paused while Paperclip completes Google verification, as [announced on September 16, 2026](https://x.com/papercliping/status/2100341600098693205). The setup instructions below are reference material, not a workaround for the pause. Check that announcement for updates or contact [support@paperclip.ing](mailto:support@paperclip.ing) before starting a new connection.
 
-Read it once and reuse it. The only thing that differs per connector is which Google APIs you enable, and Google Chat needs one extra step.
+Nine connectors in this catalog talk to Google Workspace: Gmail, Calendar, Chat, Docs, Drive, People, Sheets, Slides, and Workspace Search. Connecting any of them with **your own** OAuth client follows the shared steps below, and this page is that procedure.
+
+Read it once and reuse it. Choose the APIs and scopes for your connector and capability group. Google Chat also needs a configured Chat app.
 
 > **Note:** You need this page only if you are bringing your own OAuth client. If **Connect with Paperclip** is offered on the connector and you are happy to use it, that path needs no Cloud console work — skip to [Check you can use the managed path first](#check-you-can-use-the-managed-path-first).
 
@@ -17,8 +19,8 @@ Two paths exist, and it is worth knowing which you are on before spending time i
 
 | Path | What it needs from you | When it is offered |
 | --- | --- | --- |
-| **Connect with Paperclip** | Nothing in the Cloud console. Paperclip owns the OAuth client | Only when the instance is enrolled with Paperclip Cloud *and* Cloud advertises that connector's profile. If it is missing from the setup screen, it is unavailable — an administrator would have to arrange enrollment |
-| **Use your own Google OAuth app** | Everything on this page | Always |
+| **Connect with Paperclip** | Nothing in the Cloud console. Paperclip owns the OAuth client | Only when the instance is enrolled with Paperclip Cloud *and* Cloud advertises that connector's profile. If it is missing, ask an administrator to check enrollment and profile availability |
+| **Use your own Google OAuth app** | Everything on this page | Where the connector is available; provider approval and instance restrictions still apply |
 
 Either way, **Google's Developer Preview registration in step 1 applies.** On the managed path Google still has to have registered the Workspace account that signs in; only the Cloud project differs.
 
@@ -30,7 +32,7 @@ Google's Workspace MCP servers are in Developer Preview. Google registers two th
 2. Wait for the Google Group notification, then Google's project-registration email. Google's guidance is usually a couple of days.
 3. Add every additional tester email and every additional Cloud project through Google's member request forms **before** connecting them.
 
-> **Warning:** An unregistered account or project fails at Google's authorization screen, not when you start setup in Paperclip. If consent is refused before you see a permissions prompt, this is almost always why.
+> **Warning:** An unregistered account or project fails at Google's authorization screen, not when you start setup in Paperclip. If consent is refused, check registration, OAuth app verification or testing status, and your Workspace administrator's access policy.
 
 This registration is per Workspace account and per Cloud project, not per connector. Do it once and every Google connector benefits.
 
@@ -46,6 +48,7 @@ In the [Google Cloud console](https://console.cloud.google.com/apis/library), on
 | **Google Docs** | Drive API, Docs API, Docs MCP API |
 | **Google Drive** | Drive API, Drive MCP API |
 | **Google People** | People API, People MCP API |
+| **Google Sheets** | Drive API, Sheets API, Sheets MCP API |
 | **Google Slides** | Drive API, Slides API, Slides MCP API |
 | **Google Workspace Search** | Gmail API, Drive API, Calendar API, Chat API, Workspace MCP API |
 
@@ -55,13 +58,15 @@ Setting up several connectors on one project is normal — enable the union of w
 
 ## 3. Create the OAuth client and register Paperclip's callback
 
-In the [Google Cloud console credentials screen](https://console.cloud.google.com/auth/clients):
+First configure **Google Auth Platform → Branding** with the app identity and support contact. Under **Audience**, choose the appropriate internal or external audience; for an external app in testing, add each authorized tester. Under **Data Access**, add the scopes listed for the connector and capability group you intend to use, then save. Do not add write scopes for a read-only connection. These settings do not replace Developer Preview registration or Google's verification requirements.
+
+Then open the [Google Cloud console credentials screen](https://console.cloud.google.com/auth/clients):
 
 1. Create an **OAuth client** of type **Web application**.
 2. Add Paperclip's callback as an **Authorized redirect URI**. Paperclip displays the exact URI during setup — copy it from there rather than typing it. It is the `/api/tools/oauth/callback` route on your instance's own origin.
 3. Save, then keep the **client ID** and **client secret** to hand.
 
-> **Warning:** The redirect URI must match exactly, including scheme, host, port and trailing path. A mismatch produces Google's `redirect_uri_mismatch` error at the consent screen, and it is the single most common failure on this path.
+> **Warning:** The redirect URI must match exactly, including scheme, host, port and trailing path. A mismatch produces Google's `redirect_uri_mismatch` error at the consent screen.
 
 Google's own walkthrough is [Configure MCP servers](https://developers.google.com/workspace/guides/configure-mcp-servers).
 
@@ -69,7 +74,7 @@ Google's own walkthrough is [Configure MCP servers](https://developers.google.co
 
 Google Chat needs one thing the other connectors do not — the Chat API must have a configured Chat app on the project, not merely be enabled.
 
-In the Cloud console, open the **Chat API** → **Configuration** and complete the app's identity: its app name, avatar URL and description. Set its functionality and visibility to match how you intend to use it. Google will not authorize the connector against a Chat API with no configured app.
+In the Cloud console, open the **Chat API** → **Configuration** and complete the app's identity: its app name, avatar URL and description. Under **Functionality**, turn **Enable interactive features** off; under **Logs**, enable error logging and save, as described in Google's MCP setup guide. Google will not authorize the connector against a Chat API with no configured app.
 
 ## 5. Connect in Paperclip
 
@@ -91,7 +96,7 @@ Each connector page has a worked example for its own resource type.
 
 | Symptom | Likely cause | Fix |
 | --- | --- | --- |
-| Google refuses before the consent screen | The Workspace account or the Cloud project is not registered for Developer Preview | Complete step 1 and wait for Google's confirmation |
+| Google refuses before the consent screen | Registration, app verification/testing status, or Workspace policy prevents access | Confirm registration, test-user eligibility, and administrator approval. Do not bypass a blocked authorization screen |
 | `redirect_uri_mismatch` | The redirect URI on the OAuth client does not match the one Paperclip shows | Copy the URI from Paperclip's setup screen exactly |
 | Consent completes but the connection shows **Setup incomplete** | The final step was not finished | Select **Finish setup** |
 | An API-not-enabled error at first use | One of the APIs in step 2 is missing on the project — often the MCP API rather than the service API | Enable it and retry; no reconnect needed |

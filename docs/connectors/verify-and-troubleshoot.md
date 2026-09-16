@@ -24,7 +24,7 @@ The read-test procedure below is for **app tool** connections. The other shapes 
 Always start with a read.
 
 1. Open the connector and select the **Permissions** tab.
-2. Confirm the action list loaded. An empty list means the action catalog was never read; select **Refresh actions**.
+2. Confirm the action list loaded. For an app-tool connection, an empty list can mean discovery is incomplete or the provider returned no tools for this credential. Select **Refresh actions** and inspect any error; model credentials and chat channels do not have an action catalog.
 3. Confirm every write and destructive action is **Off** or **Ask first** while you are testing.
 4. Run one read action as a specific agent using the connector's built-in test call. Paperclip asks **Choose which agent to test as**, because the answer depends on the agent's effective policy, not just on the connection.
 5. Read the result. **Worked** means the call succeeded; **Worked. No data to show.** means it succeeded and returned nothing. **Show raw response** gives you the provider's actual payload.

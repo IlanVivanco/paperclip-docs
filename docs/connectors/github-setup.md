@@ -21,8 +21,7 @@ Deciding *which* identity and *which* repositories is the part worth slowing dow
 | Identity | Choose it when |
 | --- | --- |
 | **My GitHub account** | You want an agent acting as you, on your work, while you are the responsible person |
-| **Dedicated GitHub account** | The agent should appear as itself in commits, comments, and pull requests. Requires the connection-manager permission |
-| **Shared company GitHub account (advanced)** | There is a real shared bot account and one place to revoke it |
+| **A dedicated account for an agent** | The agent should appear as itself in commits, comments, and pull requests. Requires the connection-manager permission |
 
 For anything that pushes code, a dedicated account is the better answer. Its actions are attributable, and revoking it does not disturb a person's own access.
 
@@ -76,7 +75,7 @@ Paperclip shows the shell warning when you change a permission on a dedicated Gi
 
 Because the shell is not gated by action permissions, the controls that matter for an agent with push access live on GitHub:
 
-- Grant the installation **selected repositories**, not all of them.
+- For the managed App, grant **selected repositories**. For a PAT, restrict repository selection and token permissions in GitHub.
 - Protect the default branch: require a pull request, and require a review from someone other than the agent.
 - Require status checks to pass before merge.
 
@@ -84,7 +83,7 @@ Paperclip's [execution policy](../guides/power/execution-policy.md) can also req
 
 ### 6. Verify with a read
 
-As the agent you intend to use, ask it to list the repositories it can access and compare the result against the installation's settings on GitHub. That proves the identity resolves and the scope is what you chose.
+As the agent you intend to use, ask it to read a known file in an intended repository. Compare the content and inspect the task's connector call. Check managed App installation settings or, for a PAT, its repository selection and permissions separately. A successful read verifies that operation, not the entire access boundary.
 
 Do not verify with a push, a pull request, or a merge.
 
@@ -127,7 +126,9 @@ Then generate a private key and download the PEM file.
 
 ### 4. Install it only where mentions should work
 
-Install the App on the specific repositories where people may mention the agent. Anyone who can comment on an issue or pull request in an installed repository can start agent work, so this list is the access control.
+Install the App on the specific repositories where people should be able to mention the agent.
+
+Provider channel or repository access determines where a message can reach the integration; it does not by itself authorize agent work. Paperclip also checks the sender's linked identity and company membership. Linked users must be active non-viewer members. Unlinked senders depend on the connection's **Allow unlinked people** setting and any sponsor requirements. Review these controls before inviting people to use the agent.
 
 ### 5. Finish in Paperclip
 

@@ -5,9 +5,11 @@ seo_description: Pick between a personal credential, one shared organization ide
 
 # Use separate accounts for people and agents
 
-Three identities are on offer when you set up a connector. They differ in whose account gets used, and in what the audit trail says afterwards.
+Paperclip supports personal, organization-shared, and dedicated-agent credentials. The choices shown during setup depend on the connector and connection method; not every method supports all three.
 
-## The three choices
+For example, managed GitHub offers **My GitHub account** or **A dedicated account for an agent**. Gmail offers personal or organization-shared access, not a dedicated-agent identity. A no-credential method has no account identity to choose. Assigning a connection to one agent does not change its credential type.
+
+## Credential types
 
 ### Just me
 
@@ -19,9 +21,7 @@ Any active member can create one. Use it for a first connector, for anything tou
 
 ### Organization identity
 
-*"Eligible agents use one shared credential, regardless of who starts the run."*
-
-One account for the company. Whoever starts the run, the same credential is spent. You then decide which humans it covers — **Any human in the company** or **Humans I pick** — and separately which agents may use it.
+One account shared with eligible people in the company. Setup can label this **Any human in the company**; the connection's human audience determines whose runs may use it. You separately choose which agents may use the connection. Sharing a credential does not bypass either audience.
 
 Creating one is a manager operation. Paperclip enforces this on the server: *"Only a connection manager can share this credential with the organization."*
 
@@ -31,7 +31,7 @@ Use it for a service where a shared bot account is the intended model, and where
 
 *"That agent always uses this account, regardless of who starts the run."*
 
-An account belonging to one agent. Paperclip asks *"Which agent owns this GitHub account?"* and binds the credential to it. Runs started by anyone use that account when that agent acts.
+For a method that supports it, such as managed GitHub, this is an account belonging to one agent. Paperclip asks *"Which agent owns this GitHub account?"* and binds the credential to it. Runs started by anyone use that account when that agent acts.
 
 Also a manager operation: *"Only connection managers can authorize a dedicated agent identity."*
 
@@ -42,7 +42,7 @@ Use it when the provider's own audit trail matters. A dedicated GitHub account m
 | Question | Answer |
 | --- | --- |
 | Is this my personal account? | **Just me** |
-| Should the provider's logs name the agent, not a person? | **Dedicated agent identity** |
+| Should the provider's logs name a separate account for the agent? | Use **A dedicated account for an agent** where supported; otherwise connect a separate provider account and restrict its human and agent audiences |
 | Is there a real shared service account for this? | **Organization identity** |
 | Am I still deciding whether to use this provider? | **Just me** |
 
@@ -52,7 +52,7 @@ Use it when the provider's own audit trail matters. A dedicated GitHub account m
 
 **Revocation.** Revoking an organization identity is immediate and total: *"Installed agents lose this shared identity immediately."* Revoking a personal grant affects only that person.
 
-**Shell tools.** A dedicated GitHub identity is also handed to the run's shell, where per-tool **Ask first** does not apply. This is the one place the identity choice changes the enforcement surface, not just the name on the log line. See [GitHub](github.md).
+**Shell tools.** A dedicated GitHub identity is also handed to the run's shell, where per-tool **Ask first** does not apply. This shell access also applies to the managed personal GitHub identity; it is not unique to a dedicated-agent grant. See [GitHub](github.md).
 
 ## Changing later
 

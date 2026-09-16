@@ -5,6 +5,8 @@ seo_description: Two ways to connect Google Sheets: a Google sign-in, or sharing
 
 # Google Sheets
 
+> **Warning:** New Google connector setup is paused while Paperclip completes Google verification, as [announced on September 16, 2026](https://x.com/papercliping/status/2100341600098693205). The setup instructions below are reference material, not a workaround for the pause. Check that announcement for updates or contact [support@paperclip.ing](mailto:support@paperclip.ing) before starting a new connection.
+
 Agents can read spreadsheet values and structure, and on a writing connection update them.
 
 Sheets is the one connector with two genuinely different setups: sign in with Google, or share named spreadsheets with a Paperclip robot account. They differ in what agents can reach and what they can do, so choose before you start.
@@ -18,7 +20,7 @@ Sheets is the one connector with two genuinely different setups: sign in with Go
 
 The robot account is the stronger boundary: Paperclip checks each call against the connection's spreadsheet list, so reach does not depend on the provider's consent screen. It also exposes a wider set of operations, including row deletion. The Google sign-in path reaches more spreadsheets but cannot delete anything.
 
-> **Note:** This is unusual but not unique. Most connectors inherit whatever the provider's credential can reach; the Sheets robot path and [AgentMail](agentmail.md), which restricts an agent to its assigned inboxes, are the two in this catalog where Paperclip enforces a resource boundary of its own. Do not generalise either to other connectors.
+> **Note:** The robot path's spreadsheet allowlist is specific to that method. Do not assume other connectors provide the same resource filter.
 
 ## Option A: Google sign-in
 
@@ -27,7 +29,7 @@ The robot account is the stronger boundary: Paperclip checks each call against t
 ### Before you connect
 
 - A Google Workspace account that can already open the spreadsheets you want agents to use, with Developer Preview registration confirmed.
-- Without Paperclip Cloud enrollment, your own Google OAuth client with the Drive, Sheets, and Sheets MCP APIs enabled and Paperclip's callback URI registered.
+- If you use your own client, complete [Google OAuth setup](google-setup.md), including API enablement, consent settings, scopes, and the callback URI.
 
 ### Capability groups
 
@@ -56,7 +58,7 @@ This path requires the instance administrator to have configured a service accou
 ### Steps
 
 1. Open **Connectors** and select **Google Sheets**, then choose **Use the Paperclip robot account**.
-2. On the **Access** step, choose the identity and which agents may use the connection.
+2. On the **Access** step, choose which agents may use the connection. This method does not ask for a personal Google identity.
 3. Paperclip shows the robot account's email address. In Google Sheets, share each spreadsheet with that address:
    - **Viewer** is enough for reading.
    - **Editor** is required for appending, updating, adding tabs, clearing values, or deleting rows.
@@ -79,7 +81,7 @@ Every one of these is restricted to the spreadsheets on the connection's list. A
 
 On the Google sign-in path, reach is whatever the authorizing account can open, and Paperclip does not narrow it. On the robot path, reach is the pasted list and Paperclip does enforce it.
 
-Either way, the identity that owns the credential and the **Any agent** / **Just agents I pick** choice work as they do for any connector. See [How connector access works](access-model.md).
+Choose which agents may use either connection. The Google sign-in method also asks who may use the credential; the robot-account method uses the instance's configured service account rather than a personal Google sign-in. See [How connector access works](access-model.md).
 
 ## Try it
 

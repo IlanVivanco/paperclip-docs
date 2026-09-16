@@ -7,7 +7,7 @@ seo_description: Connect one read-only service to Paperclip and give an agent a 
 
 By the end of this you will have one connector set up, one agent allowed to use it, every write action switched off, and one finished task where the agent actually called the service. Most of the elapsed time is the provider's sign-in screen and the agent's own run.
 
-The worked example is **Hugging Face**, chosen because it is the shortest honest path: a free account, a browser sign-in with no OAuth app to register, no administrator approval, and a provider scope named `read-mcp`. Step 4 has you confirm the action list rather than take the scope's name on trust.
+The worked example is **Hugging Face**, chosen because it offers a simple setup: a free account, a browser sign-in with no OAuth app to register, no administrator approval, and a provider scope named `read-mcp`. Step 4 has you confirm the action list rather than take the scope's name on trust.
 
 > **Note:** Substituting a different connector is fine, but do not expect these exact steps to transfer. This shape — an app tool with a browser sign-in — is the simplest one in the catalog. Others need an OAuth app you register yourself, an administrator, or Google Developer Preview access; messaging channels and model providers work differently again and have no action list to configure at all. [How connector access works](access-model.md) sorts the shapes out, and each provider page lists its own prerequisites.
 
@@ -27,7 +27,7 @@ The page lists every connector Paperclip can set up. Use **Search connectors** t
 
 Setup asks this **before** it asks for a credential — the steps run **Pick app**, then **Access**, then the credential — so that you decide identity and reach before handing over an account.
 
-Under **Identity**, choose **Just me**.
+Under **Which humans can use this credential?**, choose **Just me**.
 
 This makes it your personal credential: agents use it only on runs where you are the responsible person. It is the right default for a first connector, because nothing you do here affects anyone else in the company. [Use separate accounts for people and agents](separate-accounts.md) explains when to pick something broader.
 

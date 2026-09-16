@@ -28,7 +28,7 @@ Paperclip registers its client with Atlassian automatically, so there is nothing
 
 Project and issue reach is Atlassian's decision: the connection sees what the authorizing account can see on the selected site, subject to Jira project permissions and issue-level security.
 
-> **Note:** A successful authorization does not mean an agent can see your issues. If the wrong site was selected, or the account lacks browse permission on a project, searches return nothing while the connection reports healthy. Missing results after a clean setup is nearly always site or project permission, not a broken connection.
+> **Note:** A successful authorization does not mean an agent can see your issues. If the wrong site was selected, or the account lacks browse permission on a project, searches return nothing while the connection reports healthy. Check site selection and project permissions first, then inspect the failed or empty tool response.
 
 Issue creation, transitions, and comments are writes, and they are visible to your whole team. Leave them on **Ask first** until you trust the workflow. See [Set action permissions](action-permissions.md).
 
@@ -55,9 +55,7 @@ Compare against the issue in Jira. If it comes back empty, check the site first.
 | A transition is rejected | The Jira workflow does not allow that transition for this account | Check the workflow in Jira |
 | **Needs attention** | The Atlassian grant expired or was revoked | Select **Reconnect** |
 
-Limitations: you choose one Atlassian site during authorization, and that is the site the connection works against — connect Jira again for a second site. Atlassian Cloud only. No project picker in Paperclip; reach follows the account.
-
-> **Note:** We have not tested whether a single authorization can span several Atlassian sites. What is documented here is the setup choice you make and the behaviour to plan for. If you need two sites, two connections is the arrangement we can describe with confidence.
+Limitations: this guide covers Atlassian Cloud. Paperclip does not add a project picker; reach follows the authorized account and Atlassian's permissions. Check which sites and projects the connected account can actually access before assigning work. A successful read on one site does not verify access to another.
 
 ## Related guides
 

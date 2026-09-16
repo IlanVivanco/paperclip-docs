@@ -10,7 +10,7 @@ Agents can read Linear issues, create new ones, and update existing ones — use
 ## Before you connect
 
 - A Linear account with access to the workspace and teams you want agents to use.
-- You must register your own Linear OAuth app. Linear does not support automatic client registration here, so unlike most connectors there is no path that skips the developer console. Add Paperclip's redirect URI to the app; Paperclip shows the exact URI during setup.
+- You must register your own Linear OAuth app. This Paperclip connection method asks for registered client credentials. This is a constraint of the documented Paperclip route, not a claim that Linear lacks dynamic client registration. Add Paperclip's redirect URI to the app; Paperclip shows the exact URI during setup.
 
 ## Connect Linear
 
@@ -61,7 +61,7 @@ Compare against the issue in Linear. A read of a known issue confirms the creden
 
 | Problem | Likely cause | Fix |
 | --- | --- | --- |
-| Setup asks for a client ID and secret | Expected — Linear requires your own OAuth app | Register the app in Linear's settings |
+| Setup asks for a client ID and secret | Expected for this Paperclip connection method | Register the app in Linear's settings |
 | Authorization fails with a redirect error | The redirect URI on the Linear app does not match the one Paperclip shows | Copy the URI exactly and retry |
 | An issue cannot be found | The authorizing account cannot see that team or project | Grant access in Linear; no reconnect needed |
 | The agent reaches more teams than expected | Reach follows the authorizing account, not a Paperclip filter | Authorize with a more limited account |

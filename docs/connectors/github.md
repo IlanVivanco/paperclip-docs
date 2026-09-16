@@ -49,25 +49,26 @@ The two are not equivalent. A fine-grained personal access token carries the per
 
 ### Choose an identity
 
-The managed path offers three, and the difference shows up in GitHub's own audit trail:
+The managed path offers personal or dedicated-agent access. Its definition does not offer an organization-shared grant:
 
 | Setup choice | Effect |
 | --- | --- |
 | **My GitHub account** | *"Every agent may use your GitHub when you're responsible."* Choose **Only agents I choose** to narrow it |
-| **Dedicated GitHub account** | *"That agent always uses this account, regardless of who starts the run."* Commits and comments are attributable to the agent |
-| **Shared company GitHub account (advanced)** | One organization-wide account |
+| **A dedicated account for an agent** | *"That agent always uses this account, regardless of who starts the run."* Commits and comments are attributable to the agent |
 
 A dedicated agent identity is the right choice when you want agent commits distinguishable from a person's. Creating one is a manager operation: *"Only connection managers can authorize a dedicated agent identity."*
 
 ### Repository access
 
-Repository scope is set in GitHub, not in Paperclip. The connection's identity card reflects the installation:
+For the managed GitHub App path, repository scope is set in GitHub. The connection's identity card reflects the installation:
 
 - **Accessible GitHub repositories** lists the selected repositories, or shows **All current and future repositories** for an org-wide installation.
 - **Add More Repos on GitHub** and **Configure access on GitHub** link into GitHub's installation settings.
 - **Refresh access** re-reads the installation after you change it there.
 
-Prefer selected repositories. An installation granting all current and future repositories is flagged in the repository row, because it silently widens as the organization grows.
+Prefer selected repositories for the managed App. An installation granting all current and future repositories widens as the organization grows.
+
+For a personal access token, review the token's resource owner, selected repositories, permissions, expiry, and any organization approval in GitHub. GitHub App installation controls do not set a PAT's scope.
 
 ### Actions
 
@@ -79,13 +80,13 @@ Actions are classified read, write, or destructive and can be set **Allowed**, *
 
 ### Try it
 
-Use a read. Listing the repositories the installation can reach is a good first check because it confirms the credential and shows you the scope at the same time:
+Use a read against a repository you expect the selected credential to reach:
 
 ```txt
-List the GitHub repositories you can access, and tell me how many there are.
+Read the README in YOUR_ORG/YOUR_REPO and report its first heading. Do not change anything.
 ```
 
-Compare the list against the installation's settings on GitHub. Do not verify with a push, a pull request, or a merge.
+Compare the heading with the repository and inspect the task's connector call. For managed access, also check the GitHub App installation's selected repositories; for a PAT, check the token's repository selection and permissions. One successful read does not prove the credential cannot reach other repositories. Do not verify with a push, pull request, or merge.
 
 > **Note:** Illustrative task, not a recorded test result.
 
@@ -109,7 +110,7 @@ This route grants no repository tools. An agent reachable from issue comments ca
 
 ### Access
 
-Reach is decided by where the App is installed. Anyone who can comment on an issue or pull request in an installed repository can start agent work, so repository selection is the control.
+Provider channel or repository access determines where a message can reach the integration; it does not by itself authorize agent work. Paperclip also checks the sender's linked identity and company membership. Linked users must be active non-viewer members. Unlinked senders depend on the connection's **Allow unlinked people** setting and any sponsor requirements. Review these controls before inviting people to use the agent.
 
 ### Try it
 

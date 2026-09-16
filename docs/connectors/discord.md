@@ -55,7 +55,7 @@ The Paperclip task is authoritative. If a thread and the task ever disagree, the
 
 Reach is decided in Discord, not Paperclip. The bot can see the channels its role can see on the one server you installed it on, and there is no channel picker in Paperclip. To limit where people can reach the agent, restrict the bot's role to specific channels in Discord's channel permissions.
 
-Anyone who can mention the bot in a channel it can see can start agent work. Treat channel access as the control.
+Provider channel or repository access determines where a message can reach the integration; it does not by itself authorize agent work. Paperclip also checks the sender's linked identity and company membership. Linked users must be active non-viewer members. Unlinked senders depend on the connection's **Allow unlinked people** setting and any sponsor requirements. Review these controls before inviting people to use the agent.
 
 The connection's identity and **Any agent** / **Just agents I pick** settings work as for any connector; see [How connector access works](access-model.md). Note that the answering agent is set on the connection itself.
 

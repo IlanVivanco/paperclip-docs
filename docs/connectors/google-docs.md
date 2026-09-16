@@ -5,6 +5,8 @@ seo_description: Let agents read Google Docs documents and optionally update the
 
 # Google Docs
 
+> **Warning:** New Google connector setup is paused while Paperclip completes Google verification, as [announced on September 16, 2026](https://x.com/papercliping/status/2100341600098693205). The setup instructions below are reference material, not a workaround for the pause. Check that announcement for updates or contact [support@paperclip.ing](mailto:support@paperclip.ing) before starting a new connection.
+
 Agents can read the text and structure of Google Docs documents, and on an editing connection update them.
 
 > **Warning:** Google Docs needs Google Workspace Developer Preview registration before it will authorize. Google must register the Workspace email that signs in, and the Cloud project that owns the OAuth client if you bring your own. Apply first at [Google Workspace Developer Preview](https://developers.google.com/workspace/preview).
@@ -63,9 +65,7 @@ Expect the heading you can see for yourself.
 
 If you want to confirm editing, do it on a scratch document you created for the purpose, not a live one.
 
-> **Note:** Illustrative task, not a recorded test result.
-
-> **Note:** Illustrative task, not a recorded test result. Substitute a document title from your own account.
+> **Note:** Illustrative task, not a recorded test result. Substitute a document URL or ID you can open and a value you already know.
 
 ## Troubleshooting and limitations
 

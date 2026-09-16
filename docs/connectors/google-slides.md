@@ -5,6 +5,8 @@ seo_description: Let agents read Google Slides presentations and optionally upda
 
 # Google Slides
 
+> **Warning:** New Google connector setup is paused while Paperclip completes Google verification, as [announced on September 16, 2026](https://x.com/papercliping/status/2100341600098693205). The setup instructions below are reference material, not a workaround for the pause. Check that announcement for updates or contact [support@paperclip.ing](mailto:support@paperclip.ing) before starting a new connection.
+
 Agents can read the slides and content of a Google Slides presentation, and on an editing connection update it.
 
 > **Warning:** Google Slides needs Google Workspace Developer Preview registration before it will authorize. Google must register the Workspace email that signs in, and the Cloud project that owns the OAuth client if you bring your own. Apply first at [Google Workspace Developer Preview](https://developers.google.com/workspace/preview).
@@ -43,7 +45,7 @@ Reviewed operations:
 
 Be realistic about what editing means here. The whole write surface is one operation, `update-presentation`, which applies changes through the Slides API rather than driving the Slides editor. Two consequences follow, and only the first is a capability statement:
 
-- **What it can express** is whatever the Slides API accepts. We have not enumerated that request set against this connector, so check the operation's own schema on the **Permissions** tab before planning work that depends on a specific kind of edit.
+- **Supported edits depend on the connector's operation schema.** Do not assume the operation exposes every Slides API request. Inspect its current input schema before relying on a particular edit.
 - **What it cannot supply is design judgement.** Even where the API accepts a change, an agent placing elements without seeing the result will not arrange a slide the way a person would. Treat agent edits as a first draft that someone opens in Slides afterwards.
 
 > **Note:** The connector's guidance is that presentation updates should be approved. Leave `update-presentation` on **Ask first**.

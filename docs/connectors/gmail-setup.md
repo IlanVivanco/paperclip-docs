@@ -5,6 +5,8 @@ seo_description: Get Google Developer Preview access, connect Gmail with the rea
 
 # Set up the Gmail connector
 
+> **Warning:** New Google connector setup is paused while Paperclip completes Google verification, as [announced on September 16, 2026](https://x.com/papercliping/status/2100341600098693205). The setup instructions below are reference material, not a workaround for the pause. Check that announcement for updates or contact [support@paperclip.ing](mailto:support@paperclip.ing) before starting a new connection.
+
 Two phases: get Google to register you for Developer Preview, then connect. The first phase is the slow one and happens entirely at Google.
 
 For what the connector can and cannot do once it is connected, see [Gmail](gmail.md).
@@ -51,7 +53,7 @@ Setup asks for access first, then the credential.
 1. Select **Connectors** in the sidebar.
 2. Find **Gmail** and select **Connect**.
 3. On the **Access** step, choose the identity and which agents may use the connection:
-   - Under **Identity**, **Just me** is the usual answer for a mailbox — agents use the credential only on runs where you are the responsible person. An **Organization identity** makes one mailbox available on runs started by anyone in its **human audience**, which you set on the connection's identity card as either **Any human in the company** or **Humans I pick** with a named list. Narrow that audience for a mailbox: leaving it open means any colleague's run can read the inbox. It requires the connection-manager permission and suits a genuinely shared inbox, not a person's mail.
+   - Under **Which humans can use this credential?**, **Just me** is the usual answer for a mailbox — agents use the credential only on runs where you are the responsible person. An **Organization identity** makes one mailbox available on runs started by anyone in its **human audience**, which you set on the connection's identity card as either **Any human in the company** or **Humans I pick** with a named list. Narrow that audience for a mailbox: leaving it open means any colleague's run can read the inbox. It requires the connection-manager permission and suits a genuinely shared inbox, not a person's mail.
    - Under **Which agents can use this connection**, choose **Just agents I pick** and name them. A mailbox is not something to hand to every agent by default.
 4. Choose the capability group from step 3 and the setup path:
    - **Connect with Paperclip** — Paperclip's managed Google client. Offered only when the instance is enrolled with Paperclip Cloud and Cloud advertises the Gmail profile.

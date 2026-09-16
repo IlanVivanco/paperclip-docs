@@ -23,7 +23,7 @@ Two decisions come before credentials, and getting either wrong means starting o
 | Group | What it covers |
 | --- | --- |
 | **Minimal** | The smallest tool catalog — core workspace, collection, environment, mock and spec tools |
-| **Code** | Adds tools for generating client code from API definitions |
+| **Code** | A toolset focused on generating code from API definitions |
 | **Full** | The complete Postman API tool catalog |
 
 > **Warning:** **Minimal is a smaller catalog, not a read-only one.** Postman's own documentation describes it that way, and its published minimal list includes `createCollection`, `createWorkspace`, `putCollection`, `updateWorkspace`, `publishMock`, `duplicateCollection` and `runCollection`. Choosing Minimal does not stop an agent creating, changing, publishing or running things. If you want a read-only posture, that comes from Paperclip's action settings, not from the group.
@@ -48,9 +48,9 @@ The region and group are fixed on the connection. To change either, make a new c
 
 Workspace, collection, and environment reach comes from Postman: the connection sees what the authenticating account or key can see. Paperclip has no workspace picker, so narrow access by authenticating with an account that has access to fewer workspaces.
 
-> **Warning:** Postman environments commonly hold API keys, tokens, and passwords as variables. An agent that can read an environment can read those values. The controls that actually help here are authenticating with a limited account and keeping secrets out of shared Postman environments — **not** the capability group, which does not restrict reads.
+> **Warning:** Postman environments commonly hold API keys, tokens, and passwords as variables. An agent that can read an environment can read those values. The controls that actually help here are authenticating with a limited account and keeping secrets out of shared Postman environments — alongside the discovered tool list and Paperclip's action permissions.
 
-On capability: every group, Minimal included, contains write-capable tools that change collections and workspaces colleagues rely on. The **Code** group adds client-code generation — it produces code for you to review rather than running anything.
+Toolsets differ by purpose; do not assume they form progressively broader permission tiers. Inspect the discovered actions for your selected endpoint. Review generated code before using it, and set permissions for each available action separately.
 
 One tool deserves separate attention: `runCollection` is present in the Minimal list, and running a collection means issuing its requests against whatever the collection targets. Decide explicitly whether an agent should be able to do that, and set it to **Off** if not.
 
@@ -78,7 +78,7 @@ Compare the collection list against what you see in Postman. This confirms the c
 | A workspace is missing | The authenticating account cannot see it | Grant access in Postman; no reconnect needed |
 | **Needs attention** | The API key was revoked, or the sign-in expired | Select **Reconnect** |
 
-Limitations: one region and one capability group per connection. No workspace selection in Paperclip. No capability group is read-only. Postman's own plan limits apply.
+Limitations: one region and one capability group per connection. No workspace selection in Paperclip. Do not infer read-only access from a capability group's name. Postman's own plan limits apply.
 
 ## Related guides
 

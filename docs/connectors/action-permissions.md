@@ -60,14 +60,14 @@ The refresh reports how many actions it discovered — *"Found 24 actions"* — 
 
 | How the connection was set up | A newly discovered or changed action |
 | --- | --- |
-| **Managed — "Connect with Paperclip"** | Is held back. It appears in a **New** group reading *"New actions wait, switched off, until you turn them on,"* and stays unusable until you turn it on |
+| **Managed — "Connect with Paperclip"** | New or changed actions are normally quarantined on refresh. Where safe defaults are enabled, read-classified actions are exempt. Check the resulting action list |
 | **Your own credential or OAuth client** — the ordinary catalog setup for most connectors | Becomes **active** on discovery. It is then governed by the action policies already in force for that connection, not held in a separate review queue |
 | **A custom MCP server you pasted a URL for** | Becomes active on discovery, as above |
-| **A Paperclip example connection** | Is held back, as in the managed case |
+| **A Paperclip example connection** | Safe defaults exempt read-classified actions; new or changed write and destructive actions are held back |
 
-For the ordinary case, the wizard projects the app's action defaults into policies when you finish setup, rather than using a review queue as the access state. That is a deliberate design choice, not an oversight — but it does mean **you should not assume a refresh can only ever reduce what an agent can do.**
+For the ordinary case, the wizard projects the app's action defaults into policies when you finish setup, rather than using a review queue as the access state. This means **you should not assume a refresh can only ever reduce what an agent can do.**
 
-> **Warning:** If you need the guarantee that nothing new is ever usable without your approval, you need a managed connection. On a self-credentialed connection, review the action list after refreshing a provider that has added tools, and set anything you do not want to **Off**.
+> **Warning:** A managed connection is not an unconditional guarantee that every new action requires approval. Refresh behavior depends on the connection's configuration and the action's classification. Review the refreshed list and set unwanted actions to **Off**.
 
 Two details worth knowing wherever held-back review does apply: an action you had already set to **Off** stays off rather than reappearing for review, and a connection configured for safe defaults exempts actions classified **read**, holding back only writes and destructive actions.
 

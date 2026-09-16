@@ -5,6 +5,8 @@ seo_description: Let agents search and read Drive files, and optionally create o
 
 # Google Drive
 
+> **Warning:** New Google connector setup is paused while Paperclip completes Google verification, as [announced on September 16, 2026](https://x.com/papercliping/status/2100341600098693205). The setup instructions below are reference material, not a workaround for the pause. Check that announcement for updates or contact [support@paperclip.ing](mailto:support@paperclip.ing) before starting a new connection.
+
 Agents can search Drive, read file metadata and content, and on a creating connection add new files or copy existing ones.
 
 Deleting, moving, renaming, and changing who a file is shared with are **not** exposed by this connector, in either capability group.
