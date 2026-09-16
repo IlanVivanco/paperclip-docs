@@ -1,6 +1,6 @@
 ---
 seo_title: Anthropic Connector
-seo_description: Give agents Claude model access with a Claude subscription or an Anthropic API key. Runtime requirements, assigning the credential, a bounded test run, and troubleshooting.
+seo_description: Give agents Claude model access with a subscription or an Anthropic API key. Runtime requirements, credential assignment, a test run, and fixes.
 ---
 
 # Anthropic

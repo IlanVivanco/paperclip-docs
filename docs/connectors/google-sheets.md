@@ -1,6 +1,6 @@
 ---
 seo_title: Google Sheets Connector
-seo_description: Two ways to connect Google Sheets — a Google sign-in, or sharing named spreadsheets with the Paperclip robot account. Capability groups, a read test, and troubleshooting.
+seo_description: Two ways to connect Google Sheets: a Google sign-in, or sharing named spreadsheets with the Paperclip robot account. Groups, a read test, and fixes.
 ---
 
 # Google Sheets

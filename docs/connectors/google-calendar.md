@@ -1,6 +1,6 @@
 ---
 seo_title: Google Calendar Connector
-seo_description: Let agents read calendars and availability, and optionally create, update, and delete events. Capability groups, invitation side effects, a read test, and troubleshooting.
+seo_description: Let agents read calendars and availability, and optionally manage events. Capability groups, invitation side effects, and a safe read test.
 ---
 
 # Google Calendar

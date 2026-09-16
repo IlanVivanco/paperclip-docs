@@ -1,6 +1,6 @@
 ---
 seo_title: Google Workspace Search Connector
-seo_description: One read-only search across Gmail, Drive, Calendar, and Chat. When to use it instead of the individual connectors, what it requests, a test, and troubleshooting.
+seo_description: One read-only search across Gmail, Drive, Calendar, and Chat. When to use it instead of the single-app connectors, what it requests, and a test.
 ---
 
 # Google Workspace Search

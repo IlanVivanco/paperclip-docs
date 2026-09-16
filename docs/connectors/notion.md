@@ -1,6 +1,6 @@
 ---
 seo_title: Notion Connector
-seo_description: Connect Notion so agents can search, read, and update the pages and databases you share with the connection. Setup, access scope, a read-only test, and troubleshooting.
+seo_description: Connect Notion so agents can search, read, and update the pages you share. Setup, access scope, a read-only test, and troubleshooting.
 ---
 
 # Notion

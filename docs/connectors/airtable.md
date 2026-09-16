@@ -1,91 +1,61 @@
 ---
 seo_title: Airtable Connector
-seo_description: Spreadsheet-database hybrid for structured team data. Agents work with the bases your Airtable sign-in can reach, under permissions you set.
+seo_description: Let agents read and update Airtable records. Base and table reach, enterprise allowlisting, a read test that changes nothing, and troubleshooting.
 ---
 
 # Airtable
 
-Spreadsheet-database hybrid for structured team data. Agents work with the bases your Airtable sign-in can reach.
+Agents can work with your Airtable bases — finding records, reading fields, and creating or updating rows.
 
-## What this connector does
+## Before you connect
 
-Airtable is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+- An Airtable account with access to the bases you want agents to use.
+- On an enterprise plan, an administrator may need to allowlist the client before anyone can connect. If authorization is refused or stays pending, that is the usual cause.
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `airtable` |
-| Category | Data and analytics |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
-| Provider research | wave 1, auth mode `dcr`, verified 2026-08-26 |
+## Connect Airtable
 
-## Before you start
+1. Open **Connectors** and select **Airtable**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Sign in with Airtable** and complete browser sign-in, choosing what to share when Airtable asks.
 
-- An Airtable account; enterprise administrators may need to allowlist the client.
+Paperclip registers its client with Airtable automatically, so there is nothing to set up in a developer console.
 
-## Supported setup paths
+## Choose access
 
-Open **Connectors**, find **Airtable**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+Base and table reach comes from Airtable: what the authorizing account can open, plus whatever you selected at Airtable's authorization screen. Paperclip has no base picker of its own, so narrow it there or by authorizing with an account that belongs to fewer workspaces.
 
-### Sign in with Airtable
+Airtable bases often mix reference data with operational records, and an agent cannot tell the difference. Record writes and deletions matter:
 
-Use browser sign-in for the provider-hosted MCP server.
+> **Warning:** Deleting a record in Airtable is not easily undone, and an agent updating the wrong field can be hard to spot in a large base. Keep writes on **Ask first** and deletions **Off** until you have watched the agent work. Airtable's own revision history is the recovery path.
 
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.airtable.com/mcp`
+Reads can stay **Allowed**. See [Set action permissions](action-permissions.md).
 
-Provider console: [provider docs](https://support.airtable.com/articles/9897799762-using-the-airtable-mcp-server)
-
-## Accounts and access
-
-Airtable follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Airtable's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Airtable
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+In the "Customers" base, find the record for Northwind and tell me its status and owner fields. Do not change anything.
 ```
 
-## Check that it works
+Compare against the base. Reading one known record confirms the credential, the base sharing, and the agent's permission without altering data.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result. Substitute a base and record from your own account.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Authorization is refused or stays pending | An enterprise administrator has not allowlisted the client | Ask an Airtable administrator to allow it |
+| A base is missing | It was not shared at the authorization screen, or the account cannot open it | Reconnect and include it, or get access in Airtable |
+| A field is missing from results | Field-level permissions, or the field type is not exposed | Check the field in Airtable |
+| A write is rejected | Field validation or a locked view in Airtable | Check the field's type and any locks |
+| A record was changed unexpectedly | A write action was set to **Allowed** | Restore from Airtable's revision history, then tighten the settings |
+| **Needs attention** | The grant was revoked in Airtable | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one Airtable account per connection. No base or table filter inside Paperclip. Airtable's API rate limits apply, so large scans are slow.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [Google Sheets](google-sheets.md) — for spreadsheet data, with a stricter scoping option.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Airtable provider documentation](https://support.airtable.com/articles/9897799762-using-the-airtable-mcp-server)
+- [How connector access works](access-model.md)
+- [Using the Airtable MCP server](https://support.airtable.com/articles/9897799762-using-the-airtable-mcp-server)

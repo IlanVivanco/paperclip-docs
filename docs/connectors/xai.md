@@ -1,6 +1,6 @@
 ---
 seo_title: Grok Connector
-seo_description: Give agents xAI Grok model access with a subscription sign-in or an xAI API key. Runtime requirements, assigning the credential, a bounded test, and troubleshooting.
+seo_description: Give agents xAI Grok model access with a subscription or an API key. The Grok adapter requirement, credential assignment, a test run, and fixes.
 ---
 
 # Grok

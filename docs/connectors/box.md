@@ -1,6 +1,6 @@
 ---
 seo_title: Box Connector
-seo_description: Let agents search and read Box content. The Box administrator work required first, enterprise restrictions, a read test, and why content can be missing after a clean setup.
+seo_description: Let agents search and read Box content. The Box administrator work required first, enterprise limits, a read test, and troubleshooting.
 ---
 
 # Box

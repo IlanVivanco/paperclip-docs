@@ -1,92 +1,67 @@
 ---
 seo_title: Mixpanel Connector
-seo_description: Product analytics for user and event behaviour. Agents work with the events and reports your Mixpanel account can reach, under permissions you set.
+seo_description: Let agents query Mixpanel product analytics. Project and region selection, the beta caveat, a small bounded test, and telling errors apart.
 ---
 
 # Mixpanel
 
-Product analytics for user and event behaviour. Agents work with the events and reports your Mixpanel account can reach.
+Agents can query your Mixpanel product analytics — running reports, checking event volumes, and answering questions about product usage.
 
-## What this connector does
+> **Warning:** Mixpanel's hosted server is in beta. Expect the available tools and their behaviour to change, and re-read the connection's action list after provider changes rather than assuming last month's surface.
 
-Mixpanel is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+## Before you connect
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `mixpanel` |
-| Category | Data and analytics |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
-| Provider research | wave 2, auth mode `dcr`, verified 2026-08-26 |
+- A Mixpanel account with access to the project you want agents to query.
+- If your organization uses Mixpanel's EU or other regional residency, make sure the account you sign in with is the one in that region — data residency determines where the project lives.
 
-## Before you start
+## Connect Mixpanel
 
-- A Mixpanel account; the hosted MCP server is currently beta.
-- This provider's hosted MCP server is currently beta or preview.
+1. Open **Connectors** and select **Mixpanel**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Sign in with Mixpanel** and complete browser sign-in, choosing the project when prompted.
 
-## Supported setup paths
+Paperclip registers its client automatically, so there is nothing to configure in a developer console.
 
-Open **Connectors**, find **Mixpanel**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+## Choose access
 
-### Sign in with Mixpanel
+Project reach is the authorizing Mixpanel account's, subject to Mixpanel's own project permissions. There is no project picker in Paperclip beyond what Mixpanel asks during sign-in.
 
-Use browser sign-in for the provider-hosted MCP server.
+This connector is mostly about reading. The thing to manage is not destruction but cost and volume:
 
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.mixpanel.com/mcp`
+> **Note:** Analytics queries over long date ranges and high-volume events are slow and can hit Mixpanel's query limits. An agent asking an open-ended question can produce a far larger query than a person would. Give agents bounded questions — a named report, a specific window — rather than "analyze our usage".
 
-Provider console: [provider docs](https://mixpanel.com/blog/mixpanel-mcp-server/)
+If the connection exposes anything that writes — saving reports, changing project configuration — treat it as a write and keep it behind approval. See [Set action permissions](action-permissions.md).
 
-## Accounts and access
+Event data commonly contains user identifiers and properties. An agent querying Mixpanel can surface those into a task transcript, so prefer **Just agents I pick**.
 
-Mixpanel follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
+## Try it
 
-## Actions
-
-Mixpanel's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+Ask for something small whose answer you already know:
 
 ```txt
-You             Paperclip               Mixpanel
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+How many times did the "signup_completed" event fire in Mixpanel in the last 7 days?
 ```
 
-## Check that it works
+Compare against the same figure in the Mixpanel UI. A single event over a short window is cheap and unambiguous, which makes it a good first check.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result. Substitute an event name from your own project.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Authorization succeeds but the project looks empty | The wrong project was selected, or the account is in a different data region | Reconnect and select the intended project |
+| A query fails immediately with an authorization error | The credential or the account's project permission | Check the account's access in Mixpanel |
+| A query fails after running for a while | A query or rate limit, not authentication | Narrow the date range or the event set, then retry |
+| Numbers disagree with the Mixpanel UI | Different date range, timezone, or filters than the UI report | Ask the agent which window and filters it used |
+| A tool disappeared or changed | The hosted server is in beta | Use **Refresh actions** and re-check the list |
+| **Needs attention** | The grant expired or was revoked | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one project per connection. Beta provider surface. Query cost and rate limits are Mixpanel's.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [PostHog](posthog.md) — another product analytics connector, with project pinning and read-only mode.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Mixpanel provider documentation](https://mixpanel.com/blog/mixpanel-mcp-server/)
+- [How connector access works](access-model.md)
+- [Mixpanel MCP server](https://mixpanel.com/blog/mixpanel-mcp-server/)

@@ -1,6 +1,6 @@
 ---
 seo_title: Slack Connector
-seo_description: Two independent Slack setups — Slack as an agent tool, or Slack as a channel people use to reach an agent. Which to pick, how to set up each, and troubleshooting.
+seo_description: Two independent Slack setups: Slack as an agent tool, or as a channel people use to reach an agent. Which to pick, how to set up each, and fixes.
 ---
 
 # Slack

@@ -1,6 +1,6 @@
 ---
 seo_title: Google Drive Connector
-seo_description: Let agents search and read Drive files, and optionally create or copy them. Deleting and sharing are not exposed. Capability groups, file scope, a read test, and troubleshooting.
+seo_description: Let agents search and read Drive files, and optionally create or copy them. Deleting and sharing are not exposed. Groups, scope, and a read test.
 ---
 
 # Google Drive

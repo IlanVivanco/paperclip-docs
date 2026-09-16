@@ -1,6 +1,6 @@
 ---
 seo_title: AgentMail Connector
-seo_description: Give a Paperclip agent its own email inbox with AgentMail. Each incoming conversation becomes a task. Setup, routing, sender restrictions, and troubleshooting.
+seo_description: Give a Paperclip agent its own email inbox with AgentMail. Each conversation becomes a task. Setup, routing, sender limits, and troubleshooting.
 ---
 
 # AgentMail

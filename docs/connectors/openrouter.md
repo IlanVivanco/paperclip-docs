@@ -1,6 +1,6 @@
 ---
 seo_title: OpenRouter Connector
-seo_description: Give agents model access through OpenRouter with an API key. Runtime and model-prefix requirements, assigning the credential, a bounded test, and troubleshooting.
+seo_description: Give agents model access through OpenRouter with an API key. Runtime and model-prefix requirements, assignment, a bounded test, and fixes.
 ---
 
 # OpenRouter

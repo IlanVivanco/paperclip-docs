@@ -1,91 +1,63 @@
 ---
 seo_title: Miro Connector
-seo_description: Shared online whiteboards for diagrams, planning, and workshops. Agents work with the boards your Miro account can reach, under permissions you set.
+seo_description: Let agents read and update Miro boards. Team and board reach, what board objects are actually available, a read test, and troubleshooting.
 ---
 
 # Miro
 
-Shared online whiteboards for diagrams, planning, and workshops. Agents work with the boards your Miro account can reach.
+Agents can work with your Miro boards — finding them, reading their contents, and adding or updating items.
 
-## What this connector does
+## Before you connect
 
-Miro is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+- A Miro account with access to the teams and boards you want agents to use.
+- On enterprise plans, an administrator may restrict which third-party MCP clients are allowed. If authorization is refused, that is the usual cause.
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `miro` |
-| Category | Productivity and collaboration |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
-| Provider research | wave 1, auth mode `dcr`, verified 2026-08-26 |
+## Connect Miro
 
-## Before you start
+1. Open **Connectors** and select **Miro**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Sign in with Miro** and complete browser sign-in, choosing the team when Miro asks.
 
-- A Miro account; enterprise administrators may restrict third-party MCP clients.
+Paperclip registers its client automatically, so there is nothing to configure in a developer console.
 
-## Supported setup paths
+## Choose access
 
-Open **Connectors**, find **Miro**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+Reach is the authorizing Miro account's: the teams it belongs to and the boards it can open. There is no board picker in Paperclip.
 
-### Sign in with Miro
+Be realistic about what an agent can do with a board. Miro's connection works with structured board objects — the kinds of item the API models, such as sticky notes, text, shapes, and frames, along with board metadata. It is not the Miro canvas:
 
-Use browser sign-in for the provider-hosted MCP server.
+- An agent reads objects and their content and position. It does not "see" the board the way a person does, so spatial meaning conveyed only by layout may be lost.
+- Freehand drawings, embedded content, and interactive widgets are not equivalent to structured items.
+- Anything an agent adds will be placed programmatically, and will need a person to tidy it if placement matters.
 
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.miro.com/`
+Writes land on a board colleagues may be using at that moment. Keep them on **Ask first** while you learn how the agent behaves. See [Set action permissions](action-permissions.md).
 
-Provider console: [provider docs](https://help.miro.com/hc/en-us/articles/31625301583890-How-to-enable-Miro-s-MCP-Server-user-guide)
-
-## Accounts and access
-
-Miro follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Miro's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Miro
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Read the Miro board "Q3 retro" and list the sticky notes grouped by their frame. Do not add or move anything.
 ```
 
-## Check that it works
+Compare against the board. Reading a board you can open yourself confirms the credential, the team, and the agent's permission without rearranging anyone's work.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result. Substitute a board name from your own team.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Authorization is refused | An enterprise administrator restricts third-party MCP clients | Ask a Miro administrator to allow it |
+| A board is not found | The authorizing account cannot open it, or it belongs to another team | Share the board, or reconnect selecting the right team |
+| Board content seems incomplete | Freehand, embedded, or widget content is not structured board objects | Expected; those are not exposed as items |
+| The agent misunderstood the board's layout | Meaning conveyed by spatial arrangement is not carried by the object data | Give the agent explicit context rather than relying on layout |
+| An item appeared in an odd place | Programmatic placement | Move it in Miro, and keep writes on **Ask first** |
+| **Needs attention** | The grant was revoked | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one Miro account per connection. No board filter inside Paperclip. Structured board objects only.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Miro provider documentation](https://help.miro.com/hc/en-us/articles/31625301583890-How-to-enable-Miro-s-MCP-Server-user-guide)
+- [How connector access works](access-model.md)
+- [Verify a connector and fix a broken one](verify-and-troubleshoot.md)
+- [Enabling Miro's MCP server](https://help.miro.com/hc/en-us/articles/31625301583890-How-to-enable-Miro-s-MCP-Server-user-guide)

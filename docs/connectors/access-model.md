@@ -72,10 +72,11 @@ Every discovered action is also classified by risk, which is what "set all write
 
 Classification is deliberately conservative for providers with broad, fast-moving catalogs. PostHog is the clearest example: an unannotated PostHog tool is treated as a **write**, not a read, because silently assuming "read" for an unknown tool is the failure mode worth avoiding. Its `exec` tool is hard-classified **destructive**.
 
-Two providers have limits that no permission setting can widen:
+One family of connectors has a limit that no permission setting can widen:
 
-- **Gmail** permanently blocks sending, trashing, spam-marking, and label mutation. The connector reads and searches mail and can create a draft; there is no supported path to send mail. See [Gmail](gmail.md).
-- **Google Workspace** connectors are limited to the reviewed read and write tools of the capability group you connected. A tool the provider adds in preview that is not on the reviewed list is denied rather than allowed by default.
+**Google Workspace** connectors — Gmail, Drive, Docs, Sheets, Slides, Calendar, Chat, People, and Workspace Search — are limited to the reviewed read and write operations of the capability group you connected. A tool Google adds that is not on the reviewed list is switched off rather than allowed by default.
+
+This is why [Gmail](gmail.md) cannot send. Its draft group requests Google's `gmail.compose` scope, which does permit sending at Google's end, but the reviewed write list for that group contains exactly one operation, `create-draft`. The credential could send; the connector will not offer it. The same mechanism is why [Google Drive](google-drive.md) can copy and create files but has no delete or share operation.
 
 [Set action permissions](action-permissions.md) is the how-to.
 

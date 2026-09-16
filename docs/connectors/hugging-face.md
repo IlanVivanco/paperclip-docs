@@ -1,93 +1,69 @@
 ---
 seo_title: Hugging Face Connector
-seo_description: Public hub for open machine-learning models, datasets, and demos. Agents search models, datasets, and Spaces through a read-only sign-in.
+seo_description: Let agents search Hugging Face models, datasets, and papers. What discovery covers, why it does not run or host models, a search test, and troubleshooting.
 ---
 
 # Hugging Face
 
-Public hub for open machine-learning models, datasets, and demos. Agents search models, datasets, and Spaces. The sign-in asks for a read-only scope, which makes this the shortest connector to try first.
+Agents can search the Hugging Face Hub — finding models, datasets, and papers, and reading their documentation and metadata.
 
-## What this connector does
+> **Note:** This is discovery, not execution. Finding a model through this connector does not run it, download it into a workspace, deploy it, or give an agent inference against it. Running a model is a separate matter from reading about one.
 
-Hugging Face is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+If you want an agent to *use* a model, that is a model provider connection — see [Anthropic](anthropic.md), [OpenAI](openai.md), [OpenRouter](openrouter.md), or [Grok](xai.md).
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `hugging-face` |
-| Category | AI tools |
-| Transport | `mcp_remote` |
-| Highest risk tier | S2 — account data with limited blast radius. |
-| Provider research | wave 1, auth mode `dcr_cimd`, verified 2026-08-26 |
-
-## Before you start
+## Before you connect
 
 - A Hugging Face account.
 
-## Supported setup paths
+That is genuinely all for public content. Connect with an account that belongs to your organization if agents should also see private repositories; reach follows the account.
 
-Open **Connectors**, find **Hugging Face**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+## Connect Hugging Face
 
-### Sign in with Hugging Face
+1. Open **Connectors** and select **Hugging Face**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Sign in with Hugging Face** and complete browser sign-in.
 
-Use browser sign-in for the provider-hosted MCP server.
+Paperclip registers its client automatically, so there is nothing to configure in a developer console.
 
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Risk tier: S2
-- Endpoints: MCP server `https://huggingface.co/mcp?login&gradio=none`
-- Requested scopes:
-  - `read-mcp`
+## Choose access
 
-Provider console: [provider docs](https://huggingface.co/docs/hub/agents-mcp)
+Two tiers of content, and the difference is worth stating:
 
-## Accounts and access
+| Content | Who can see it |
+| --- | --- |
+| Public models, datasets, and papers | Anyone. Connecting adds no privileged access to these |
+| Private or gated repositories | Only if the authorizing account already has access |
 
-Hugging Face follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
+Because most of the value here is public content, this is one of the lower-risk connectors to give an agent. The exception is an account with access to private organization repositories — that account's reach becomes the agent's.
 
-## Actions
+Most operations are reads and can stay **Allowed**. If the connection exposes anything that writes to the Hub, treat it as you would any write. See [Set action permissions](action-permissions.md).
 
-Hugging Face's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
+> **Note:** The connection targets the Hub's own tools. It does not expose the interactive applications hosted on Spaces.
 
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Hugging Face
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Search Hugging Face for recent text embedding models under 500M parameters and summarize the top three, including their licences.
 ```
 
-## Check that it works
+Expect results you can check on the Hub. Licence is a useful thing to ask for, because it is exactly the detail people skip when picking a model.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| A private repository is not found | The authorizing account does not have access | Grant access on the Hub, or connect with an account that has it |
+| A gated model's details are unavailable | Gated repositories require accepting terms on the Hub | Accept the terms with the authorizing account |
+| An agent claims it can run a model it found | It cannot — this connector is discovery only | Use a model provider connection |
+| Results seem stale | The Hub changes constantly; the agent read what was returned at the time | Re-run the search |
+| **Needs attention** | The grant was revoked | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: discovery and metadata only. No inference, no hosting, no Spaces applications. Private content requires the account to already have access.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [Anthropic](anthropic.md), [OpenAI](openai.md), [OpenRouter](openrouter.md), [Grok](xai.md) — connections that actually run models.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Hugging Face provider documentation](https://huggingface.co/docs/hub/agents-mcp)
+- [Hugging Face MCP documentation](https://huggingface.co/docs/hub/agents-mcp)

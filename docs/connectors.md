@@ -7,7 +7,7 @@ seo_description: Every service Paperclip can connect, grouped by what it is for,
 
 A **connector** is a saved connection to an outside service: a Gmail mailbox, a GitHub organization, a Notion workspace, a PostHog project. You set one up once, decide who and what it is for, and Paperclip carries that decision into every run.
 
-> **Warning:** Draft against an unreleased snapshot. These pages document the connector surface at Paperclip App commit `13368c51` (13 September 2026). The most recent tagged release, [v2026.831.1](reference/changelog.md), shipped a much smaller catalog. Nothing here tells you what your installed version can do — open **Connectors** in your own instance and compare.
+> **Warning:** Draft against an unreleased snapshot. These pages document the connector surface at Paperclip App commit `ae063299` (15 September 2026). The most recent tagged release, [v2026.831.1](reference/changelog.md), shipped a much smaller catalog. Nothing here tells you what your installed version can do — open **Connectors** in your own instance and compare.
 
 ## Start here
 
@@ -67,10 +67,10 @@ Find an app and open its setup guide.
 | --- | --- | --- |
 | [Asana](connectors/asana.md) | Work management for team projects, tasks, and goals. Agents work with the projects and tasks your Asana app can reach. | Your own OAuth app |
 | [Jira](connectors/jira.md) | Atlassian's issue tracker for software teams. Agents work with the issues on the Jira site you connect. | Sign in with Jira |
-| [Linear](connectors/linear.md) | Issue tracking for product and engineering teams. Agents create, update, and read issues, scoped to the workspace, teams, and projects you pick. | Your own OAuth app |
+| [Linear](connectors/linear.md) | Issue tracking for product and engineering teams. Agents create, update, and read issues across whatever the authorizing Linear account can reach. | Your own OAuth app |
 | [Miro](connectors/miro.md) | Shared online whiteboards for diagrams, planning, and workshops. Agents work with the boards your Miro account can reach. | Sign in with Miro |
 | [Todoist](connectors/todoist.md) | Task lists for individuals and small teams. Agents work with the tasks and projects in your Todoist account. | Sign in with Todoist |
-| [Zapier](connectors/zapier.md) | Automation service that wires thousands of apps together. You choose the actions in Zapier and paste one generated URL, so the agent gets exactly the actions you put in it and nothing else. | No credential |
+| [Zapier](connectors/zapier.md) | Automation service that wires thousands of apps together. You choose the actions in Zapier and paste one generated URL, so the agent gets the actions you put in it. Treat that URL as a secret — its token is part of the address. | Generated MCP URL |
 
 ### Communication
 
@@ -78,7 +78,7 @@ Find an app and open its setup guide.
 | --- | --- | --- |
 | [AgentMail](connectors/agentmail.md) | Email inboxes built for software agents. Gives an agent its own inbox and turns each email conversation into a Paperclip task. Behind the **Chat connectors** setting, like the chat channels. | API key |
 | [Resend](connectors/resend.md) | Transactional email delivery for developers. Agents work with the sending domains and delivery records your Resend account can reach. | Sign in with Resend |
-| [Slack](connectors/slack.md) | Team messaging. Two separate purposes: as an app integration agents read and post in the workspace and channels you pick; as a chat channel people work with one agent from Slack. | Your own OAuth app · Provider app registration |
+| [Slack](connectors/slack.md) | Team messaging. Two separate purposes: as an app integration agents read and post in the workspace, limited by the authorizing account's channel access; as a chat channel people work with one agent from Slack. | Your own OAuth app · Provider app registration |
 
 ### Developer tools
 
@@ -89,7 +89,7 @@ Find an app and open its setup guide.
 | [Netlify](connectors/netlify.md) | Hosting and deploys for web front ends. Agents work with the teams and sites your Netlify account can reach. | Sign in with Netlify |
 | [PagerDuty](connectors/pagerduty.md) | On-call scheduling and incident response. Agents work with the incidents, services, and schedules your token can reach. Choose the US or EU service region when you connect. | API key |
 | [Postman](connectors/postman.md) | API development and testing workspace. Agents work with the collections and APIs your Postman account can reach. Pick how much access to grant: read-only, code generation, or full write. | Sign in with Postman · API key |
-| [Sentry](connectors/sentry.md) | Error and performance monitoring. Agents investigate errors, releases, and production issues in the organizations, projects, and environments you pick. | Sign in with Sentry · Your own OAuth app |
+| [Sentry](connectors/sentry.md) | Error and performance monitoring. Agents investigate errors, releases, and production issues in the Sentry organization you authorize. | Sign in with Sentry · Your own OAuth app |
 
 ### Data and analytics
 
@@ -99,7 +99,7 @@ Find an app and open its setup guide.
 | [ClickHouse](connectors/clickhouse.md) | Columnar database built for analytical queries over very large datasets. Agents query the ClickHouse Cloud service you name. | Sign in with ClickHouse |
 | [Mixpanel](connectors/mixpanel.md) | Product analytics for user and event behaviour. Agents work with the events and reports your Mixpanel account can reach. | Sign in with Mixpanel |
 | [PostHog](connectors/posthog.md) | Product analytics with session replay, feature flags, and experiments. Agents analyse product usage, errors, flags, and experiments. | Sign in with PostHog · API key |
-| [Supabase](connectors/supabase.md) | Hosted Postgres with authentication, storage, and edge functions. Agents work with the projects you pick in your Supabase organization. | Sign in with Supabase · API key |
+| [Supabase](connectors/supabase.md) | Hosted Postgres with authentication, storage, and edge functions. Agents work with the Supabase project you scope the connection to. Use a development project. | Sign in with Supabase · API key |
 
 Google Sheets is the other common home for tabular data; it sits under [Google Workspace](#google-workspace) with the rest of the suite.
 
@@ -109,7 +109,7 @@ Google Sheets is the other common home for tabular data; it sits under [Google W
 | --- | --- | --- |
 | [Box](connectors/box.md) | Enterprise file storage and sharing. Agents work with the files and folders your Box integration can reach. | Your own OAuth app |
 | [Cloudinary](connectors/cloudinary.md) | Image and video hosting with on-the-fly transformation. Agents work with the assets your Cloudinary roles allow. | Sign in with Cloudinary |
-| [Notion](connectors/notion.md) | Workspace for notes, documents, and databases. Agents read and update the pages and databases you share with the connection — and only those. | Sign in with Notion · Your own OAuth app |
+| [Notion](connectors/notion.md) | Workspace for notes, documents, and databases. Agents read and update the pages and databases you share with the connection at Notion's consent screen. | Sign in with Notion · Your own OAuth app |
 | [Webflow](connectors/webflow.md) | Visual website builder with a CMS behind it. Agents work with the sites and collections your Webflow roles allow. | Sign in with Webflow |
 | [Wix](connectors/wix.md) | Website builder and hosting. Agents work with the sites your Wix account can reach. | Sign in with Wix |
 

@@ -1,6 +1,6 @@
 ---
 seo_title: Gmail Connector
-seo_description: Let agents search and read your Gmail, and optionally create drafts for you to review. Sending is not reachable. Setup choices, access scope, a read test, and troubleshooting.
+seo_description: Let agents search and read Gmail, and optionally draft replies. Sending is not reachable. Setup choices, access scope, a read test, and fixes.
 ---
 
 # Gmail

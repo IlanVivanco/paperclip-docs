@@ -1,91 +1,75 @@
 ---
 seo_title: Resend Connector
-seo_description: Transactional email delivery for developers. Agents work with the sending domains and delivery records your Resend account can reach.
+seo_description: Let agents work with Resend email delivery — domains, audiences, and delivery status. Why sending is not a setup test, domain scope, and troubleshooting.
 ---
 
 # Resend
 
-Transactional email delivery for developers. Agents work with the sending domains and delivery records your Resend account can reach.
+Agents can work with your Resend account — checking delivery status, inspecting domains and audiences, and, where you permit it, sending email.
 
-## What this connector does
+> **Warning:** This connector can reach a real sending pipeline. Mail sent from Resend goes to real inboxes, counts against your plan, and affects your domain's sending reputation. Do not verify this connector by sending a message.
 
-Resend is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+Resend is for programmatic email from your own domains. If you want an agent to have its own inbox and treat conversations as tasks, that is [AgentMail](agentmail.md). If you want an agent to read your personal mailbox, that is [Gmail](gmail.md).
 
-| Property | Value |
+## Before you connect
+
+- A Resend account with access to the domains you want agents to work with.
+- Verified sending domains, if sending is in scope. Resend requires domain verification through DNS before it will send from an address, and this connector does not change that.
+
+## Connect Resend
+
+1. Open **Connectors** and select **Resend**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Sign in with Resend** and complete browser sign-in.
+
+Paperclip registers its client automatically, so there is nothing to configure in a developer console.
+
+## Choose access
+
+Reach is the authorizing Resend account's: its domains, audiences, and delivery history.
+
+Separate the operations clearly, because they differ enormously in consequence:
+
+| Operation | Consequence |
 | --- | --- |
-| Catalog slug | `resend` |
-| Category | Communication |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
-| Provider research | wave 1, auth mode `dcr`, verified 2026-08-26 |
+| Reading delivery status, domains, audiences | Nothing leaves the building |
+| Managing audiences and contacts | Changes who is on a mailing list |
+| Sending email | Real mail to real people, immediately and irreversibly |
 
-## Before you start
+> **Danger:** Keep send actions **Off**, or **Ask first** at the very least. An agent that can send mail unsupervised can email your customers. There is no recall, and a mistake affects your domain reputation as well as the recipients.
 
-- A Resend account with access to the relevant domains.
+Audience changes deserve care too — removing a contact loses a subscription record, and adding one may have consent implications. See [Set action permissions](action-permissions.md).
 
-## Supported setup paths
+## Try it
 
-Open **Connectors**, find **Resend**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
-
-### Sign in with Resend
-
-Use browser sign-in for the provider-hosted MCP server.
-
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.resend.com/mcp`
-
-Provider console: [provider docs](https://resend.com/changelog/remote-mcp-server)
-
-## Accounts and access
-
-Resend follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Resend's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+Verify with a read:
 
 ```txt
-You             Paperclip               Resend
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+List the verified sending domains on the Resend account and tell me the delivery status of the most recent email. Do not send anything.
 ```
 
-## Check that it works
+Compare against the Resend dashboard. This confirms the credential and shows you the domain scope at the same time, with nothing delivered.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+If you eventually need to confirm sending, send to an address you personally control, from a domain you own, and only once you have decided the agent should have that capability.
 
-## If something goes wrong
+> **Note:** Illustrative task, not a recorded test result.
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+## Troubleshooting and limitations
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| No domains are listed | The account has none, or none are verified | Add and verify a domain in Resend |
+| Sending is refused | The domain is not verified, or the send action is **Off** | Verify the domain in Resend; check the **Permissions** tab |
+| Mail sends but does not arrive | Recipient filtering, or domain reputation and DNS records | Check Resend's delivery logs and your SPF, DKIM, and DMARC records |
+| An agent emailed someone unexpectedly | A send action was set to **Allowed** | Set it to **Off**, and review what was sent in Resend's logs |
+| Sends are throttled | Resend's plan rate limits | Check your plan limits |
+| **Needs attention** | The grant was revoked | Select **Reconnect** |
 
-## Related
+Limitations: one Resend account per connection. Domain verification is Resend's and cannot be bypassed. Paperclip cannot recall sent mail.
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+## Related guides
+
+- [AgentMail](agentmail.md) — give an agent its own inbox and turn email into tasks.
+- [Gmail](gmail.md) — read an existing mailbox.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Resend provider documentation](https://resend.com/changelog/remote-mcp-server)
+- [Resend remote MCP server](https://resend.com/changelog/remote-mcp-server)

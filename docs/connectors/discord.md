@@ -1,6 +1,6 @@
 ---
 seo_title: Discord Connector
-seo_description: Let people start and continue Paperclip work by mentioning an agent in Discord. Bot setup, required intent and permissions, agent routing, and troubleshooting a silent bot.
+seo_description: Let people start Paperclip work by mentioning an agent in Discord. Bot setup, required intent and permissions, routing, and fixing a silent bot.
 ---
 
 # Discord

@@ -1,6 +1,6 @@
 ---
 seo_title: Jira Connector
-seo_description: Let agents read and update Jira issues through Atlassian's hosted MCP server. Site selection, admin approval, why an authorized connection can still find nothing, and fixes.
+seo_description: Let agents read and update Jira issues through Atlassian's hosted server. Site selection, admin approval, and why a connection can find nothing.
 ---
 
 # Jira

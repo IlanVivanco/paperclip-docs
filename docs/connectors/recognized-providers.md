@@ -9,7 +9,7 @@ Reference for the inventory behind the catalog. If you are looking for a connect
 
 Two separate things get confused here, so they are listed separately. A **withheld** provider has a complete definition that Paperclip still recognizes, but it is deliberately kept out of the customer-facing list. A **provider-gated** one is not offered because the provider itself will not let an independently registered client connect.
 
-> **Warning:** Snapshot, not a release. This is the inventory at Paperclip App commit `13368c51` (13 September 2026), which is ahead of every tagged release. Membership of both lists is a product decision that can change in either direction, and a name appearing here is not a commitment to list it later. Check your own instance for what it actually offers.
+> **Warning:** Snapshot, not a release. This is the inventory at Paperclip App commit `ae063299` (15 September 2026), which is ahead of every tagged release. Membership of both lists is a product decision that can change in either direction, and a name appearing here is not a commitment to list it later. Check your own instance for what it actually offers.
 
 ## Withheld from the Connectors list
 

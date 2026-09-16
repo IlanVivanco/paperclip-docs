@@ -1,6 +1,6 @@
 ---
 seo_title: PostHog Connector
-seo_description: Let agents analyze product usage, errors, feature flags, and experiments in PostHog. Project pinning, read-only mode, why risk classification is conservative, and troubleshooting.
+seo_description: Let agents analyze product usage, errors, and feature flags in PostHog. Project pinning, read-only mode, and why classification is conservative.
 ---
 
 # PostHog

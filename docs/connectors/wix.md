@@ -1,91 +1,65 @@
 ---
 seo_title: Wix Connector
-seo_description: Website builder and hosting. Agents work with the sites your Wix account can reach, under per-action permissions you set in Paperclip.
+seo_description: Let agents work with your Wix sites. Site selection, why the connector is narrower than the Wix editor, a read test, and troubleshooting.
 ---
 
 # Wix
 
-Website builder and hosting. Agents work with the sites your Wix account can reach.
+Agents can work with your Wix sites — reading site information and working with the business data Wix exposes, such as CMS collections and store or booking records where your site has them.
 
-## What this connector does
+> **Note:** The connector is considerably narrower than the Wix editor. Wix's product surface is large, and what an agent gets is what the hosted server exposes for your sites — not every feature you can reach by clicking around in Wix. Read the connection's action list before planning work around it.
 
-Wix is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+## Before you connect
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `wix` |
-| Category | Content and design |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
-| Provider research | wave 1, auth mode `dcr`, verified 2026-08-26 |
+- A Wix account with access to the sites you want agents to use.
+- The right role on those sites. Wix distinguishes site owner from contributor roles with varying permissions, and the connection inherits whatever the authorizing account has.
 
-## Before you start
+## Connect Wix
 
-- A Wix account with access to the relevant sites.
+1. Open **Connectors** and select **Wix**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Sign in with Wix** and complete browser sign-in, choosing the site when Wix asks.
 
-## Supported setup paths
+Paperclip registers its client automatically, so there is nothing to configure in a developer console.
 
-Open **Connectors**, find **Wix**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+## Choose access
 
-### Sign in with Wix
+Site reach is the authorizing Wix account's, subject to its role on each site. There is no site picker in Paperclip beyond what Wix asks during authorization.
 
-Use browser sign-in for the provider-hosted MCP server.
+What the connection can actually do varies by site, because it depends on which Wix business solutions that site uses. A site with Wix Stores exposes commerce data; a plain marketing site does not. Do not assume a capability exists because Wix offers the product — check the connection's action list for the site you connected.
 
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.wix.com/mcp`
+Writes reach a live site's data:
 
-Provider console: [provider docs](https://www.wix.com/studio/developers/mcp-server)
+> **Warning:** Content and business-data changes can appear publicly, and commerce or booking records are real business records. Keep writes on **Ask first** and anything that deletes records **Off**. Recovery is whatever Wix's own history provides.
 
-## Accounts and access
+See [Set action permissions](action-permissions.md).
 
-Wix follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Wix's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Wix
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Tell me the name and published status of the connected Wix site, and list its CMS collections if it has any. Do not change anything.
 ```
 
-## Check that it works
+Compare against the Wix dashboard. This confirms the credential and the site, and the collection list tells you what the connection can actually reach for that site.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| A site is missing | The account lacks a role on it, or it was not chosen during authorization | Get access in Wix, or reconnect and select it |
+| An expected capability is absent | The site does not use that Wix business solution, or the server does not expose it | Check which solutions the site has enabled |
+| An action is refused | The account's contributor role does not permit it | Adjust the role in Wix |
+| A change appeared on the public site | The data is live content | Revert in Wix, then set writes to **Ask first** |
+| A record was deleted | A destructive action was allowed | Check Wix's own history for recovery; set deletions to **Off** |
+| **Needs attention** | The grant was revoked | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one Wix account per connection. Capabilities vary by site depending on the business solutions it uses. Narrower than the Wix editor.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [Webflow](webflow.md) — another website platform connector.
+- [Shopify](shopify.md) — for storefront commerce specifically.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Wix provider documentation](https://www.wix.com/studio/developers/mcp-server)
+- [Wix MCP server](https://www.wix.com/studio/developers/mcp-server)

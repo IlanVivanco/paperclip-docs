@@ -1,91 +1,69 @@
 ---
 seo_title: Cloudinary Connector
-seo_description: Image and video hosting with on-the-fly transformation. Agents work with the assets your Cloudinary roles allow, and no more than those.
+seo_description: Let agents search and manage Cloudinary assets. What the asset-management connection covers, role-based limits, billing-relevant actions, and troubleshooting.
 ---
 
 # Cloudinary
 
-Image and video hosting with on-the-fly transformation. Agents work with the assets your Cloudinary roles allow.
+Agents can search and manage the media assets in your Cloudinary product environment — finding images and video, reading metadata, and working with your asset library.
 
-## What this connector does
+This connection is Cloudinary's asset-management surface. It is about finding and organizing assets, not a general interface to every Cloudinary feature.
 
-Cloudinary is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+## Before you connect
 
-| Property | Value |
+- A Cloudinary account with access to the product environment you want agents to use.
+- The roles on the signing-in user matter: Cloudinary limits what the connection can do to what that user's roles permit. Decide which user authorizes before you connect.
+
+## Connect Cloudinary
+
+1. Open **Connectors** and select **Cloudinary**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Sign in with Cloudinary** and complete browser sign-in.
+
+Paperclip registers its client automatically, so there is nothing to configure in a developer console.
+
+## Choose access
+
+Reach is the signed-in user's product environment, and authorization is limited by that user's Cloudinary roles. A read-only Cloudinary role is the cleanest way to give an agent search without change.
+
+Separate three kinds of operation when you set permissions:
+
+| Operation | Consequence |
 | --- | --- |
-| Catalog slug | `cloudinary` |
-| Category | Content and design |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
-| Provider research | wave 1, auth mode `dcr`, verified 2026-08-26 |
+| Searching and reading asset metadata | Nothing changes, and nothing is billed |
+| Uploading or modifying assets | Changes your asset library |
+| Deleting assets | Removes media that live sites may reference |
 
-## Before you start
+> **Warning:** Deleting an asset can break every page that embeds it, and deletions are not reversible from Paperclip. Keep deletion **Off**. Uploads and transformations can also consume storage and transformation quota, which has a billing effect on your Cloudinary plan.
 
-- A Cloudinary account; authorization is limited by the signed-in user's roles.
+See [Set action permissions](action-permissions.md).
 
-## Supported setup paths
-
-Open **Connectors**, find **Cloudinary**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
-
-### Sign in with Cloudinary
-
-Use browser sign-in for the provider-hosted MCP server.
-
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Risk tier: S3
-- Endpoints: MCP server `https://asset-management.mcp.cloudinary.com/mcp`
-
-Provider console: [provider docs](https://cloudinary.com/documentation/cloudinary_llm_mcp)
-
-## Accounts and access
-
-Cloudinary follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Cloudinary's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Cloudinary
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Search Cloudinary for assets tagged "product-hero" and tell me how many there are and the public ID of the newest one. Do not upload, transform, or delete anything.
 ```
 
-## Check that it works
+Compare against the Cloudinary media library. A search confirms the credential and the environment without touching quota in a way that matters.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result. Substitute a tag from your own library.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Authorization succeeds but little is available | The signed-in user's roles are limited | Check the user's roles in Cloudinary |
+| The wrong assets appear | The account has several product environments and another was selected | Reconnect with the intended environment |
+| An action is refused | The user's role does not permit it | Adjust the role in Cloudinary, or leave the capability off |
+| An asset disappeared from a live site | A delete action was allowed and ran | Restore from Cloudinary backups if enabled, then set deletion to **Off** |
+| Quota or billing rose unexpectedly | Uploads or transformations consumed plan resources | Review usage in Cloudinary and restrict those actions |
+| **Needs attention** | The grant was revoked | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one product environment per connection. Role-based limits are Cloudinary's, not Paperclip's. Deletion is not recoverable from Paperclip.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [Google Drive](google-drive.md), [Box](box.md) — general file storage rather than media assets.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Cloudinary provider documentation](https://cloudinary.com/documentation/cloudinary_llm_mcp)
+- [How connector access works](access-model.md)
+- [Cloudinary MCP documentation](https://cloudinary.com/documentation/cloudinary_llm_mcp)

@@ -1,78 +1,65 @@
 ---
 seo_title: Mem0 Connector
-seo_description: Hosted long-term memory for AI applications. Agents store and recall facts across runs in your Mem0 project, under permissions you set.
+seo_description: Give agents a persistent memory store with Mem0. Whose memory is being read, how namespacing works, a scoped read test, and troubleshooting.
 ---
 
 # Mem0
 
-Hosted long-term memory for AI applications. Agents store and recall facts across runs in your Mem0 project.
+Mem0 gives agents a persistent memory store that outlives a single task — a place to write down facts and retrieve them on a later run.
 
-## What this connector does
+The question to settle before connecting is *whose* memory an agent is reading and writing. Mem0 organizes memories by identifiers you supply at call time, so the boundary is a convention you enforce, not something Paperclip checks.
 
-Mem0 is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+## Before you connect
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `mem0` |
-| Category | AI tools |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
-| Provider research | wave 3, auth mode `api_key`, verified 2026-08-26 |
+- A Mem0 account and an API key from it. Keys look like `m0sk_…`.
+- A decision about how you will namespace memories — per agent, per user, per project — and which identifiers agents should use.
 
-## Before you start
+## Connect Mem0
 
-- A Mem0 API key; the live server currently requires the slash-normalized endpoint.
+1. Open **Connectors** and select **Mem0**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Paste the **Mem0 API key**. Paperclip stores it as a secret.
 
-## Supported setup paths
+## Choose access
 
-Open **Connectors**, find **Mem0**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+> **Warning:** The API key reaches the whole Mem0 project, not one namespace. Any agent with this connection can in principle read and write any memory in that project by passing a different identifier. Separation between agents or users is a convention in how agents call the tools, not an enforced boundary.
 
-### Use an API key
+Two practical consequences:
 
-Use a restricted customer-owned key when browser sign-in is not suitable.
+- If different agents must not see each other's memories, give them **separate connections with separate Mem0 projects and keys**. Do not rely on identifier discipline alone.
+- Be deliberate about what goes in. Memories persist across tasks and are readable later by anything holding the key, so personal data or secrets written into Mem0 outlive the conversation that produced them.
 
-- Connection method: API key
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.mem0.ai/mcp/`
+Memory writes are cheap to make and easy to accumulate. An agent that writes on every run will build a store nobody curates, which degrades retrieval quality as much as it costs. Consider leaving writes on **Ask first** at the start so you can see what an agent wants to remember. See [Set action permissions](action-permissions.md).
 
-| Field | Required | What it is |
+Deletions remove memory permanently; keep them **Off** unless you have a reason.
+
+## Try it
+
+Use a scoped read rather than writing something you then have to clean up:
+
+```txt
+Search Mem0 for memories about the onboarding project and tell me what is stored. Do not add or delete any memory.
+```
+
+On a new store this correctly returns nothing, which is still a useful result — it confirms the key and the connection without seeding data. To test writing as well, add one clearly labelled throwaway memory and delete it afterwards.
+
+> **Note:** Illustrative task, not a recorded test result.
+
+## Troubleshooting and limitations
+
+| Problem | Likely cause | Fix |
 | --- | --- | --- |
-| **Mem0 API key** | Yes | Credential value; Paperclip stores it as a secret. |
+| Searches return nothing | The store is empty, or the agent queried a different identifier than it wrote under | Check the identifier convention the agent is using |
+| An agent reads another agent's memories | Identifiers are a convention, not an enforced boundary | Use separate Mem0 projects and separate connections |
+| Retrieval quality drops over time | The store has accumulated low-value memories | Curate the store in Mem0; restrict what agents may write |
+| Calls are rejected | The key was revoked or belongs to a different project | Reconnect with a current key |
+| Something sensitive was written | Memories persist beyond the task | Delete it in Mem0 and narrow what agents may store |
+| **Needs attention** | The key stopped working | Select **Reconnect** |
 
-Provider console: [get a key](https://docs.mem0.ai/platform/mem0-mcp) · [provider docs](https://docs.mem0.ai/platform/mem0-mcp)
+Limitations: one Mem0 project per connection, and the key reaches all of it. Namespacing is not enforced by Paperclip. Mem0's own plan limits apply.
 
-## Accounts and access
+## Related guides
 
-Mem0 follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Mem0's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
-
-There is no browser handshake. Paperclip stores the value you supply as a secret and presents it to the server on each call; the connection is created by `POST /api/companies/{companyId}/tools/apps/connect` and completed by `POST /api/companies/{companyId}/tools/apps/{connectionId}/finish`.
-
-## Check that it works
-
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
-
-## If something goes wrong
-
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
-
-## Related
-
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Mem0 provider documentation](https://docs.mem0.ai/platform/mem0-mcp)
+- [How connector access works](access-model.md)
+- [Mem0 MCP documentation](https://docs.mem0.ai/platform/mem0-mcp)

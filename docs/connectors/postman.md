@@ -1,6 +1,6 @@
 ---
 seo_title: Postman Connector
-seo_description: Connect Postman's hosted MCP server. Choose your region first, then a capability group — Minimal, Code, or Full. Setup, access, a read test, and troubleshooting.
+seo_description: Connect Postman's hosted MCP server. Choose your region first, then a capability group: Minimal, Code, or Full. Setup, access, and a read test.
 ---
 
 # Postman

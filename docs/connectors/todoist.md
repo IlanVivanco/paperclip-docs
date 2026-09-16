@@ -1,91 +1,64 @@
 ---
 seo_title: Todoist Connector
-seo_description: Task lists for individuals and small teams. Agents work with the tasks and projects in your Todoist account, under per-action permissions you set.
+seo_description: Let agents read and update Todoist tasks. Account and project reach, shared project behaviour, restricting writes, a read test, and troubleshooting.
 ---
 
 # Todoist
 
-Task lists for individuals and small teams. Agents work with the tasks and projects in your Todoist account.
+Agents can work with your Todoist tasks — finding them, reading details, and creating or completing them.
 
-## What this connector does
+## Before you connect
 
-Todoist is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+- A Todoist account with the projects you want agents to use.
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `todoist` |
-| Category | Productivity and collaboration |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
-| Provider research | wave 1, auth mode `dcr`, verified 2026-08-26 |
+That is all. This is one of the simplest connectors to set up.
 
-## Before you start
+## Connect Todoist
 
-- A Todoist account.
+1. Open **Connectors** and select **Todoist**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Sign in with Todoist** and complete browser sign-in.
 
-## Supported setup paths
+Paperclip registers its client automatically, so there is nothing to configure in a developer console.
 
-Open **Connectors**, find **Todoist**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+## Choose access
 
-### Sign in with Todoist
+Reach is the authorizing Todoist account's: its own projects, plus any shared projects it has joined. There is no project picker in Paperclip.
 
-Use browser sign-in for the provider-hosted MCP server.
+Shared projects are worth pausing on. A personal Todoist account often belongs to shared projects with a partner, a team, or a client. An agent with this connection can read and change tasks in all of them, and those changes appear to the other members as coming from you.
 
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Risk tier: S3
-- Endpoints: MCP server `https://ai.todoist.net/mcp`
+If that matters, either connect an account that belongs to fewer shared projects, or keep writes restricted.
 
-Provider console: [provider docs](https://developer.todoist.com/)
+To restrict writes, set the create, update, and complete actions to **Ask first** or **Off** on the connection's **Permissions** tab, leaving reads **Allowed**. That gives you an agent that can consult your task list without editing it, which is the useful default for most first setups. See [Set action permissions](action-permissions.md).
 
-## Accounts and access
+> **Note:** Completing a task in Todoist is a write, and for a recurring task it advances the recurrence. Treat completion as a change rather than a harmless acknowledgement.
 
-Todoist follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Todoist's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Todoist
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+What Todoist tasks are due today? List them with their projects. Do not complete or change anything.
 ```
 
-## Check that it works
+Compare against Todoist. Reading today's tasks confirms the credential and the agent's permission without touching your task list.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| A project's tasks are missing | The authorizing account has not joined that shared project | Join it in Todoist; no reconnect needed |
+| An agent changed a task in a shared project | Reach includes shared projects, and writes were allowed | Set writes to **Ask first**, or connect a more limited account |
+| A recurring task moved unexpectedly | Completing a recurring task advances its recurrence | Adjust it in Todoist and restrict the completion action |
+| A write is rejected | The account's role in a shared project does not permit it | Check the project's sharing settings in Todoist |
+| Some fields are unavailable | Certain Todoist features are plan-gated | Check your Todoist plan |
+| **Needs attention** | The grant was revoked | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one Todoist account per connection. No project filter inside Paperclip. Shared projects come with the account.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [Linear](linear.md), [Jira](jira.md), [Asana](asana.md) — team work tracking rather than personal tasks.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Todoist provider documentation](https://developer.todoist.com/)
+- [How connector access works](access-model.md)
+- [Todoist developer documentation](https://developer.todoist.com/)

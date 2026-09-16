@@ -1,6 +1,6 @@
 ---
 seo_title: GitHub Connector
-seo_description: Two separate GitHub setups — repository tools for agents, or people working with an agent from issues and pull requests. Includes the shell Git and gh exception.
+seo_description: Two separate GitHub setups: repository tools for agents, or people working with an agent from issues. Includes the shell Git and gh exception.
 ---
 
 # GitHub
