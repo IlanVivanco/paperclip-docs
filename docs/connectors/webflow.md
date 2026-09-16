@@ -7,7 +7,7 @@ seo_description: Let agents work with Webflow sites and CMS collections. How rol
 
 Agents can work with your Webflow sites — reading site structure and working with CMS collections and their items.
 
-The useful case is CMS content: an agent drafting, checking, or updating collection items. Site design is not what this connector is for.
+The practical case is CMS content: an agent drafting, checking, or updating collection items. Webflow also exposes Designer tools for canvas, styles and layout at the same endpoint, but they carry a prerequisite that rarely suits agent work — see [Designer tools](#designer-tools).
 
 ## Before you connect
 
@@ -36,7 +36,17 @@ The distinction that matters most is between changing content and making it live
 
 > **Warning:** Publishing is the consequential one. A publish can push every pending change on a site live, not only the item an agent was working on — including edits colleagues had staged and not yet finished. Keep publish actions **Off** and let a person publish from Webflow.
 
-Design capabilities — layouts, styles, components, interactions — are not what this connection is for. Do not plan on an agent restyling a site through it. See [Set action permissions](action-permissions.md).
+See [Set action permissions](action-permissions.md) for setting each of these.
+
+## Designer tools
+
+Webflow's MCP server does expose Designer tools — canvas, styles and layout — and they are served from the same endpoint this connector uses. **They are not unavailable; they are conditional.**
+
+The condition is a companion app. Webflow states that "the MCP Companion App must remain open in the Webflow Designer for Designer API tools to function," launched from the Apps panel with the Designer open. Close it and the canvas operations stop working.
+
+That prerequisite is a poor fit for unattended agent work, because it requires a person to have the Designer open for the duration. Plan Designer work as something a person drives, and use this connector for CMS content.
+
+> **Note:** We have not run Webflow Designer tools through Paperclip. What is established here is the provider's own requirement, not a tested Paperclip result — so if you do try it, treat it as unverified and start on a site that does not matter. Webflow's [MCP getting started](https://developers.webflow.com/mcp/reference/getting-started) is the authority on the current tool surface.
 
 ## Try it
 
@@ -56,10 +66,10 @@ Compare against the Webflow dashboard. Reading collection structure confirms the
 | A CMS field is missing | Certain field types are not exposed, or the field is on a different collection | Check the collection schema in Webflow |
 | A change is not visible on the live site | CMS changes require publishing | Publish from Webflow when the change is ready |
 | A site published unexpectedly | A publish action was set to **Allowed** | Set it to **Off**; review what went live in Webflow |
-| An agent cannot change the layout | Expected — design capabilities are not exposed | Make design changes in the Webflow Designer |
+| A Designer tool fails or is unavailable | The MCP Companion App is not open in the Webflow Designer; it must stay open for Designer tools to work | Open it from the Apps panel, or do the design work in the Designer directly |
 | **Needs attention** | The grant was revoked | Select **Reconnect** |
 
-Limitations: one Webflow account per connection. No site filter inside Paperclip. CMS and site data rather than design. Webflow's plan limits apply to CMS item counts and API rates.
+Limitations: one Webflow account per connection. No site filter inside Paperclip. Designer tools need a companion app kept open in the Designer, so they do not suit unattended work. Webflow's plan limits apply to CMS item counts and API rates.
 
 ## Related guides
 

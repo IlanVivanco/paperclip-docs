@@ -33,19 +33,39 @@ If an agent should only read, grant only read. A read-only ClickHouse user is a 
 
 Any schema-changing or data-changing operations should stay **Off** unless you have a specific reason. See [Set action permissions](action-permissions.md).
 
+### `LIMIT` is not a cost control
+
+This is the trap worth internalising before you let an agent near a large table. `LIMIT` caps the rows a query *returns*. It does nothing about the rows it *reads* to produce them — a `LIMIT 10` over an unfiltered table can still scan the whole table.
+
+ClickHouse says so directly in its guidance for agent-generated queries: "ALWAYS bound scan size with `max_rows_to_read` or `max_bytes_to_read` — `LIMIT` alone does not prevent a full scan."
+
+Bound the work itself, on the ClickHouse side, with settings such as:
+
+| Setting | What it bounds |
+| --- | --- |
+| `max_rows_to_read` | Rows scanned before materialization — the guardrail that actually holds |
+| `max_bytes_to_read` | Bytes scanned |
+| `max_execution_time` | Interrupts a query exceeding N seconds |
+| `max_estimated_execution_time` | Rejects a query whose projected runtime is too long |
+
+Set these as quotas or profile settings on the ClickHouse user the connection signs in as, so they apply to whatever an agent writes rather than depending on the agent remembering. ClickHouse's [agent query-safety guidance](https://github.com/ClickHouse/agent-skills/blob/main/skills/clickhouse-best-practices/rules/agent-query-safety.md) has the recommended values.
+
 ## Try it
 
-Run something deliberately cheap and bounded:
+Verify with **metadata only**. A metadata read confirms the credential and the grants without scanning table data at all, which is the one check you can run against an unfamiliar service without thinking about cost:
 
 ```txt
-List the tables in the ClickHouse service, then tell me the row count of the smallest one. Do not run any query without a limit, and do not change anything.
+List the databases and tables the ClickHouse connection can see. Do not query
+any table contents and do not change anything.
 ```
 
-Expect a table list matching what you see in ClickStack. Asking for structure first, and only then a narrow count, keeps the verification inexpensive.
+Expect a list matching what you see in ClickStack for that user's grants.
 
-Do not verify with a full scan of a production table, and do not verify with DDL.
+Only once that works, and only against a table you know is small, try a bounded read — and rely on the user's scan limits rather than a `LIMIT` clause to keep it bounded.
 
-> **Note:** Illustrative task, not a recorded test result.
+Do not verify with a count over a production table. "The smallest table" is not a safe instruction: an agent has to scan to find out which one that is.
+
+> **Note:** Illustrative task, not a recorded test result. No query was executed against any ClickHouse service for this documentation.
 
 ## Troubleshooting and limitations
 
@@ -56,7 +76,7 @@ Do not verify with a full scan of a production table, and do not verify with DDL
 | Authorization succeeds but no tables appear | The signed-in user has no grants on any database | Grant access to the user in ClickHouse |
 | Some tables are missing | Grants cover only some databases | Adjust the grants; no reconnect needed |
 | A query is refused | The user is read-only and the query writes | Expected if you configured it that way |
-| A query is slow or expensive | It was unbounded over a large table | Add limits, and set quotas on the ClickHouse user |
+| A query is slow or expensive despite a `LIMIT` | `LIMIT` bounds returned rows, not rows scanned | Set `max_rows_to_read` / `max_bytes_to_read` and an execution-time limit on the ClickHouse user |
 | **Needs attention** | The sign-in expired or the service was removed | Select **Reconnect** and confirm the service still exists |
 
 Limitations: one ClickStack service per connection. ClickHouse Cloud only. Access control is ClickHouse's grants, not a Paperclip resource filter.
