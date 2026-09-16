@@ -30,11 +30,13 @@ Separate three kinds of operation when you set permissions:
 
 | Operation | Consequence |
 | --- | --- |
-| Searching and reading asset metadata | Nothing changes, and nothing is billed |
+| Searching and reading asset metadata | Changes nothing in your library |
 | Uploading or modifying assets | Changes your asset library |
 | Deleting assets | Removes media that live sites may reference |
 
-> **Warning:** Deleting an asset can break every page that embeds it, and deletions are not reversible from Paperclip. Keep deletion **Off**. Uploads and transformations can also consume storage and transformation quota, which has a billing effect on your Cloudinary plan.
+> **Warning:** Deleting an asset can break every page that embeds it, and deletions are not reversible from Paperclip. Keep deletion **Off**. Uploads and transformations consume storage and transformation quota, which has a billing effect on your Cloudinary plan.
+
+> **Note:** Reads change nothing, but do not assume they are free. API calls count against your Cloudinary plan's own rate and usage limits, and how those are metered is Cloudinary's business, not Paperclip's. Check your plan if an agent will be reading at volume.
 
 See [Set action permissions](action-permissions.md).
 
