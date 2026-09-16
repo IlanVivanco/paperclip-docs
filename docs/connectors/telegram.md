@@ -49,12 +49,20 @@ Paperclip registers the webhook with Telegram for you, using a generated secret 
 
 ## Choose access
 
-Telegram gives you less sender control than the other channels, and it is worth being clear about that before you publish the bot's username: **anyone who can find the bot can message it**, and a message can start agent work. Telegram has no allowlist for who may talk to a bot.
+Two different controls apply here, on two different sides, and conflating them is the mistake worth avoiding.
 
-Two practical consequences:
+**On Telegram's side there is no sender allowlist.** Anyone who can find the bot can message it. Do not treat the bot's username as a secret — treat it as public, and share it only with the people you intend to serve.
 
-- Do not treat the bot's username as a secret, but do treat it as public. Only share it with the people you intend to serve.
-- In groups, Telegram's default privacy mode means a bot only receives messages that address it directly. Turning that off in BotFather would give the bot every group message; leave it alone unless you have decided you want that.
+**On Paperclip's side there is a control.** The connection's **Access** tab has **External identity access** with an **Allow unlinked people** toggle:
+
+| Setting | What happens when an unrecognized person messages the bot |
+| --- | --- |
+| **On** (the default) | They are a restricted guest. Their tasks run only with an isolated workspace and sandbox environment, and Paperclip refuses the request if that is unavailable. Guests cannot approve, hire, spend, manage access, or reassign agents |
+| **Off** | They cannot start work at all. Only senders linked to a Paperclip person get through |
+
+So "anyone can message the bot" is true, and "anyone can make an agent do arbitrary work" is not. Decide which of those two settings you want **before** you publish the username; the restrictions on a guest are real but they are not the same as refusing them.
+
+In groups, Telegram's default privacy mode means a bot only receives messages that address it directly. Turning that off in BotFather would give the bot every group message; leave it alone unless you have decided you want that.
 
 The connection's identity and agent settings work as for any connector; see [How connector access works](access-model.md). The answering agent is set on the connection.
 

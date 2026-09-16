@@ -80,7 +80,9 @@ That exercises intent, permissions, routing, and task creation in one step, in a
 | A mention creates no task | The mention was inside an existing thread rather than a root message, or the connection is unhealthy | Mention at channel level; check the connection's status |
 | The wrong agent answers | The answering agent is set on the connection | Change it on the connection |
 
-Limitations: one server and one agent per connection. Private channels the bot's role cannot see are unreachable. Direct messages to the bot are not the supported entry point — use a channel mention.
+Limitations: one server and one agent per connection. Private channels the bot's role cannot see are unreachable.
+
+> **Note:** The documented way to start work is a root mention in a channel, and that is the path this page describes and the setup flow tests. Paperclip's Discord adapter does advertise direct-message support, but we have not verified that a direct message starts a task — do not build a workflow on it without trying it yourself first.
 
 ## Related guides
 

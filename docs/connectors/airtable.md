@@ -36,7 +36,9 @@ Reads can stay **Allowed**. See [Set action permissions](action-permissions.md).
 In the "Customers" base, find the record for Northwind and tell me its status and owner fields. Do not change anything.
 ```
 
-Compare against the base. Reading one known record confirms the credential, the base sharing, and the agent's permission without altering data.
+Compare the field values against the base. Reading one record whose values you already know confirms the credential, the base sharing, and the agent's permission without altering data — and unlike a summary, a specific field value is something you can check.
+
+Then open the connection's activity and confirm the Airtable calls are listed there. The answer alone does not establish that the agent read the record rather than inferred it.
 
 > **Note:** Illustrative task, not a recorded test result. Substitute a base and record from your own account.
 
@@ -46,8 +48,8 @@ Compare against the base. Reading one known record confirms the credential, the 
 | --- | --- | --- |
 | Authorization is refused or stays pending | An enterprise administrator has not allowlisted the client | Ask an Airtable administrator to allow it |
 | A base is missing | It was not shared at the authorization screen, or the account cannot open it | Reconnect and include it, or get access in Airtable |
-| A field is missing from results | Field-level permissions, or the field type is not exposed | Check the field in Airtable |
-| A write is rejected | Field validation or a locked view in Airtable | Check the field's type and any locks |
+| A field is missing from results | Most likely the field type is not exposed by the server, or Airtable permissions hide it | Open the record in Airtable as the authorizing account and compare. If you can see the field there, it is the tool surface rather than permissions |
+| A write is rejected | Airtable refused it — field validation, a required field, or a view or table restriction | Read the provider's error text in the action's raw response before changing anything; it names the reason more precisely than this table can |
 | A record was changed unexpectedly | A write action was set to **Allowed** | Restore from Airtable's revision history, then tighten the settings |
 | **Needs attention** | The grant was revoked in Airtable | Select **Reconnect** |
 

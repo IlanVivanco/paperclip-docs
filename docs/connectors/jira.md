@@ -50,12 +50,14 @@ Compare against the issue in Jira. If it comes back empty, check the site first.
 | --- | --- | --- |
 | Authorization is refused or stays pending | The Atlassian tenant requires administrator approval of the client | Ask an Atlassian administrator to approve it |
 | The connection is healthy but finds no issues | The wrong site was selected during authorization | Reconnect and choose the correct site |
-| Some projects are invisible | The authorizing account lacks browse permission, or issue-level security applies | Grant permission in Jira; no reconnect needed |
+| Some projects are invisible | Usually the authorizing account lacks browse permission; issue-level security and project-role configuration can also hide issues | Open one of the missing issues in Jira as that account. If you cannot see it either, it is a Jira permission; fix it there and no reconnect is needed |
 | Confluence tools appear unexpectedly | The Atlassian server covers both products | Switch off the ones you do not want on the **Permissions** tab |
 | A transition is rejected | The Jira workflow does not allow that transition for this account | Check the workflow in Jira |
 | **Needs attention** | The Atlassian grant expired or was revoked | Select **Reconnect** |
 
-Limitations: one Atlassian site per connection. Atlassian Cloud only. No project picker in Paperclip — reach follows the account.
+Limitations: you choose one Atlassian site during authorization, and that is the site the connection works against — connect Jira again for a second site. Atlassian Cloud only. No project picker in Paperclip; reach follows the account.
+
+> **Note:** We have not tested whether a single authorization can span several Atlassian sites. What is documented here is the setup choice you make and the behaviour to plan for. If you need two sites, two connections is the arrangement we can describe with confidence.
 
 ## Related guides
 

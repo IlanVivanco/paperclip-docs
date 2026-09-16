@@ -20,6 +20,19 @@ Four shapes, with genuinely different controls. Reading the wrong section is the
 
 > **Warning:** Do not carry an assumption across rows. "Set the writes to Ask first" is meaningless on a channel or a model connection, and a channel's reach cannot be narrowed from the **Permissions** tab.
 
+### The control channels do have
+
+Channels have no action switches, but they are not ungoverned. Each one has an **Access** tab with **External identity access**, and one toggle on it decides what happens when someone Paperclip does not recognize sends a message:
+
+| **Allow unlinked people** | Effect |
+| --- | --- |
+| **On** | The sender is a restricted guest. Their tasks run only with an isolated workspace and sandbox environment, and Paperclip refuses the request when that is unavailable. Guests cannot approve, hire, spend, manage access, or reassign agents |
+| **Off** | Only senders linked to a Paperclip person can start work |
+
+Linked identities act as their current Paperclip user, with that person's permissions.
+
+[iMessage Photon](imessage-photon.md) is the exception: it does not permit unlinked senders at all, so linking there is a required setup step rather than a policy choice.
+
 ## The four gates on a tool connection
 
 The rest of this page describes **app tool** connections. They separate access into four decisions, made at different moments by different people, and every tool call is checked against all four.
