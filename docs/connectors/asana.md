@@ -15,10 +15,32 @@ Agents can work with Asana tasks — finding them, reading details, and updating
 
 ## Connect Asana
 
-1. Create an Asana MCP OAuth app in Asana's developer console and register Paperclip's callback URI on it. Keep the client ID and secret to hand.
-2. Open **Connectors** and select **Asana**.
-3. On the **Access** step, choose the identity and which agents may use the connection.
-4. Select **Use your own OAuth app**, supply the client ID and secret, then authorize in Asana.
+The callback URI comes from Paperclip and the client credentials come from Asana, so the two consoles interleave. Open Paperclip's setup first to read the URI, then register the app, then come back.
+
+### 1. Read Paperclip's callback URI
+
+1. Open **Connectors** and select **Asana**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Use your own OAuth app**. Paperclip displays the exact callback URI — copy it. It is the `/api/tools/oauth/callback` route on your instance's origin. Leave this screen open.
+
+### 2. Create the Asana MCP app
+
+In Asana's developer console at [app.asana.com/0/my-apps](https://app.asana.com/0/my-apps):
+
+1. Select **Create new app** and enter a name.
+2. **Set the app type to "MCP app".** This is the step that catches people out — a standard API app will not work here, because Asana keeps MCP tokens separate.
+3. Select **Create app**.
+4. In the **OAuth** section of the sidebar, add the callback URI from step 1 as the **Redirect URL**.
+5. Under **Manage distribution**, choose the specific workspaces the app may be used in, or allow any workspace.
+6. Copy the **client ID** and **client secret**.
+
+> **Note:** Asana MCP apps have no scopes to choose. Asana's guidance is to use `default` or omit the parameter entirely — so if you are looking for a permissions checklist here, there is not one. Reach comes from the authorizing account instead.
+
+### 3. Finish in Paperclip
+
+Return to the setup screen, supply the client ID and secret, then authorize in Asana as the account whose access you want the connection to have.
+
+Asana's own reference is [Integrating with Asana's MCP server](https://developers.asana.com/docs/integrating-with-asanas-mcp-server).
 
 ## Choose access
 

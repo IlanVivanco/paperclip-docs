@@ -14,10 +14,28 @@ Agents can read Linear issues, create new ones, and update existing ones — use
 
 ## Connect Linear
 
-1. In Linear's settings, create an OAuth application and add Paperclip's redirect URI to it. Keep the client ID and secret to hand.
-2. Open **Connectors** and select **Linear**.
-3. On the **Access** step, choose the identity and which agents may use the connection.
-4. Supply the client ID and secret, then authorize in Linear.
+Paperclip supplies the redirect URI and Linear supplies the credentials, so start in Paperclip.
+
+### 1. Read Paperclip's redirect URI
+
+Open **Connectors** → **Linear**, choose the identity and agents on the **Access** step, and copy the redirect URI Paperclip displays. Leave the screen open.
+
+### 2. Create the Linear OAuth application
+
+At [Linear's new OAuth application form](https://linear.app/settings/api/applications/new):
+
+1. Give the application a name.
+2. Add the redirect URI from step 1 under the **redirect callback URLs**.
+3. Create it, then copy the **client ID** and **client secret**.
+
+Two things worth knowing before you do this:
+
+- **Every admin in the workspace can see and manage the application.** Linear's own recommendation is to create a dedicated workspace for managing OAuth applications rather than putting it in your main one.
+- **Scopes are chosen at authorization, not on the application.** Linear's set is `read` (always present), `write`, `issues:create`, `comments:create`, `timeSchedule:write`, and `admin`. Grant the narrowest set that covers the work — `admin` in particular is full access to admin-level endpoints and is not needed for issue work.
+
+### 3. Finish in Paperclip
+
+Supply the client ID and secret, then authorize in Linear as the account whose access the connection should have.
 
 ## Choose access
 

@@ -29,12 +29,21 @@ An agent uses a Slack workspace credential to search messages, read channel list
 
 ### Connect it
 
-1. At [Slack API apps](https://api.slack.com/apps), create an app for your workspace and configure it as an OAuth client with the redirect URI Paperclip shows during setup.
-2. Open **Connectors**, select **Slack**, then **Use this connection as an agent tool**.
-3. On the **Access** step, choose the identity and which agents may use the connection.
-4. Supply your Slack app's client ID and secret, then complete Slack's authorization.
+Paperclip supplies the redirect URI, Slack supplies the credentials, so start in Paperclip.
 
-The connection requests the scopes Paperclip needs for this route — reading channels, searching, and posting.
+**1. Read Paperclip's redirect URI.** Open **Connectors**, select **Slack**, then **Use this connection as an agent tool**. On the **Access** step choose the identity and which agents may use the connection. Copy the redirect URI Paperclip displays and leave the screen open.
+
+**2. Create the Slack app.** At [Slack API apps](https://api.slack.com/apps), create an app for your workspace. Then in the app's management pages:
+
+- Open **OAuth & Permissions** and add the redirect URI from step 1 under **Redirect URLs**. It must be HTTPS, must contain no anchor, and must match exactly.
+- Still under **OAuth & Permissions**, add the bot token scopes for the work you intend — reading channels, searching, and posting are the three this route uses. Grant the narrowest set that covers it.
+- Copy the app's **Client ID** and **Client Secret** from its credentials.
+
+**3. Finish in Paperclip.** Supply the client ID and secret, then complete Slack's authorization.
+
+> **Note:** Many Slack workspaces require an administrator to approve an app before it can be installed. If authorization stalls at an approval prompt, that is a Slack workspace policy and only an administrator can clear it — check before starting if you are not one.
+
+Slack's own reference is [Installing with OAuth](https://docs.slack.dev/authentication/installing-with-oauth).
 
 ### Access and actions
 

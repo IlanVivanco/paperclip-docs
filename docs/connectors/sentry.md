@@ -20,7 +20,15 @@ This is a good connector to give a debugging agent, because the useful work is a
 2. On the **Access** step, choose the identity and which agents may use the connection.
 3. Complete Sentry's browser sign-in and choose the organization when prompted.
 
-Paperclip registers its client with Sentry automatically for the default path, so there is nothing to configure in a developer console. If your organization requires its own OAuth client, you can supply one during setup instead.
+Paperclip registers its client with Sentry automatically, so there is nothing to configure in a developer console. This is the supported path and the one this page documents.
+
+### Optional: use your own Sentry OAuth client
+
+Sentry accepts Paperclip's automatic registration, so this is not needed for an ordinary setup. Use it only when the connection must appear under an OAuth client your organization owns — for example to satisfy a review of installed integrations.
+
+You supply the client ID and secret during setup, and add the callback URI Paperclip displays to your client before authorizing. Access, scope and everything below work the same way afterwards.
+
+> **Note:** We document this branch as an option rather than a procedure. Sentry's console steps are its own and we have not verified them against a current account, so follow [Sentry's documentation](https://docs.sentry.io/) for creating the client and use the automatic path unless you specifically need this.
 
 ## Choose access
 

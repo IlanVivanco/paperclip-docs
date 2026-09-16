@@ -19,10 +19,40 @@ Box does not support automatic client registration for this server, so your own 
 
 ## Connect Box
 
-1. Have a Box administrator create the OAuth integration, register Paperclip's callback URI, and enable AI access for the enterprise.
-2. Open **Connectors** and select **Box**.
-3. On the **Access** step, choose the identity and which agents may use the connection.
-4. Select **Use your own OAuth app**, supply the client ID and secret, then authorize in Box.
+Most of this happens in Box's Admin Console and needs an administrator. Start in Paperclip only to read the callback URI.
+
+### 1. Read Paperclip's callback URI
+
+Open **Connectors** → **Box** → the **Access** step → **Use your own OAuth app**. Paperclip displays the callback URI; copy it and give it to whoever does step 3.
+
+### 2. Turn on Box AI for the enterprise
+
+In the Box **Admin Console**:
+
+1. Select **Box AI**, then **Settings**.
+2. Ensure **AI API** is enabled.
+3. Ensure **Official Box Integrations is enabled for all users** is selected.
+
+> **Warning:** Without these, authorization can succeed and still leave agents unable to do anything useful. If the connection looks healthy but every call fails or returns nothing, come back to this step before debugging anything in Paperclip.
+
+### 3. Create the integration credentials
+
+Still in the Admin Console:
+
+1. Select **Integrations** in the left sidebar.
+2. Filter by the **MCP** category, or search for the Box MCP server you want.
+3. Beside the selected MCP server, select its state and enable it.
+4. For a server that is not listed, hover over **Custom Box MCP Server** and select **Configure**.
+5. Under **Additional Configuration**, select **+ Add Integration Credentials**.
+6. Copy the generated **Client ID** and **Client Secret**.
+7. Enter the **Redirect URI** from step 1.
+8. Under **Scopes**, ensure **Manage AI** is selected.
+
+### 4. Finish in Paperclip
+
+Return to the setup screen, supply the client ID and secret, then authorize in Box as the account whose content the agents should reach.
+
+Box's own reference is [Managing Box MCP Servers](https://support.box.com/hc/en-us/articles/43847256139923-Managing-Box-MCP-Servers).
 
 ## Choose access
 
