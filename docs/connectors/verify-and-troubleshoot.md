@@ -7,7 +7,19 @@ seo_description: Confirm a new connector works using a read-only test call, read
 
 Two jobs on one page: proving a new connection works without touching anything outside Paperclip, and diagnosing one that has stopped.
 
-## Verify a new connection
+## First: how do you verify this shape?
+
+The read-test procedure below is for **app tool** connections. The other shapes have no action list, so it does not apply to them.
+
+| Shape | How you verify it |
+| --- | --- |
+| **App tools** — Notion, Jira, Stripe, and most of the catalog | The read test below |
+| **Messaging channels** — Slack chat, Discord, Telegram, Teams, iMessage Photon, GitHub chat | Send a real message from the provider and wait for the agent's reply. There is no action list to test against, and setup is not complete until a reply is delivered. The connector's own page has the sequence |
+| **Model providers** — Anthropic, OpenAI, OpenRouter, Grok | Run a short task on an agent whose runtime matches, and watch the run. A connected badge says nothing about runtime compatibility. See [Anthropic](anthropic.md) |
+
+[How connector access works](access-model.md) explains why the controls differ.
+
+## Verify a new tool connection
 
 Always start with a read.
 
@@ -33,14 +45,14 @@ Do not verify a connector with a write. A write that half-succeeds against a rea
 
 | Status | Meaning |
 | --- | --- |
-| **Healthy** | The credential works and agents can use the connection. |
+| **Healthy** | The credential works. It does **not** mean a given agent can use the connection — that depends on agent access and the action's own setting, which are checked separately at call time. |
 | **Connected** | A connection exists for this connector. |
 | **Not connected** | No connection yet. *"Connect it so agents can use it."* |
 | **Setup incomplete** | A connection record exists but setup never finished. *"Finish setup before agents can use this account."* |
 | **Needs attention** | Something requires a person: an expired credential, or a pending review request. |
 | **Paused** | *"Paused — agents can't use it right now."* |
 
-A **Connected** badge is not proof that a call will succeed. It says a connection record exists. Run the read test.
+Neither **Connected** nor **Healthy** is proof that a particular agent's call will succeed. **Connected** says a record exists; **Healthy** says the credential works. Whether *this* agent may run *that* action is a separate layer, resolved at call time. Run the read test as the agent you actually intend to use.
 
 ## Common failures
 

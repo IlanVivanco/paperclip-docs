@@ -1,11 +1,28 @@
 ---
 seo_title: How Connector Access Works
-seo_description: Identity, audience, agent selection, and per-action permission are four separate decisions in a Paperclip connector. This explains what each one governs.
+seo_description: Which access controls apply depends on the kind of connector. This explains the four gates on tool connections, and what governs channels and models.
 ---
 
 # How connector access works
 
-Connecting a service and letting an agent use it are not the same act. A Paperclip connector separates them into four decisions, made at different moments by different people, and every tool call is checked against all four.
+Connecting a service and letting an agent use it are not the same act. Paperclip separates them — but **how** it separates them depends on what kind of connector you are looking at. Start here.
+
+## First: which kind of connector is this?
+
+Four shapes, with genuinely different controls. Reading the wrong section is the most common way to end up with a wrong expectation.
+
+| Shape | Examples | What governs access |
+| --- | --- | --- |
+| **App tools** | Notion, Jira, Stripe, Supabase | The four gates below. This is the majority of the catalog and the rest of this page is about it |
+| **Messaging channels** | Slack chat, Discord, Telegram, Microsoft Teams, iMessage Photon, GitHub chat, AgentMail | **No action list and no per-action switches.** Reach is where the app is installed and which senders are linked. See the connector's own page |
+| **Model providers** | Anthropic, OpenAI, OpenRouter, Grok | **No tools at all.** These supply the credential a model runs on. There is nothing to permit; what matters is credential sharing, the responsible user, and agent eligibility. See [Anthropic](anthropic.md) for the full rule |
+| **Mixed purpose** | [GitHub](github.md), [Slack](slack.md) | Two separate connections with separate credentials — one tool, one channel. Each follows its own row above |
+
+> **Warning:** Do not carry an assumption across rows. "Set the writes to Ask first" is meaningless on a channel or a model connection, and a channel's reach cannot be narrowed from the **Permissions** tab.
+
+## The four gates on a tool connection
+
+The rest of this page describes **app tool** connections. They separate access into four decisions, made at different moments by different people, and every tool call is checked against all four.
 
 ```txt
       credential                   who it belongs to              which agents           which actions
@@ -21,7 +38,7 @@ A call has to clear all four gates. Holding the credential is not enough; being 
 
 ## The connection
 
-The connection is the stored credential plus everything needed to reach the service: the transport (`mcp_remote`, `rest_api`, `local_stdio`, `chat_sdk`, or `runtime_auth`), the server URL, and how it authenticates (`oauth`, `api_key`, or `none`).
+The connection is the stored credential plus everything needed to reach the service: the transport, the server URL, and how it authenticates (`oauth`, `api_key`, or `none`). Tool connections use `mcp_remote`, `rest_api`, or `local_stdio`; the `chat_sdk` and `runtime_auth` transports belong to the channel and model shapes above, which is why the action gate does not apply to them.
 
 Each connection carries a company-scoped identity — a `uid` like `google-sheets/finance-sheet-1a2b3c4d` — that survives renaming. That identity is what the rest of Paperclip references, which is why renaming a connection in the UI never breaks a policy pointed at it.
 
