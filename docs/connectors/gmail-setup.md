@@ -31,7 +31,7 @@ In the [Google Cloud console](https://console.cloud.google.com/auth/clients):
 
 Google's own walkthrough is [Configure MCP servers](https://developers.google.com/workspace/guides/configure-mcp-servers).
 
-## 3. Choose the capability group
+## 3. Decide the capability group before you start
 
 This is the decision that matters, and it is fixed for the life of the connection.
 
@@ -40,35 +40,34 @@ This is the decision that matters, and it is fixed for the life of the connectio
 | **Read only** | `gmail.readonly` | Agents need to find and read mail. Nothing is written to the mailbox. |
 | **Read & create drafts** | `gmail.readonly`, `gmail.compose` | An agent should leave a draft for a person to review and send. |
 
-Neither group can send mail. Start with **Read only** unless you have a concrete reason for drafts — moving up later means making a new connection, which is cheap, while moving down means the wider scope was granted in the meantime.
+Neither group makes sending reachable. Start with **Read only** unless you have a concrete reason for drafts.
+
+To change groups later, create a second connection with the group you want and remove the first. The group is part of the connection, so **Reconnect** re-runs sign-in for the same group rather than changing it.
 
 ## 4. Connect
 
+Setup asks for access first, then the credential.
+
 1. Select **Connectors** in the sidebar.
 2. Find **Gmail** and select **Connect**.
-3. Pick the capability group, then the setup path:
-   - **Connect with Paperclip** — Paperclip's managed Google client. Available only when the instance is enrolled with Paperclip Cloud and Cloud advertises the Gmail profile.
+3. On the **Access** step, choose the identity and which agents may use the connection:
+   - Under **Identity**, **Just me** is the usual answer for a mailbox — agents use the credential only on runs where you are the responsible person. An **Organization identity** makes one mailbox available to eligible agents on any run, whoever started it; it requires the connection-manager permission and suits a genuinely shared inbox, not a person's mail.
+   - Under **Which agents can use this connection**, choose **Just agents I pick** and name them. A mailbox is not something to hand to every agent by default.
+4. Choose the capability group from step 3 and the setup path:
+   - **Connect with Paperclip** — Paperclip's managed Google client. Offered only when the instance is enrolled with Paperclip Cloud and Cloud advertises the Gmail profile.
    - **Use your own Google OAuth app** — supply the client ID and secret from step 2.
-4. Complete Google's consent screen with the registered Workspace account.
+5. Complete Google's consent screen with the registered Workspace account.
 
-## 5. Choose the identity and the agents
-
-Under **Identity**, **Just me** is the usual answer for a mailbox: agents use the credential only on runs where you are the responsible person.
-
-An **Organization identity** makes one mailbox available to eligible agents on any run, whoever started it. It requires the connection-manager permission. Use it for a genuinely shared inbox, not for a person's mail.
-
-Under **Which agents can use this connection**, choose **Just agents I pick** and name them. A mailbox is not something to hand to every agent in the company by default.
-
-## 6. Set the actions
+## 5. Set the actions
 
 Open the **Permissions** tab.
 
 - Leave the reads **Allowed**.
-- If you connected the draft group, set `create_draft` to **Ask first**. Drafts land in a real mailbox; the connector's own guidance is that draft creation requires approval.
+- If you connected the draft group, set `create-draft` to **Ask first**. Drafts land in a real mailbox; the connector's own guidance is that draft creation requires approval.
 
-## 7. Verify with a read
+## 6. Verify with a read
 
-Run one read action — `search_threads` against a query whose answer you already know — using the connector's test call, as the agent you intend to use. Confirm the result matches what you see in Gmail.
+As the agent you intend to use, run one read whose answer you already know — a thread search against a sender you can see in Gmail — and confirm the result matches. This confirms the credential, the account, and the agent's permission together.
 
 Do not verify by creating a draft.
 

@@ -1,75 +1,83 @@
 ---
 seo_title: AgentMail Connector
-seo_description: Email inboxes built for software agents. Gives an agent its own inbox and turns each email conversation into a Paperclip task you can follow.
+seo_description: Give a Paperclip agent its own email inbox with AgentMail. Each incoming conversation becomes a task. Setup, routing, sender restrictions, and troubleshooting.
 ---
 
 # AgentMail
 
-Email inboxes built for software agents. Gives an agent its own inbox and turns each email conversation into a Paperclip task.
+AgentMail gives an agent its own email address. Mail that arrives becomes a Paperclip task, the agent works the task, and its replies go back out on the same thread.
 
-## What this connector does
+This is a conversation channel, not a set of tools an agent calls against your own mail. It does not read an existing mailbox — the inbox belongs to the agent. For reading your own Gmail, see [Gmail](gmail.md).
 
-AgentMail is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+> **Warning:** Anyone who knows the address can email an unrestricted inbox, and an incoming message can create a task and start agent work. Sender restrictions are configured in AgentMail, and Paperclip does not verify them. Set up an allowlist before publishing the address anywhere.
 
-| Property | Value |
+## Before you connect
+
+- **Chat connectors** must be switched on for the instance. It is an experimental setting and it is off by default; an instance administrator enables it under experimental settings. Without it, email and chat setup is hidden.
+- An AgentMail account and an API key from the [AgentMail console](https://console.agentmail.to).
+- The agent that will own the inbox. One inbox belongs to one agent.
+- To use your own domain, verify it in AgentMail first. Inboxes on `agentmail.to` need no verification.
+
+## Connect AgentMail
+
+1. Open **Connectors** and select **AgentMail**.
+2. On the **Access** step, choose the identity and which agents may use the connection, then select **Save and continue**.
+3. Paste your **AgentMail API key**. Paperclip stores it as a secret.
+4. Create a new inbox or select an existing one. If you create one, choose the address and, for a custom domain, pick a domain you have already verified.
+5. Choose how Paperclip receives mail:
+   - **Live connection** — Paperclip holds an outbound connection to AgentMail and reconnects on its own. No public URL is needed. This is the simpler choice and works behind a firewall.
+   - **Webhook** — AgentMail posts to Paperclip. Your API key must have webhook create, read, and delete permission for the inbox, or setup fails with a message telling you to fix the key or use **Live connection**.
+6. Assign the inbox to its agent and finish.
+
+> **Note:** If the owning agent runs at low trust, it needs an active sandbox environment before its inbox can be connected.
+
+## How email becomes work
+
+| Stage | What happens |
 | --- | --- |
-| Catalog slug | `agentmail` |
-| Category | Communication |
-| Transport | `rest_api` |
-| Highest risk tier | S3 — account data that can be changed. |
+| A message arrives | Paperclip creates a task for the owning agent, with the message as the opening context |
+| The agent works | Ordinary task work. Internal comments and the agent's final response stay in Paperclip and never send email |
+| The agent replies | Only an explicit send or reply leaves Paperclip. A reply continues the existing thread; a new message starts a separate child task |
+| Delivery | The agent can check delivery status for something it sent |
 
-## Before you start
+Two consequences worth knowing. Sending does not close the task, so an agent can send and keep working. And because internal discussion never leaves Paperclip, you can review a thread without risk of the draft reaching the sender.
 
-- An account with the provider, and permission in Paperclip to create a connection. Sharing one with the whole company or with a dedicated agent identity additionally needs the connection-manager permission.
+## Choose access
 
-## Supported setup paths
+An agent may only use inboxes assigned to it. A request against a thread on an inbox the agent does not own is refused, so one agent cannot read another agent's mail through this connector.
 
-Open **Connectors**, find **AgentMail**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+The connection's own settings — the identity that owns the credential, and **Any agent** or **Just agents I pick** — work as they do for any connector. [How connector access works](access-model.md) has the detail. Note that inbox assignment, not the agent list, is what decides whose mail an agent can read.
 
-### Email with an agent
+Who may email the inbox is an AgentMail setting, not a Paperclip one. AgentMail keeps separate lists for new messages and for replies, so check both when restricting senders. See AgentMail's [allowlists and blocklists](https://docs.agentmail.to/knowledge-base/allowlists-blocklists).
 
-Assign an inbox to an agent and manage email conversations in tasks.
+## Try it
 
-- Connection method: API key
-- Risk tier: S3
+Verify without sending anything outbound:
 
-| Field | Required | What it is |
+1. Open the connection and confirm the inbox is listed and the connection is healthy.
+2. From an address you control and have allowlisted, send one short message to the inbox.
+3. Expect a new task for the owning agent within a few moments, with your message as the opening context.
+
+That confirms the whole receiving path — credential, inbox assignment, and routing — without Paperclip sending mail. Only extend to a reply when you intend real mail to go out, and to an address you control.
+
+> **Note:** Procedure, not a recorded test result. It sends one message from your own account to your own inbox; nothing is delivered to a third party.
+
+## Troubleshooting and limitations
+
+| Problem | Likely cause | Fix |
 | --- | --- | --- |
-| **AgentMail API key** | Yes | Credential value; Paperclip stores it as a secret. |
+| AgentMail does not appear in **Connectors** | **Chat connectors** is off for the instance | Ask an administrator to enable it in experimental settings |
+| Setup fails asking about webhook permissions | The API key cannot manage webhooks for this inbox | Grant webhook create, read, and delete permission in AgentMail, or choose **Live connection** |
+| Mail arrives in AgentMail but no task appears | Receiving is not established, or the inbox is not assigned to an agent | Check the connection's health and that the inbox has an owning agent |
+| A custom-domain inbox cannot be created | The domain is not verified in AgentMail | Verify the domain in AgentMail, then retry |
+| The agent cannot read a thread you can see | The thread is on an inbox that is not assigned to that agent | Assign the inbox to that agent, or give the work to the agent that owns it |
+| The inbox was disconnected and will not come back | A disconnected inbox is not reusable | Create a new inbox connection |
 
-Provider console: [get a key](https://console.agentmail.to) · [provider docs](https://docs.agentmail.to/inboxes)
+Limitations: one inbox, one owning agent. Paperclip does not enforce who may write to the inbox. Attachments and thread history come from AgentMail, so what an agent can see is what AgentMail retains.
 
-## Accounts and access
+## Related guides
 
-AgentMail follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-AgentMail's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
-
-There is no browser handshake. Paperclip stores the value you supply as a secret and presents it to the server on each call; the connection is created by `POST /api/companies/{companyId}/tools/apps/connect` and completed by `POST /api/companies/{companyId}/tools/apps/{connectionId}/finish`.
-
-## Check that it works
-
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
-
-## If something goes wrong
-
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
-
-## Related
-
-- [Connectors](../connectors.md)
 - [How connector access works](access-model.md)
-- [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
+- [Verify a connector and fix a broken one](verify-and-troubleshoot.md)
+- [Gmail](gmail.md) — read your own mailbox instead of giving an agent its own.
+- [AgentMail inbox documentation](https://docs.agentmail.to/inboxes)
