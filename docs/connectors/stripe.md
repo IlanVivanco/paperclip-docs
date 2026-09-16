@@ -1,106 +1,79 @@
 ---
 seo_title: Stripe Connector
-seo_description: Payments, invoicing, and billing. Agents read customers, invoices, and payouts in the account you connect, under per-action permissions.
+seo_description: Let agents read Stripe data and, with approval, act on it. Test mode first, restricted keys, why financial actions need review, and troubleshooting.
 ---
 
 # Stripe
 
-Payments, invoicing, and billing. Agents read customers, invoices, and payouts in the account you connect.
+Agents can work with your Stripe account through Stripe's hosted server — looking up customers, payments, subscriptions, and products, and with approval performing actions against them.
 
-## What this connector does
+> **Warning:** This connector reaches real financial data, and its writes are real financial operations. Stripe's hosted server is in public preview. Start in test mode, and require approval for anything that moves money.
 
-Stripe is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+Do not assume a specific capability from the name. What an agent can do is exactly what Stripe's server exposes to your credential and what you have permitted — refunds, payouts, and payment creation are not automatically available, and are not automatically absent either. Read the connection's action list rather than guessing in either direction.
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `stripe` |
-| Category | Commerce and finance |
-| Transport | `mcp_remote` |
-| Highest risk tier | S4 — money, production data, or irreversible actions. |
-| Provider research | wave 2, auth mode `dcr_or_api_key`, verified 2026-08-26 |
+## Before you connect
 
-## Before you start
+- A Stripe account. Use a **test mode** account or test keys for the first connection.
+- If using a key, create a **restricted key** with only the permissions agents need, rather than a full secret key.
 
-- A Stripe account; the server is public preview and payment actions require explicit approval.
-- Financial or destructive actions must be explicitly approved before execution.
+Restricted keys are the main control on this connector. Stripe lets you grant read-only access to specific resource types, which is far more precise than anything Paperclip can apply afterwards.
 
-## Supported setup paths
+## Connect Stripe
 
-Open **Connectors**, find **Stripe**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+1. Open **Connectors** and select **Stripe**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Choose how to authenticate:
+   - **Sign in with Stripe** — browser sign-in.
+   - **Use an API key** — paste a Stripe key. Use a restricted key scoped to the minimum.
+4. Finish setup.
 
-### Sign in with Stripe (`mcp-oauth`)
+> **Danger:** A Stripe secret key grants full account access, including moving money. Paste only a restricted key unless you have a specific reason not to, and never a live secret key into an untested setup.
 
-Use browser sign-in for the provider-hosted MCP server.
+## Choose access
 
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Risk tier: S4
-- Endpoints: MCP server `https://mcp.stripe.com`
+Two layers, and the Stripe-side one is stronger:
 
-Provider console: [provider docs](https://docs.stripe.com/mcp)
-
-### Use an API key (`mcp-api-key`)
-
-Use a restricted customer-owned key when browser sign-in is not suitable.
-
-- Connection method: API key
-- Risk tier: S4
-- Endpoints: MCP server `https://mcp.stripe.com`
-
-| Field | Required | What it is |
+| Layer | Controlled in | Precision |
 | --- | --- | --- |
-| **Stripe API key** | Yes | Credential value; Paperclip stores it as a secret. |
+| Which API operations the credential can perform | Stripe, on the restricted key | Per resource, read or write |
+| Whether an agent may call an exposed action | Paperclip, on the **Permissions** tab | Per action, with approval |
 
-Provider console: [get a key](https://docs.stripe.com/mcp) · [provider docs](https://docs.stripe.com/mcp)
+Use the restricted key to remove capability, and Paperclip's settings to require review on what remains.
 
-## Accounts and access
+Test mode versus live mode is decided entirely by which credential you connect. A test-mode key reaches test data only. There is no toggle in Paperclip that switches a live connection into test mode, so if you want both, make two connections and name them clearly.
 
-Stripe follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
+> **Warning:** Stripe's own guidance is that financial and destructive actions require explicit approval before execution. Keep every write on **Ask first** or **Off**. An **Allowed** write here means an agent can change financial records without a person seeing it first.
 
-## Actions
+See [Set action permissions](action-permissions.md).
 
-Stripe's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
+## Try it
 
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+Use a read against test data:
 
 ```txt
-You             Paperclip               Stripe
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Look up the most recent Stripe customer and tell me their email and when they were created. Do not create, refund, or change anything.
 ```
 
-## Check that it works
+Compare against the Stripe dashboard in the same mode. Never verify this connector with a payment, a refund, or a payout — those are real operations even when they are small.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result. Run it against a test-mode connection first.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| An agent sees no data | The credential is test mode and you are comparing against live, or the reverse | Check which mode the connected credential belongs to |
+| An action is refused by Stripe | The restricted key does not include that permission | Widen the key deliberately in Stripe, or leave the capability off |
+| An action is missing from the list | Stripe's server does not expose it to this credential | Use **Refresh actions**; otherwise it is not available |
+| A financial action ran without review | It was set to **Allowed** | Set writes to **Ask first** or **Off** |
+| Behaviour changes without a Paperclip change | The hosted server is in public preview and evolving | Re-read the action list after provider changes |
+| **Needs attention** | The key was rolled or the sign-in expired | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one Stripe account and one mode per connection. Paperclip cannot reverse a financial operation. Public preview means the surface can change.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [Shopify](shopify.md) — storefront commerce, with different boundaries.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Stripe provider documentation](https://docs.stripe.com/mcp)
+- [Answer a connector review request](review-requests.md)
+- [Stripe MCP documentation](https://docs.stripe.com/mcp)

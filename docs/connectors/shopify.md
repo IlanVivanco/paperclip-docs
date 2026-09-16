@@ -1,96 +1,83 @@
 ---
 seo_title: Shopify Connector
-seo_description: E-commerce platform for online stores. Agents search a store's products and policies and manage carts. You give a domain; there is no sign-in.
+seo_description: Give agents a store's public catalog, policies, and cart tools. This is the shopper-facing storefront surface, not Admin API access to orders or customers.
 ---
 
 # Shopify
 
-E-commerce platform for online stores. Agents search a store's products and policies and manage shopping carts. You give a store domain; there is no sign-in, and no access to the store's admin.
+Agents can search a Shopify store's products and policies and work with shopping carts, the same way a shopper's assistant would.
 
-## What this connector does
+> **Warning:** This is Shopify's shopper-facing surface, not Admin API access. It does **not** reach merchant orders, customers, inventory management, or anything in Shopify Admin — not even for the merchant's own store. If you need admin data, this connector is not the route.
 
-Shopify is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+There is no sign-in. These are public endpoints, so what an agent can see is what any visitor to the storefront could see.
 
-| Property | Value |
+## Before you connect
+
+- The store's permanent `your-store.myshopify.com` domain. A custom domain is not the endpoint, even if that is the address customers use.
+- A **public** storefront. Shopify keeps trial storefronts private until a plan is selected, and a password-protected storefront returns an authorization error to everyone — Paperclip cannot use a merchant's Admin session to get past it.
+
+To make a storefront public: select a Shopify plan, then in Shopify Admin open **Online Store → Preferences** and set storefront visibility to public, removing password protection.
+
+## Pick a server
+
+Shopify offers two, and Paperclip exposes both:
+
+| Option | Use it for |
 | --- | --- |
-| Catalog slug | `shopify` |
-| Category | Commerce and finance |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
+| **Shopify UCP commerce** | The recommended choice. Shopify's current catalog, cart, and checkout tools |
+| **Storefront policies and compatibility tools** | Shopify's compatibility server, when agents mainly need storefront policy and FAQ search |
 
-## Before you start
+> **Note:** On the UCP option, Paperclip supplies the agent profile Shopify requires automatically. It currently sends Shopify's documented hosted profile fixture while Paperclip's own production profile is being established.
 
-- **Launch the storefront before connecting.** Shopify's Storefront MCP is a public, no-auth endpoint. Paperclip cannot use the merchant's Shopify Admin session to bypass a private storefront. See [Open Shopify Admin](https://admin.shopify.com/).
-- This is Shopify's shopper-facing UCP server, not Admin API access. It does not manage merchant products or customers.
-- The storefront must be public. A private or password-protected storefront returns HTTP 401 even when the merchant is signed in to Shopify Admin.
-- Paperclip currently uses Shopify's documented hosted agent-profile fixture while Paperclip's production UCP profile is being established.
-- This is Shopify's Storefront MCP, not Admin API access. It does not manage merchant products, orders, or customers.
+## Connect Shopify
 
-## Supported setup paths
+1. Confirm the storefront is public.
+2. Open **Connectors** and select **Shopify**.
+3. On the **Access** step, choose the identity and which agents may use the connection.
+4. Choose the server option.
+5. Enter the **Store domain** as the bare permanent host — `your-store.myshopify.com`, with no `https://` and no trailing path. Paperclip validates the format and rejects anything that is not a `myshopify.com` host.
+6. Finish setup.
 
-Open **Connectors**, find **Shopify**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+## Choose access
 
-### Shopify UCP commerce (`ucp-commerce`)
+Because the endpoint is public, the connection grants no privileged reach: the boundary is the storefront itself. Connecting does not expose anything a shopper could not already find.
 
-Recommended for Shopify's current UCP catalog, cart, and checkout tools.
+What does need attention is the write side. Cart and checkout operations are real actions against the store:
 
-- Connection method: No credential
-- Risk tier: S3
-- Endpoints: MCP server `https://{storeDomain}/api/ucp/mcp`
+> **Warning:** `cancel-cart`, `cancel-checkout`, and `complete-checkout` are classified destructive. Completing a checkout is a purchase. Leave these **Off** unless an agent genuinely needs them, and use **Ask first** at minimum.
 
-| Field | Required | What it is |
+Product and policy lookups are reads and are safe to leave **Allowed**. See [Set action permissions](action-permissions.md).
+
+One connection covers one store. Connect Shopify again for a second store.
+
+## Try it
+
+Look up a product you can confirm on the storefront yourself:
+
+```txt
+Search the store for a product called "canvas tote" and tell me its price and whether it is in stock. Do not add anything to a cart.
+```
+
+Expect details matching the public product page. Keep the first check to a product or policy lookup — anything cart-related starts a real commerce flow.
+
+> **Note:** Illustrative task, not a recorded test result. Substitute a product from the store.
+
+## Troubleshooting and limitations
+
+| Problem | Likely cause | Fix |
 | --- | --- | --- |
-| **Store domain** | Yes | Enter the permanent myshopify.com domain without https://. Custom storefront domains are not the MCP endpoint. |
+| Setup fails with an authorization error | The storefront is private or password-protected | Select a plan and set storefront visibility to public in **Online Store → Preferences** |
+| The store domain is rejected | A custom domain or a full URL was entered | Use the bare `your-store.myshopify.com` host |
+| An agent cannot see orders or customers | Expected — this is not Admin API access | Nothing to fix here; this connector does not cover admin data |
+| Products are missing from results | They are unpublished, or not available to the storefront's sales channel | Publish them in Shopify Admin |
+| Policy search returns nothing | Policies are not filled in on the store | Add them in Shopify Admin |
+| A checkout action unexpectedly completed | Checkout tools are real commerce actions | Set them to **Off** or **Ask first** |
 
-Provider console: [provider docs](https://shopify.dev/docs/agents/catalog/storefront-catalog)
+Limitations: one store per connection, public storefront only, no Admin API. Shopify's own rate limits apply.
 
-### Storefront policies and compatibility tools (`storefront-mcp`)
+## Related guides
 
-Use Shopify's compatibility server when agents need storefront policy and FAQ search.
-
-- Connection method: No credential
-- Risk tier: S3
-- Endpoints: MCP server `https://{storeDomain}/api/mcp`
-
-| Field | Required | What it is |
-| --- | --- | --- |
-| **Store domain** | Yes | Enter the permanent myshopify.com domain without https://. Custom storefront domains are not the MCP endpoint. |
-
-Provider console: [provider docs](https://shopify.dev/docs/apps/build/storefront-mcp/servers/storefront)
-
-## Accounts and access
-
-Shopify follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Shopify's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
-
-There is no browser handshake. Paperclip stores the value you supply as a secret and presents it to the server on each call; the connection is created by `POST /api/companies/{companyId}/tools/apps/connect` and completed by `POST /api/companies/{companyId}/tools/apps/{connectionId}/finish`.
-
-## Check that it works
-
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
-
-## If something goes wrong
-
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| The provider rejects the sign-in | Confirm the prerequisite above is done: launch the storefront before connecting. |
-
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
-
-## Related
-
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [Stripe](stripe.md) — payments data, with its own boundaries.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Shopify provider documentation](https://shopify.dev/docs/apps/build/storefront-mcp/servers/storefront)
+- [How connector access works](access-model.md)
+- [Shopify Storefront MCP documentation](https://shopify.dev/docs/apps/build/storefront-mcp/servers/storefront)

@@ -1,115 +1,82 @@
 ---
 seo_title: Supabase Connector
-seo_description: Hosted Postgres with authentication, storage, and edge functions. Agents work with the projects you pick in your Supabase organization.
+seo_description: Let agents work with a Supabase project. Scope it to a development project, use read-only mode, and understand the production risk before connecting.
 ---
 
 # Supabase
 
-Hosted Postgres with authentication, storage, and edge functions. Agents work with the projects you pick in your Supabase organization.
+Agents can inspect and work with a Supabase project — its database, schema, and project configuration.
 
-## What this connector does
+> **Warning:** Use a development project. Supabase connections can reach real data and, without read-only mode, change schema and database contents. Do not connect a production project unless you have read Supabase's own MCP security guidance and accepted the risk deliberately.
 
-Supabase is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+Write tools start enabled on this connector. They are governed by Paperclip's action settings, but the default is not read-only — you have to choose that.
 
-| Property | Value |
+## Before you connect
+
+- A Supabase account with access to the project you want agents to use.
+- The **project reference** of that project, from its Supabase settings.
+- A decision about read-only mode, made before you connect rather than after.
+
+## Connect Supabase
+
+1. Open **Connectors** and select **Supabase**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Choose how to authenticate:
+   - **Sign in with Supabase** — browser sign-in.
+   - **Use an API key** — paste a Supabase API key.
+4. Set the scoping controls below.
+5. Finish setup.
+
+## Scope the connection
+
+| Control | Recommendation |
 | --- | --- |
-| Catalog slug | `supabase` |
-| Category | Data and analytics |
-| Transport | `mcp_remote` |
-| Highest risk tier | S4 — money, production data, or irreversible actions. |
-| Provider research | wave 2, auth mode `dcr_or_api_key`, verified 2026-08-26 |
+| **Project reference** | Always set it. Scope the connection to one development project |
+| **Read-only mode** | Turn it on unless an agent genuinely needs to change the database |
+| **Feature groups** | Optionally narrow which groups of tools are exposed |
 
-## Before you start
+Setting the project reference is the difference between "this agent works on one development project" and "this agent can reach what the account can reach". Set it.
 
-- A Supabase account; use a development project and review write actions before connecting production data.
-- Do not connect production data unless you have reviewed Supabase's MCP security guidance.
+Read-only mode is the other decision worth making up front. Turning it on after an agent has already had write tools does not undo anything it did.
 
-## Supported setup paths
+## Choose access
 
-Open **Connectors**, find **Supabase**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+Project reach is the Supabase account's, narrowed by the project reference you set. Organization and project permissions are Supabase's, not Paperclip's — an account with owner rights on an organization brings those rights to the connection.
 
-### Sign in with Supabase (`mcp-oauth`)
+Be clear about the range of what write access means here. It is not only inserting rows: depending on the tools exposed, it can include schema changes and project configuration. Those are not reversible from Paperclip.
 
-Use browser sign-in for the provider-hosted MCP server.
+Leave writes on **Ask first** at minimum, and prefer **Off** for anything touching schema. See [Set action permissions](action-permissions.md).
 
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Risk tier: S4
-- Endpoints: MCP server `https://mcp.supabase.com/mcp`
+## Try it
 
-| Field | Required | What it is |
-| --- | --- | --- |
-| **Project reference** | Yes | Scope the connection to one development project. |
-| **Read-only mode** | No | Enable this to prevent the connection from changing the database. |
-| **Feature groups** | No | Optional comma-separated feature groups. |
-
-Provider console: [provider docs](https://supabase.com/docs/guides/ai-tools/mcp)
-
-### Use an API key (`mcp-api-key`)
-
-Use a restricted customer-owned key when browser sign-in is not suitable.
-
-- Connection method: API key
-- Risk tier: S4
-- Endpoints: MCP server `https://mcp.supabase.com/mcp`
-
-| Field | Required | What it is |
-| --- | --- | --- |
-| **Supabase API key** | Yes | Credential value; Paperclip stores it as a secret. |
-| **Project reference** | Yes | Scope the connection to one development project. |
-| **Read-only mode** | No | Enable this to prevent the connection from changing the database. |
-| **Feature groups** | No | Optional comma-separated feature groups. |
-
-Provider console: [get a key](https://supabase.com/docs/guides/ai-tools/mcp) · [provider docs](https://supabase.com/docs/guides/ai-tools/mcp)
-
-## Accounts and access
-
-Supabase follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Supabase's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+Use a metadata read, not a query against real data:
 
 ```txt
-You             Paperclip               Supabase
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+List the tables in the Supabase project and tell me how many there are. Do not query any row data or change anything.
 ```
 
-## Check that it works
+Expect a table list matching the project. A metadata read confirms the credential and the project scope without pulling customer data into a task transcript, and without running anything expensive.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+Do not verify with a migration, a schema change, or a privileged SQL statement.
 
-## If something goes wrong
+> **Note:** Illustrative task, not a recorded test result.
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+## Troubleshooting and limitations
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| The agent reached an unexpected project | No project reference was set | Set **Project reference** and reconnect |
+| Write tools are missing | **Read-only mode** is on | That is the recommended posture; turn it off only deliberately |
+| A schema change succeeded that you did not expect | Write tools start enabled and the action was allowed | Turn on read-only mode, or set schema tools to **Off**; recover using Supabase's own backups |
+| Authentication succeeds but the project is not visible | The account lacks access to that project | Grant access in Supabase |
+| Queries fail or time out | Supabase project limits, not Paperclip | Check the project's plan and resource limits |
+| **Needs attention** | The key was revoked or the sign-in expired | Select **Reconnect** |
 
-## Related
+Limitations: one project per connection when scoped. Paperclip cannot roll back a database change — recovery is Supabase's backups. Read-only mode hides write tools but is not a substitute for using a development project.
 
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+## Related guides
+
+- [ClickHouse](clickhouse.md) — another database connector.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Supabase provider documentation](https://supabase.com/docs/guides/ai-tools/mcp)
+- [How connector access works](access-model.md)
+- [Supabase MCP documentation](https://supabase.com/docs/guides/ai-tools/mcp)

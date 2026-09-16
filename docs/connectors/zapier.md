@@ -1,71 +1,74 @@
 ---
 seo_title: Zapier Connector
-seo_description: Automation that wires thousands of apps together. You choose the actions in Zapier and paste one generated URL, so agents get those actions and no others.
+seo_description: Reach thousands of apps through a Zapier MCP server. The generated URL is a credential — how to set it up safely, choose exposed actions, and troubleshoot.
 ---
 
 # Zapier
 
-Automation service that wires thousands of apps together. You choose the actions in Zapier and paste one generated URL, so the agent gets exactly the actions you put in it and nothing else.
+Zapier lets agents reach the apps you have already connected in your Zapier account. You build an MCP server in Zapier, choose which actions it exposes, and give Paperclip its generated URL.
 
-## What this connector does
+> **Danger:** The generated Zapier URL contains its own access token. It is a credential, not just an address — anyone who has the URL can call the actions the server exposes. Treat it exactly like a password: never paste it into a ticket, a chat message, a screenshot, or a commit.
 
-Zapier is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+## Before you connect
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `zapier` |
-| Category | Productivity and collaboration |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
-| Provider research | wave 3, auth mode `generated_url`, verified 2026-08-26 |
+- A Zapier account with the apps you want to reach already connected there.
+- An MCP server created in Zapier, with the specific actions you want exposed enabled on it.
 
-## Before you start
+The actions an agent can call are decided in Zapier, not Paperclip. This is the main thing to get right before connecting: a server with broad actions enabled gives the agent broad reach, and Paperclip cannot narrow it beyond switching off what Zapier advertises.
 
-- Create a Zapier MCP server, choose the actions it exposes, and paste its generated connection URL.
+## Connect Zapier
 
-## Supported setup paths
+1. In Zapier, create an MCP server and enable only the actions agents should have. Start with the smallest useful set.
+2. Copy the server's complete generated connection URL.
+3. Open **Connectors** and select **Zapier**.
+4. On the **Access** step, choose the identity and which agents may use the connection.
+5. Paste the full URL on the **Add MCP URL** step and select **Check link**. Paperclip verifies it can reach the server, then stores the URL as a secret.
 
-Open **Connectors**, find **Zapier**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+Paste the URL exactly as Zapier generated it, including the token portion. A truncated URL fails the check.
 
-### Paste generated MCP URL
+## Choose access
 
-Use the complete provider-generated MCP URL from Zapier.
+Two separate layers, and it is worth knowing which one to reach for:
 
-- Connection method: No credential
-- Risk tier: S3
+| Layer | Controlled in | Use it to |
+| --- | --- | --- |
+| Which actions exist at all | Zapier, on the MCP server | Remove capability entirely |
+| Whether an agent may call an exposed action | Paperclip, on the **Permissions** tab | Require approval, or switch one off |
 
-## Accounts and access
+Changing the exposed action set in Zapier does not require reconnecting — use **Refresh actions** in Paperclip afterwards to re-read the list. Newly discovered actions arrive switched off.
 
-Zapier follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
+Anyone in Zapier who can edit that MCP server can widen what the agent can reach, without touching Paperclip. Keep the list of people who can edit it small, and review it when you review the connection.
 
-## Actions
+Because Zapier actions usually act on real systems — sending messages, creating records — most of them classify as writes. Leave them on **Ask first** until you have watched the agent use them. See [Set action permissions](action-permissions.md).
 
-Zapier's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
+## Try it
 
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
+Choose a deliberately read-only action for the first check — for example looking up a record or listing recent items in a connected app — and run it as the agent you intend to use.
 
-## Authorization sequence
+```txt
+Use Zapier to look up the most recent row in my tracking spreadsheet and tell me what it says. Do not create or send anything.
+```
 
-There is no browser handshake. Paperclip stores the value you supply as a secret and presents it to the server on each call; the connection is created by `POST /api/companies/{companyId}/tools/apps/connect` and completed by `POST /api/companies/{companyId}/tools/apps/{connectionId}/finish`.
+A read confirms the URL, the server, and the agent's permission without acting on an outside system. Avoid verifying with an action that sends a message or creates a record; Zapier actions usually reach real destinations.
 
-## Check that it works
+> **Note:** Illustrative task, not a recorded test result. Substitute an action your own server exposes.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+## Troubleshooting and limitations
 
-## If something goes wrong
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| **Check link** fails | The URL is incomplete, or the server was deleted in Zapier | Copy the complete URL again from Zapier |
+| The action list is empty | No actions are enabled on the Zapier MCP server | Enable actions in Zapier, then **Refresh actions** |
+| An action you enabled in Zapier is missing | Paperclip has not re-read the list | Use **Refresh actions** |
+| A newly appeared action does nothing | New actions arrive switched off | Set it to **Allowed** or **Ask first** |
+| An action fails inside Zapier | The underlying app connection in Zapier has expired | Reconnect that app in Zapier |
+| You suspect the URL leaked | The URL is a bearer credential | Regenerate the server URL in Zapier and reconnect in Paperclip |
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
+Limitations: the action surface is whatever the Zapier server exposes, and Paperclip cannot see or restrict what happens inside a Zap beyond the action it calls. Zapier's own plan limits and task quotas apply. Rotating the URL means reconnecting.
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+## Related guides
 
-## Related
-
-- [Connectors](../connectors.md)
-- [How connector access works](access-model.md)
+- [Connect your own MCP server](custom-mcp-servers.md) — for a server you run yourself.
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Zapier provider documentation](https://docs.zapier.com/mcp/quickstart)
+- [How connector access works](access-model.md)
+- [Zapier MCP quickstart](https://docs.zapier.com/mcp/quickstart)

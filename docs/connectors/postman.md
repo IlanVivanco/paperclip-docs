@@ -1,161 +1,83 @@
 ---
 seo_title: Postman Connector
-seo_description: API development and testing workspace. Agents work with your collections and APIs, at read-only, code-generation, or full-write access.
+seo_description: Connect Postman's hosted MCP server. Choose your region first, then a capability group — Minimal, Code, or Full. Setup, access, a read test, and troubleshooting.
 ---
 
 # Postman
 
-API development and testing workspace. Agents work with the collections and APIs your Postman account can reach. Pick how much access to grant: read-only, code generation, or full write.
+Agents can work with your Postman workspaces, collections, and environments — reading API definitions, and on the fuller capability groups generating code and making changes.
 
-## What this connector does
+Two decisions come before credentials, and getting either wrong means starting over.
 
-Postman is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+## Decide region and capability group first
 
-| Property | Value |
+**Region** determines both the endpoint and how you authenticate:
+
+| Region | Authentication |
 | --- | --- |
-| Catalog slug | `postman` |
-| Category | Developer tools |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
-| Provider research | wave 2, auth mode `dcr_or_api_key`, verified 2026-08-26 |
+| **US** | Browser sign-in |
+| **EU** | API key — browser sign-in is not available on EU endpoints |
 
-## Before you start
+**Capability group** determines how many tools the connection exposes:
 
-- A Postman account; OAuth is available for US endpoints and API keys are required for EU endpoints.
+| Group | What it covers |
+| --- | --- |
+| **Minimal** | Essential workspace, collection, and environment tools, with the smallest tool catalog |
+| **Code** | Tools for generating client code from API definitions |
+| **Full** | All Postman API tools, including write-capable collaboration and advanced features |
 
-## Supported setup paths
+Start with **Minimal**. It is the smallest surface that does useful work, and a smaller tool catalog is easier for both you and the agent to reason about. Move up only when an agent actually needs code generation or write access.
 
-Open **Connectors**, find **Postman**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+The region and group are fixed on the connection. To change either, make a new connection.
 
-### US · Browser sign-in (`mcp-oauth-minimal`)
+## Before you connect
 
-Use browser sign-in for the provider-hosted MCP server.
+- A Postman account with access to the workspaces you want agents to use.
+- For the EU region, a Postman API key.
 
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Capability group: **Minimal**
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.postman.com/minimal`
+## Connect Postman
 
-Provider console: [provider docs](https://learning.postman.com/latest-v-12/docs/reference/postman-api/postman-mcp-server/postman-mcp-remote-server)
+1. Open **Connectors** and select **Postman**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Choose the option matching your region and capability group.
+4. For US, complete Postman's browser sign-in. For EU, paste your Postman API key.
 
-### US · Browser sign-in (`mcp-oauth-code`)
+## Choose access
 
-Use browser sign-in for the provider-hosted MCP server.
+Workspace, collection, and environment reach comes from Postman: the connection sees what the authenticating account or key can see. Paperclip has no workspace picker, so narrow access by authenticating with an account that has access to fewer workspaces.
 
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Capability group: **Code**
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.postman.com/code`
+> **Warning:** Postman environments commonly hold API keys, tokens, and passwords as variables. An agent that can read an environment can read those values. This is the main reason to prefer **Minimal**, to authenticate with a limited account, and to keep secrets out of shared Postman environments.
 
-Provider console: [provider docs](https://learning.postman.com/latest-v-12/docs/reference/postman-api/postman-mcp-server/postman-mcp-remote-server)
+On capability: **Full** includes write-capable tools, which change collections and workspaces that colleagues rely on. The **Code** group generates client code from definitions — it produces code for you to review, it does not run anything. Neither group gives an agent the ability to execute arbitrary requests against your APIs as a side effect of being connected.
 
-### US · Browser sign-in (`mcp-oauth-full`)
+Leave writes on **Ask first**. See [Set action permissions](action-permissions.md).
 
-Use browser sign-in for the provider-hosted MCP server.
-
-- Connection method: Sign in with the provider
-- OAuth client: registered on demand by Paperclip
-- Capability group: **Full**
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.postman.com/mcp`
-
-Provider console: [provider docs](https://learning.postman.com/latest-v-12/docs/reference/postman-api/postman-mcp-server/postman-mcp-remote-server)
-
-### EU · API key (`mcp-eu-key-minimal`)
-
-Use a restricted customer-owned key when browser sign-in is not suitable.
-
-- Connection method: API key
-- Capability group: **Minimal**
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.eu.postman.com/minimal`
-
-| Field | Required | What it is |
-| --- | --- | --- |
-| **Postman API key** | Yes | Credential value; Paperclip stores it as a secret. |
-
-Provider console: [get a key](https://learning.postman.com/latest-v-12/docs/reference/postman-api/postman-mcp-server/postman-mcp-remote-server) · [provider docs](https://learning.postman.com/latest-v-12/docs/reference/postman-api/postman-mcp-server/postman-mcp-remote-server)
-
-### EU · API key (`mcp-eu-key-code`)
-
-Use a restricted customer-owned key when browser sign-in is not suitable.
-
-- Connection method: API key
-- Capability group: **Code**
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.eu.postman.com/code`
-
-| Field | Required | What it is |
-| --- | --- | --- |
-| **Postman API key** | Yes | Credential value; Paperclip stores it as a secret. |
-
-Provider console: [get a key](https://learning.postman.com/latest-v-12/docs/reference/postman-api/postman-mcp-server/postman-mcp-remote-server) · [provider docs](https://learning.postman.com/latest-v-12/docs/reference/postman-api/postman-mcp-server/postman-mcp-remote-server)
-
-### EU · API key (`mcp-eu-key-full`)
-
-Use a restricted customer-owned key when browser sign-in is not suitable.
-
-- Connection method: API key
-- Capability group: **Full**
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.eu.postman.com/mcp`
-
-| Field | Required | What it is |
-| --- | --- | --- |
-| **Postman API key** | Yes | Credential value; Paperclip stores it as a secret. |
-
-Provider console: [get a key](https://learning.postman.com/latest-v-12/docs/reference/postman-api/postman-mcp-server/postman-mcp-remote-server) · [provider docs](https://learning.postman.com/latest-v-12/docs/reference/postman-api/postman-mcp-server/postman-mcp-remote-server)
-
-## Accounts and access
-
-Postman follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Postman's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Postman
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+List the Postman collections you can see and tell me how many requests are in the first one. Do not change anything.
 ```
 
-## Check that it works
+Compare the collection list against what you see in Postman. This confirms the credential, the region endpoint, and the agent's permission at once.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| Authorization loops or is refused | The provider may require an administrator to approve the client on first use. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Browser sign-in is not offered | You selected an EU option; EU endpoints require an API key | Use the EU key option, or the US region if the account is hosted there |
+| Authentication succeeds but nothing is visible | The account is in the other region | Connect with the option matching where the Postman account is hosted |
+| A tool you expected is missing | The connection uses a narrower capability group | Make a new connection with **Code** or **Full** |
+| Writes are refused | The group is **Minimal**, or the action is set to **Off** | Check the group, then the **Permissions** tab |
+| A workspace is missing | The authenticating account cannot see it | Grant access in Postman; no reconnect needed |
+| **Needs attention** | The API key was revoked, or the sign-in expired | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one region and one capability group per connection. No workspace selection in Paperclip. Postman's own plan limits apply.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
 - [How connector access works](access-model.md)
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Postman provider documentation](https://learning.postman.com/latest-v-12/docs/reference/postman-api/postman-mcp-server/postman-mcp-remote-server)
+- [Verify a connector and fix a broken one](verify-and-troubleshoot.md)
+- [Postman MCP server documentation](https://learning.postman.com/latest-v-12/docs/reference/postman-api/postman-mcp-server/postman-mcp-remote-server)
