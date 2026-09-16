@@ -14,8 +14,20 @@ This is a tool connector: an agent reads and writes Chat using *your* Google acc
 ## Before you connect
 
 - A Google Workspace account that already belongs to the spaces you want agents to read, with Developer Preview registration confirmed.
-- If you bring your own Google OAuth client, you must also **configure a Google Chat app in the Cloud project** — Chat is the one Google connector with this extra requirement. Enable the Chat and Chat MCP APIs and register Paperclip's callback URI.
 - Personal Google accounts do not have Google Chat spaces in the Workspace sense; this connector expects a Workspace account.
+
+### Decide your setup path now
+
+This is the gate worth checking before anything else, because the two paths cost very different amounts of work:
+
+| Path | What it takes | Offered when |
+| --- | --- | --- |
+| **Connect with Paperclip** | Sign-in only, no Cloud console work | Only when the instance is enrolled with Paperclip Cloud *and* Cloud advertises the Chat profile. If it is not on the setup screen, it is unavailable to you |
+| **Use your own Google OAuth app** | A Cloud project with the **Chat API** and **Chat MCP API** enabled, a registered callback URI, **and a configured Chat app** | Always |
+
+**Chat is the one Google connector that needs a configured Chat app**, not merely an enabled API. In the Cloud console, open **Chat API** → **Configuration** and complete the app's identity — app name, avatar URL, and description — then set its functionality and visibility. Google will not authorize against a Chat API with no configured app, and the failure appears at the consent screen rather than earlier.
+
+[Set up your own Google OAuth app](google-setup.md) is the full procedure, including this step.
 
 ## Pick a capability group
 
@@ -30,7 +42,7 @@ The group is fixed for the life of the connection.
 
 1. Open **Connectors** and select **Google Chat**.
 2. On the **Access** step, choose the identity and which agents may use the connection.
-3. Choose the capability group, then **Connect with Paperclip** or **Use your own Google OAuth app**.
+3. Choose the capability group, then the path you settled above — **Connect with Paperclip**, or **Use your own Google OAuth app** with the client ID and secret from [Set up your own Google OAuth app](google-setup.md).
 4. Complete Google's consent screen with the registered Workspace account.
 
 ## Choose access
@@ -50,15 +62,16 @@ Reviewed operations:
 
 ## Try it
 
-Read a conversation you can confirm by eye, and do not post anything:
+Pick a space the authorizing account belongs to and a recent message in it whose sender and wording you can see for yourself. Then:
 
 ```txt
-Search Google Chat for recent messages in the "deploys" space and summarize the last few. Do not send a message.
+In the Google Chat space "deploys", find the most recent message and tell me who
+sent it and when. Do not send a message.
 ```
 
-Compare the summary against Chat. A read is the right first check here because the alternative posts in front of colleagues.
+Expect the sender and timestamp you can already see in Chat. Matching a specific known message is the point — a plausible-sounding summary is not evidence the agent read anything.
 
-If you do need to confirm sending, send to a direct message with yourself rather than a shared space.
+If you must confirm sending, post to a space created for the purpose that contains only you. A direct message "with yourself" is ambiguous in Chat and a poor test target; a scratch space is unambiguous and equally harmless.
 
 > **Note:** Illustrative task, not a recorded test result.
 

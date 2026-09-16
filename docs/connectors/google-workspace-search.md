@@ -25,13 +25,13 @@ This connector only searches. It returns results with links; it does not read a 
 
 - A Google Workspace account whose mail, files, calendar, and chat you are willing to make searchable.
 - Google Workspace Developer Preview registration for that account, confirmed by Google. Apply at [Google Workspace Developer Preview](https://developers.google.com/workspace/preview).
-- Without Paperclip Cloud enrollment, your own Google OAuth client with the Gmail, Drive, Calendar, Chat, and Workspace MCP APIs enabled and Paperclip's callback URI registered.
+- Without Paperclip Cloud enrollment, your own Google OAuth client with the **Gmail API**, **Drive API**, **Calendar API**, **Chat API**, and **Workspace MCP API** enabled — five APIs, more than any single-app connector needs. [Set up your own Google OAuth app](google-setup.md) is the complete procedure.
 
 ## Connect Google Workspace Search
 
 1. Open **Connectors** and select **Google Workspace Search**.
 2. On the **Access** step, choose the identity and which agents may use the connection.
-3. Select **Connect with Paperclip**, or **Use your own Google OAuth app**.
+3. Select **Connect with Paperclip**, or **Use your own Google OAuth app** — the latter needs the client ID and secret from [Set up your own Google OAuth app](google-setup.md).
 4. Complete Google's consent screen with the registered Workspace account.
 
 One capability group, **Search Workspace**, requesting `gmail.readonly`, `drive.readonly`, `calendar.readonly`, and `chat.messages.readonly`. There is a single operation, `search-corpus`.

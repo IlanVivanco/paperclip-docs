@@ -184,6 +184,10 @@
             {
               "title": "Custom MCP Servers",
               "file": "../docs/connectors/custom-mcp-servers.md"
+            },
+            {
+              "title": "Google Workspace Setup",
+              "file": "../docs/connectors/google-setup.md"
             }
           ]
         },

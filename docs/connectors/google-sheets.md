@@ -16,7 +16,9 @@ Sheets is the one connector with two genuinely different setups: sign in with Go
 | Agents to work across the spreadsheets your Google account can already open | **Google sign-in** | Everything that account can open |
 | Agents limited to a short, explicit list of spreadsheets | **The Paperclip robot account** | Only the spreadsheets you paste in |
 
-The robot account is the stronger boundary, and the only connector where Paperclip itself enforces which resources are reachable. It also exposes a wider set of operations, including row deletion. The Google sign-in path reaches more spreadsheets but cannot delete anything.
+The robot account is the stronger boundary: Paperclip checks each call against the connection's spreadsheet list, so reach does not depend on the provider's consent screen. It also exposes a wider set of operations, including row deletion. The Google sign-in path reaches more spreadsheets but cannot delete anything.
+
+> **Note:** This is unusual but not unique. Most connectors inherit whatever the provider's credential can reach; the Sheets robot path and [AgentMail](agentmail.md), which restricts an agent to its assigned inboxes, are the two in this catalog where Paperclip enforces a resource boundary of its own. Do not generalise either to other connectors.
 
 ## Option A: Google sign-in
 
@@ -81,11 +83,16 @@ Either way, the identity that owns the credential and the **Any agent** / **Just
 
 ## Try it
 
+Use a spreadsheet you can open yourself, identified by its URL, and a cell whose value you already know. Substitute both:
+
 ```txt
-Read the "Headcount" tab of the hiring plan spreadsheet and tell me the column headers and how many rows have data. Do not change anything.
+In this spreadsheet — https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit
+— read cell B2 of the "Headcount" tab and tell me its value. Do not change anything.
 ```
 
-Compare against the spreadsheet. On the robot path, `list_spreadsheets` is an even smaller first check: it returns the connection's allowlist, which confirms setup without touching cell data.
+Expect the value you already know. Giving the URL rather than a title matters: the reviewed read operations take a spreadsheet identifier, and asking an agent to find a document "by title" tests discovery rather than the connection.
+
+On the robot path, run `list_spreadsheets` first as a cheaper smoke test — but read what it proves narrowly. **It returns the connection's configured list, so it confirms setup, not that Google will serve a cell.** A spreadsheet can appear there and still fail to read if it was never actually shared with the robot account. Follow it with the cell read above.
 
 > **Note:** Illustrative task, not a recorded test result.
 

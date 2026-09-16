@@ -15,13 +15,13 @@ This connector is read-only. There is no capability group that writes, so an age
 
 - A Google account with Developer Preview registration confirmed.
 - For directory search, a Google Workspace account. Directory availability depends on the Workspace account and its administrator's settings — a personal Google account has contacts but no organization directory.
-- Without Paperclip Cloud enrollment, your own Google OAuth client with the People and People MCP APIs enabled and Paperclip's callback URI registered.
+- Without Paperclip Cloud enrollment, your own Google OAuth client with the **People API** and **People MCP API** enabled. [Set up your own Google OAuth app](google-setup.md) is the complete procedure — do it before you start here.
 
 ## Connect Google People
 
 1. Open **Connectors** and select **Google People**.
 2. On the **Access** step, choose the identity and which agents may use the connection.
-3. Select **Connect with Paperclip**, or **Use your own Google OAuth app**.
+3. Select **Connect with Paperclip**, or **Use your own Google OAuth app** — the latter needs the client ID and secret from [Set up your own Google OAuth app](google-setup.md).
 4. Complete Google's consent screen.
 
 There is one capability group, **Read contacts**, requesting `directory.readonly`, `userinfo.profile`, and `contacts.readonly`.
@@ -47,12 +47,15 @@ Directory reach is Google's decision, not Paperclip's. A Workspace administrator
 Look up one person you can verify, rather than listing everyone:
 
 ```txt
-Look up the email address for Priya in our Google directory.
+Look up "Priya Raman" in our Google directory and tell me the email address on
+that contact.
 ```
 
-Expect a single match you can confirm. Keep verification to a named lookup — a broad enumeration collects personal data you did not need.
+Use a full name, not a first name — a first name will often match several people, and then you are checking the agent's disambiguation rather than the connection. Expect the one address you already know.
 
-> **Note:** Illustrative task, not a recorded test result. Substitute a colleague's first name.
+If more than one person matches anyway, ask which source each result came from: contacts and the directory are different, and knowing which answered tells you what the connection actually reached.
+
+> **Note:** Illustrative task, not a recorded test result. Substitute a colleague whose address you can verify.
 
 ## Troubleshooting and limitations
 

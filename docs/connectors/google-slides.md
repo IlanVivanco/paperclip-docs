@@ -12,7 +12,7 @@ Agents can read the slides and content of a Google Slides presentation, and on a
 ## Before you connect
 
 - A Google Workspace account that can already open the presentations you want agents to use, with Developer Preview registration confirmed.
-- Without Paperclip Cloud enrollment, your own Google OAuth client with the Drive, Slides, and Slides MCP APIs enabled and Paperclip's callback URI registered.
+- Without Paperclip Cloud enrollment, your own Google OAuth client with the **Drive API**, **Slides API**, and **Slides MCP API** enabled. [Set up your own Google OAuth app](google-setup.md) is the complete procedure — do it before you start here.
 
 ## Pick a capability group
 
@@ -27,7 +27,7 @@ The group is fixed for the life of the connection.
 
 1. Open **Connectors** and select **Google Slides**.
 2. On the **Access** step, choose the identity and which agents may use the connection.
-3. Choose the capability group, then **Connect with Paperclip** or **Use your own Google OAuth app**.
+3. Choose the capability group, then **Connect with Paperclip** or **Use your own Google OAuth app** — the latter needs the client ID and secret from [Set up your own Google OAuth app](google-setup.md).
 4. Complete Google's consent screen with the registered Workspace account.
 
 ## Choose access
@@ -41,17 +41,27 @@ Reviewed operations:
 | `read-presentation` | Both |
 | `update-presentation` | **Read & edit** only |
 
-Be realistic about what editing means here. `update-presentation` applies changes through the Slides API. It is good at text content and structural slide operations. It is not the Slides editor, and it does not give an agent design judgement — themes and master layouts, precise positioning, animations and transitions, speaker-note formatting, and embedded chart refreshes are either unavailable or will not look the way a person would arrange them. Treat agent edits as a first draft that someone opens in Slides afterwards.
+Be realistic about what editing means here. The whole write surface is one operation, `update-presentation`, which applies changes through the Slides API rather than driving the Slides editor. Two consequences follow, and only the first is a capability statement:
+
+- **What it can express** is whatever the Slides API accepts. We have not enumerated that request set against this connector, so check the operation's own schema on the **Permissions** tab before planning work that depends on a specific kind of edit.
+- **What it cannot supply is design judgement.** Even where the API accepts a change, an agent placing elements without seeing the result will not arrange a slide the way a person would. Treat agent edits as a first draft that someone opens in Slides afterwards.
 
 > **Note:** The connector's guidance is that presentation updates should be approved. Leave `update-presentation` on **Ask first**.
 
 ## Try it
 
+Identify the presentation by its URL rather than its title, and check the answer against a deck you can open:
+
 ```txt
-Read the "Q3 review" presentation and list the title of each slide in order. Do not change it.
+Read this presentation — https://docs.google.com/presentation/d/YOUR_DECK_ID/edit
+— and list the title of each slide in order. Do not change it.
 ```
 
-Compare the slide titles against the presentation. If you want to confirm editing, do it on a copy rather than the deck someone is about to present.
+Compare the titles against the deck.
+
+> **Warning:** Do not test with "the presentation called X". The reviewed operation is `read-presentation`, which takes a presentation identifier — this connector has no deck-search tool, so a title-based request tests discovery rather than your connection. Title search belongs to [Google Drive](google-drive.md) or [Google Workspace Search](google-workspace-search.md).
+
+If you want to confirm editing, do it on a copy rather than the deck someone is about to present.
 
 > **Note:** Illustrative task, not a recorded test result.
 

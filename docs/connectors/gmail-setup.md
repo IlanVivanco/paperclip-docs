@@ -25,11 +25,11 @@ Skip this section if your instance is enrolled with Paperclip Cloud and **Connec
 
 In the [Google Cloud console](https://console.cloud.google.com/auth/clients):
 
-1. Enable the Gmail API and the Gmail MCP API on the project.
-2. Create an OAuth client and register Paperclip's callback URI on it. Paperclip shows the exact URI during setup; it is the `/api/tools/oauth/callback` route on your instance's origin.
+1. Enable the **Gmail API** and the **Gmail MCP API** on the project.
+2. Create an OAuth client of type **Web application** and add Paperclip's callback as an authorized redirect URI. Paperclip shows the exact URI during setup — copy it from there; it is the `/api/tools/oauth/callback` route on your instance's origin, and it must match exactly.
 3. Keep the client ID and client secret to hand.
 
-Google's own walkthrough is [Configure MCP servers](https://developers.google.com/workspace/guides/configure-mcp-servers).
+[Set up your own Google OAuth app](google-setup.md) covers this in full, including the redirect-URI failure mode, and is the same procedure for every other Google connector. Google's own walkthrough is [Configure MCP servers](https://developers.google.com/workspace/guides/configure-mcp-servers).
 
 ## 3. Decide the capability group before you start
 

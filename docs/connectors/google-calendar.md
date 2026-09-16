@@ -13,7 +13,7 @@ Agents can read the calendars on your Google account, look up events, and check 
 
 - A Google Workspace account that can already see the calendars you want agents to use.
 - Developer Preview registration for that account, completed and confirmed by Google. Register every additional account before it connects; an unregistered account fails at authorization, not at connect time.
-- If your instance is not enrolled with Paperclip Cloud, **Connect with Paperclip** is not offered and you will need your own Google OAuth client. Enable the Calendar and Calendar MCP APIs on the Cloud project and register the callback URI Paperclip shows during setup.
+- If your instance is not enrolled with Paperclip Cloud, **Connect with Paperclip** is not offered and you will need your own Google OAuth client with the **Calendar API** and **Calendar MCP API** enabled. [Set up your own Google OAuth app](google-setup.md) is the complete procedure — do it before you start here.
 
 ## Pick a capability group
 
@@ -28,7 +28,7 @@ The group is fixed for the life of the connection. To change it, make a new conn
 
 1. Open **Connectors** and select **Google Calendar**.
 2. On the **Access** step, choose the identity and which agents may use the connection.
-3. Choose the capability group, then the path: **Connect with Paperclip** for the managed Google client, or **Use your own Google OAuth app**.
+3. Choose the capability group, then the path: **Connect with Paperclip** for the managed Google client, or **Use your own Google OAuth app** — which needs the client ID and secret from [Set up your own Google OAuth app](google-setup.md).
 4. Complete Google's consent screen with the registered Workspace account.
 
 ## Choose access

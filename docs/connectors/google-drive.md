@@ -15,7 +15,7 @@ Deleting, moving, renaming, and changing who a file is shared with are **not** e
 
 - A Google Workspace account that can already open the files you want agents to use.
 - Developer Preview registration for that account, confirmed by Google.
-- If your instance is not enrolled with Paperclip Cloud, you will need your own Google OAuth client with the Drive and Drive MCP APIs enabled and Paperclip's callback URI registered.
+- If your instance is not enrolled with Paperclip Cloud, you will need your own Google OAuth client with the **Drive API** and **Drive MCP API** enabled. [Set up your own Google OAuth app](google-setup.md) is the complete procedure — do it before you start here.
 
 ## Pick a capability group
 
@@ -30,7 +30,7 @@ The group is fixed for the life of the connection; to change it, make a new conn
 
 1. Open **Connectors** and select **Google Drive**.
 2. On the **Access** step, choose the identity and which agents may use the connection.
-3. Choose the capability group, then **Connect with Paperclip** or **Use your own Google OAuth app**.
+3. Choose the capability group, then **Connect with Paperclip** or **Use your own Google OAuth app** — the latter needs the client ID and secret from [Set up your own Google OAuth app](google-setup.md).
 4. Complete Google's consent screen with the registered Workspace account.
 
 ## Choose access

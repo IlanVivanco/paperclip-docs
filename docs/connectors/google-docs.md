@@ -13,7 +13,7 @@ Agents can read the text and structure of Google Docs documents, and on an editi
 
 - A Google Workspace account that can already open the documents you want agents to use.
 - Developer Preview registration for that account, confirmed by Google.
-- Without Paperclip Cloud enrollment, you need your own Google OAuth client with the Drive, Docs, and Docs MCP APIs enabled and Paperclip's callback URI registered.
+- Without Paperclip Cloud enrollment, you need your own Google OAuth client with the **Drive API**, **Docs API**, and **Docs MCP API** enabled. [Set up your own Google OAuth app](google-setup.md) is the complete procedure — do it before you start here.
 
 ## Pick a capability group
 
@@ -28,7 +28,7 @@ The group is fixed for the life of the connection.
 
 1. Open **Connectors** and select **Google Docs**.
 2. On the **Access** step, choose the identity and which agents may use the connection.
-3. Choose the capability group, then **Connect with Paperclip** or **Use your own Google OAuth app**.
+3. Choose the capability group, then **Connect with Paperclip** or **Use your own Google OAuth app** — the latter needs the client ID and secret from [Set up your own Google OAuth app](google-setup.md).
 4. Complete Google's consent screen with the registered Workspace account.
 
 ## Choose access
@@ -42,7 +42,7 @@ Reviewed operations:
 | `read-doc` | Both |
 | `update-doc` | **Read & edit** only |
 
-This is a deliberately small surface, and it is worth being clear about what it is not. `update-doc` applies document updates through the Docs API; it is not the full Google Docs editor. Do not promise an agent will reproduce native editing behaviour — complex formatting, suggestions and comment threads, revision history operations, and collaborative features are not exposed here.
+This is a deliberately small surface: two operations, not a Docs editor. `update-doc` applies changes through the Docs API, so what it can express is whatever that API accepts — check the operation's schema on the **Permissions** tab before planning work that depends on a particular kind of edit. What is definitely absent is anything beyond these two operations: there is no separate tool here for comments, suggestions, or revision history.
 
 > **Note:** The connector's guidance is that document updates should be approved. Leave `update-doc` on **Ask first**; an edit lands in a real document that other people may be working in.
 
@@ -50,11 +50,20 @@ This is a deliberately small surface, and it is worth being clear about what it 
 
 ## Try it
 
+Identify the document by its URL, not its title, and pick something in it you already know. Substitute both:
+
 ```txt
-Read the Google Doc titled "Team charter" and summarize its main sections. Do not edit it.
+Read this Google Doc — https://docs.google.com/document/d/YOUR_DOC_ID/edit — and
+tell me the text of its first heading. Do not edit it.
 ```
 
-Expect a summary whose headings match what you see in the document. If you want to confirm editing, do it on a scratch document you created for the purpose, not a live one.
+Expect the heading you can see for yourself.
+
+> **Warning:** Do not test with "the document titled X". The reviewed operation here is `read-doc`, which takes a document identifier — there is no document-search tool on this connector. A title-based request makes the agent guess or fail for reasons that have nothing to do with your setup. If you genuinely need title search, that is [Google Drive](google-drive.md) or [Google Workspace Search](google-workspace-search.md).
+
+If you want to confirm editing, do it on a scratch document you created for the purpose, not a live one.
+
+> **Note:** Illustrative task, not a recorded test result.
 
 > **Note:** Illustrative task, not a recorded test result. Substitute a document title from your own account.
 
