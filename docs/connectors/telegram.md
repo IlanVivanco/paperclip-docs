@@ -1,72 +1,88 @@
 ---
 seo_title: Telegram Connector
-seo_description: Lets people work with a Paperclip agent from Telegram, through a bot you create with BotFather and connect to Paperclip's webhook.
+seo_description: Let people start Paperclip work by messaging a Telegram bot. BotFather setup, the public webhook requirement, agent routing, and fixing a silent bot.
 ---
 
 # Telegram
 
-Message the agent through a bot you create with BotFather.
+People message your Telegram bot, and Paperclip starts work. Replies come back in the same Telegram conversation.
 
-## What this connector does
+One connection serves one bot and one agent.
 
-Telegram is a **chat channel**. It gives people a place to talk to a Paperclip agent; it does not give agents tools to call. Chat channel setup is behind the **Chat connectors** instance flag, which is off by default.
+> **Warning:** Telegram delivers messages by calling Paperclip, so your instance needs a publicly reachable HTTPS address. Telegram only accepts webhooks on ports **443, 80, 88, or 8443**. If your instance is not reachable that way, this connector cannot work — unlike [AgentMail](agentmail.md), there is no outbound-only mode.
 
-| Property | Value |
+## Before you connect
+
+- **Chat connectors** must be switched on for the instance. It is an experimental setting, off by default, enabled by an instance administrator under experimental settings.
+- A publicly reachable HTTPS URL for the instance, configured by an administrator as `PAPERCLIP_CHAT_WEBHOOK_PUBLIC_URL`, on one of Telegram's permitted ports.
+- A Telegram account, to talk to BotFather.
+- The agent that will answer.
+
+## Connect Telegram
+
+### 1. Create the bot
+
+1. Message [@BotFather](https://t.me/BotFather) in Telegram and send `/newbot`.
+2. Give the bot a display name and a username ending in `bot`.
+3. Copy the **bot token** BotFather returns. It looks like `123456789:AA...`.
+
+Create a dedicated bot for this connector rather than reusing one that already has another webhook — a Telegram bot supports one webhook at a time, so connecting here replaces whatever it pointed at before.
+
+> **Danger:** The bot token is a full credential for the bot. Never paste it into a chat, an issue, or a screenshot. If it leaks, use BotFather's `/revoke` to rotate it and reconnect.
+
+### 2. Connect it in Paperclip
+
+1. Open **Connectors** and select **Telegram**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Paste the **Bot token**.
+4. Choose the agent that will answer, and finish.
+
+Paperclip registers the webhook with Telegram for you, using a generated secret so it can reject forged deliveries. There is no URL for you to paste into BotFather.
+
+## How a conversation becomes work
+
+| In Telegram | In Paperclip |
 | --- | --- |
-| Catalog slug | `telegram` |
-| Category | Communication |
-| Transport | `chat_sdk` |
-| Highest risk tier | S3 — account data that can be changed. |
+| Someone sends the bot a direct message | A task is created for the connected agent |
+| They keep replying | The conversation continues on the same task |
+| The agent responds | The reply arrives in the Telegram conversation |
 
-## Before you start
+## Choose access
 
-- An account with the provider, and permission in Paperclip to create a connection. Sharing one with the whole company or with a dedicated agent identity additionally needs the connection-manager permission.
+Telegram gives you less sender control than the other channels, and it is worth being clear about that before you publish the bot's username: **anyone who can find the bot can message it**, and a message can start agent work. Telegram has no allowlist for who may talk to a bot.
 
-## Supported setup paths
+Two practical consequences:
 
-Open **Connectors**, find **Telegram**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+- Do not treat the bot's username as a secret, but do treat it as public. Only share it with the people you intend to serve.
+- In groups, Telegram's default privacy mode means a bot only receives messages that address it directly. Turning that off in BotFather would give the bot every group message; leave it alone unless you have decided you want that.
 
-### Chat with an agent
+The connection's identity and agent settings work as for any connector; see [How connector access works](access-model.md). The answering agent is set on the connection.
 
-Let people in Telegram start and continue work with one Paperclip agent.
+## Try it
 
-- Connection method: Provider app registration
-- Risk tier: S3
+1. Open your bot in Telegram and send `hello, can you confirm you are connected?`
+2. Expect a reply in the conversation within a few moments.
+3. Confirm a matching task appears in Paperclip, assigned to the connected agent.
 
-| Field | Required | What it is |
+Message the bot from your own account first. That exercises webhook delivery, routing, and task creation without involving anyone else.
+
+> **Note:** Procedure, not a recorded test result.
+
+## Troubleshooting and limitations
+
+| Problem | Likely cause | Fix |
 | --- | --- | --- |
-| **Bot token** | Yes | Credential value; Paperclip stores it as a secret. |
+| Telegram does not appear in **Connectors** | **Chat connectors** is off for the instance | Ask an administrator to enable it |
+| Setup fails mentioning HTTPS and ports | The instance's public webhook URL is missing or on an unsupported port | An administrator must set `PAPERCLIP_CHAT_WEBHOOK_PUBLIC_URL` to HTTPS on 443, 80, 88, or 8443 |
+| The bot exists and accepts messages but never replies | Telegram cannot reach the instance, or another system replaced the webhook | Reconnect the connection, which re-registers the webhook |
+| The bot worked and went silent | The token was revoked, or another tool called `setWebhook` on the same bot | Rotate the token if needed and reconnect; use a dedicated bot |
+| The bot ignores messages in a group | Telegram privacy mode delivers only messages addressing the bot | Address the bot directly, or reconsider whether a group is the right entry point |
+| The wrong agent answers | The answering agent is set on the connection | Change it on the connection |
 
-Provider console: [register an app](https://t.me/BotFather) · [provider docs](https://core.telegram.org/bots/tutorial)
+Limitations: one bot and one agent per connection. No sender allowlist. A Telegram bot has a single webhook, so the bot cannot be shared with another integration.
 
-## Accounts and access
+## Related guides
 
-Telegram follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-None. A chat channel carries messages between a person and an agent; it does not publish an action list.
-
-## Authorization sequence
-
-There is no browser handshake. Paperclip stores the value you supply as a secret and presents it to the server on each call; the connection is created by `POST /api/companies/{companyId}/tools/apps/connect` and completed by `POST /api/companies/{companyId}/tools/apps/{connectionId}/finish`.
-
-## Check that it works
-
-Send one message to the agent from Telegram and confirm a task appears in Paperclip. Do not test with a message you would not want an agent to act on.
-
-## If something goes wrong
-
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
-
-## Related
-
-- [Connectors](../connectors.md)
+- [Discord](discord.md), [Slack](slack.md), [Microsoft Teams](microsoft-teams.md) — other conversation channels.
 - [How connector access works](access-model.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
+- [Telegram bot tutorial](https://core.telegram.org/bots/tutorial)

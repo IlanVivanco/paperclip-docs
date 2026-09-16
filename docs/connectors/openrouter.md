@@ -1,66 +1,62 @@
 ---
 seo_title: OpenRouter Connector
-seo_description: Supplies one credential that routes to models from many vendors. It is not an agent tool, so it adds no actions to any permission list.
+seo_description: Give agents model access through OpenRouter with an API key. Runtime and model-prefix requirements, assigning the credential, a bounded test, and troubleshooting.
 ---
 
 # OpenRouter
 
-Run models from many vendors through one credential and one bill.
+An OpenRouter connection gives agents a credential that routes to many model providers through one account. It is model access, not a set of tools — there are no actions to permit.
 
-## What this connector does
+OpenRouter is API key only. There is no subscription sign-in for this provider, and Paperclip says so on the sign-in screen.
 
-OpenRouter is a **model provider**, not an agent tool. It supplies the credential an agent's runtime uses when it runs a model. It does not add any actions to the **Permissions** tab, and it never appears in a review request.
+## Before you connect
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `openrouter` |
-| Category | Model providers |
-| Transport | `runtime_auth` |
-| Highest risk tier | S3 — account data that can be changed. |
+- An OpenRouter account with credit or billing set up, and an API key from [OpenRouter keys](https://openrouter.ai/keys).
+- An agent that runs on the OpenCode runtime. This credential is only usable by an agent whose harness resolves to OpenCode.
+- A model id that starts with `openrouter/`. This is a hard requirement, not a convention — Paperclip treats an OpenRouter connection as incompatible with a model id that lacks the prefix.
 
-## Before you start
+## Connect OpenRouter
 
-- An account with the provider, and permission in Paperclip to create a connection. Sharing one with the whole company or with a dedicated agent identity additionally needs the connection-manager permission.
+1. Open **Connectors** and select **OpenRouter**.
+2. On the **Access** step, choose whether the credential is **Personal** or **Company shared**, and which agents may use it.
+3. Paste the API key. Paperclip stores it as a secret and it is not readable afterwards.
 
-## Supported setup paths
+## Assign the credential
 
-Open **Connectors**, find **OpenRouter**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+- **Set it as your default** for the provider, and agents configured to use the responsible user's connection draw on each person's own account.
+- **Bind a specific connection** to the agent so every run uses that account.
 
-### OpenRouter API key
+Then set the agent's model to an `openrouter/`-prefixed id, for example `openrouter/anthropic/claude-sonnet-4.5`. The provider and model choice happens in the agent's configuration; the connection only supplies the credential.
 
-Authenticate an agent with this account.
+> **Warning:** Authenticating successfully does not mean a particular model is available to you. OpenRouter decides which upstream models your account can route to, based on its own availability, your credit, and any provider-specific requirements. A key that works for one model can be refused for another.
 
-- Connection method: API key
-- Risk tier: S3
+## Try it
 
-| Field | Required | What it is |
+```txt
+Reply with the single word: ready
+```
+
+Run it on an agent with an `openrouter/`-prefixed model. A one-word reply confirms credential, runtime, model routing, and assignment together for a negligible amount of credit.
+
+If it fails, change only one thing at a time — the model id is the most common cause.
+
+> **Note:** Illustrative task, not a recorded test result.
+
+## Troubleshooting and limitations
+
+| Problem | Likely cause | Fix |
 | --- | --- | --- |
-| **API key** | Yes | Credential value; Paperclip stores it as a secret. |
+| *"Select an AI connection compatible with this harness and model"* | The model id does not start with `openrouter/`, or the agent is not on an OpenCode runtime | Fix the model id, or move the agent to an OpenCode runtime |
+| There is no subscription option | Expected. OpenRouter is API key only | Use an API key |
+| *"Connect an account and choose your personal default"* | The agent uses the responsible user's connection and that person has no default | Connect an account and mark it as your default |
+| The key works but one model is refused | OpenRouter is not routing that model for your account | Choose another model, or check the model's requirements with OpenRouter |
+| Runs fail once usage rises | OpenRouter credit is exhausted or a rate limit applied | Top up or check limits in your OpenRouter account |
+| Status **needs attention** | The key was revoked or rotated | Reconnect with a current key |
 
-## Accounts and access
+Limitations: one connection is one OpenRouter account, and it grants no tool access. Only `openrouter/`-prefixed models are usable with it. Which upstream models are reachable is OpenRouter's decision, not Paperclip's.
 
-A model provider connection is attached to a grant like any other connection, but it is consumed by the agent runtime rather than by the tool gateway. Choose **Just me** to keep the credential to your own runs, or **Any human in the company** to let every eligible agent use it. See [Use separate accounts for people and agents](separate-accounts.md).
+## Related guides
 
-## Actions
-
-None. A model provider connection exposes no callable actions.
-
-## Check that it works
-
-The connector list shows **Healthy** once the credential validates. Assign the account to an agent and start a short run; a failing credential surfaces as **Needs attention** with **The key stopped working — reconnect to fix.**
-
-## If something goes wrong
-
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
-
-## Related
-
-- [Connectors](../connectors.md)
+- [Anthropic](anthropic.md), [OpenAI](openai.md), [Grok](xai.md) — the other model providers.
 - [How connector access works](access-model.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
+- [OpenRouter documentation](https://openrouter.ai/docs)

@@ -1,74 +1,89 @@
 ---
 seo_title: Discord Connector
-seo_description: Lets people work with a Paperclip agent from Discord. Mention the agent in a channel and Paperclip opens a thread tied to one task.
+seo_description: Let people start and continue Paperclip work by mentioning an agent in Discord. Bot setup, required intent and permissions, agent routing, and troubleshooting a silent bot.
 ---
 
 # Discord
 
-Mention the agent in a server channel and Paperclip opens a thread, keeping it tied to one task.
+People mention your agent in a Discord channel, and Paperclip starts work. Each root mention opens a Discord thread, and the reply comes back in that thread.
 
-## What this connector does
+One connection serves one Discord server and one agent.
 
-Discord is a **chat channel**. It gives people a place to talk to a Paperclip agent; it does not give agents tools to call. Chat channel setup is behind the **Chat connectors** instance flag, which is off by default.
+## Before you connect
 
-| Property | Value |
+- **Chat connectors** must be switched on for the instance. It is an experimental setting, off by default, and an instance administrator enables it under experimental settings. Without it, chat setup is hidden entirely.
+- **Manage Server** permission on the Discord server where the bot will live, so you can install it.
+- A dedicated Discord application. Use a new one for this connector rather than reusing a bot that already does something else.
+- The agent that will answer.
+
+## Connect Discord
+
+### 1. Create the application and bot
+
+At the [Discord developer portal](https://discord.com/developers/applications), create an application and add a bot to it. Then:
+
+- Enable the **Message Content** intent on the bot. Without it Discord delivers no message text and the bot will appear online but never respond.
+- Copy the **bot token**, and the **Application ID** from the application's general information.
+- Copy the **Server ID** of the target server. Enable Discord's developer mode, then right-click the server and copy its ID.
+
+### 2. Install the bot on the server
+
+The bot needs these permissions in at least one text channel:
+
+**View Channels**, **Send Messages**, **Create Public Threads**, **Send Messages in Threads**, **Read Message History**, **Add Reactions**, **Embed Links**, and **Attach Files**.
+
+Paperclip builds an install link with exactly these permissions during setup, scoped to the server ID you supplied, which is the least error-prone way to install it.
+
+### 3. Connect it in Paperclip
+
+1. Open **Connectors** and select **Discord**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Paste the **Bot token**, **Application ID**, and **Server ID**.
+4. Choose the agent that will answer, and finish.
+
+## How a conversation becomes work
+
+| In Discord | In Paperclip |
 | --- | --- |
-| Catalog slug | `discord` |
-| Category | Communication |
-| Transport | `chat_sdk` |
-| Highest risk tier | S3 — account data that can be changed. |
+| Someone mentions the bot in a channel | A task is created for the connected agent, and Paperclip opens a thread on that message |
+| Replies inside the thread | Continue the same task |
+| A new root mention elsewhere | Starts a separate task and its own thread |
 
-## Before you start
+The Paperclip task is authoritative. If a thread and the task ever disagree, the task is the record — useful to know when someone edits or deletes a Discord message mid-conversation.
 
-- An account with the provider, and permission in Paperclip to create a connection. Sharing one with the whole company or with a dedicated agent identity additionally needs the connection-manager permission.
+## Choose access
 
-## Supported setup paths
+Reach is decided in Discord, not Paperclip. The bot can see the channels its role can see on the one server you installed it on, and there is no channel picker in Paperclip. To limit where people can reach the agent, restrict the bot's role to specific channels in Discord's channel permissions.
 
-Open **Connectors**, find **Discord**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+Anyone who can mention the bot in a channel it can see can start agent work. Treat channel access as the control.
 
-### Chat with an agent
+The connection's identity and **Any agent** / **Just agents I pick** settings work as for any connector; see [How connector access works](access-model.md). Note that the answering agent is set on the connection itself.
 
-Let people in Discord start and continue work with one Paperclip agent.
+## Try it
 
-- Connection method: Provider app registration
-- Risk tier: S3
+1. In a channel the bot can see, mention it with a short request: `@YourAgent hello, can you confirm you are connected?`
+2. Expect a thread to open on your message within a few moments.
+3. Confirm a matching task appears in Paperclip, assigned to the connected agent.
 
-| Field | Required | What it is |
+That exercises intent, permissions, routing, and task creation in one step, in a channel you control.
+
+> **Note:** Procedure, not a recorded test result. Use a private channel for the first attempt.
+
+## Troubleshooting and limitations
+
+| Problem | Likely cause | Fix |
 | --- | --- | --- |
-| **Bot token** | Yes | Credential value; Paperclip stores it as a secret. |
-| **Application ID** | Yes | Credential value; Paperclip stores it as a secret. |
-| **Server ID** | Yes | Credential value; Paperclip stores it as a secret. |
+| Discord does not appear in **Connectors** | **Chat connectors** is off for the instance | Ask an administrator to enable it |
+| The bot shows online but never replies | The **Message Content** intent is not enabled | Enable it in the developer portal, then reconnect |
+| The bot replies in some channels but not others | Its role cannot see those channels, or cannot create threads there | Grant the listed permissions on the channel |
+| Setup is rejected for missing permissions | The bot lacks the required permissions in any text channel | Re-install with Paperclip's generated link |
+| A mention creates no task | The mention was inside an existing thread rather than a root message, or the connection is unhealthy | Mention at channel level; check the connection's status |
+| The wrong agent answers | The answering agent is set on the connection | Change it on the connection |
 
-Provider console: [register an app](https://discord.com/developers/applications) · [provider docs](https://discord.com/developers/docs/quick-start/getting-started)
+Limitations: one server and one agent per connection. Private channels the bot's role cannot see are unreachable. Direct messages to the bot are not the supported entry point — use a channel mention.
 
-## Accounts and access
+## Related guides
 
-Discord follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-None. A chat channel carries messages between a person and an agent; it does not publish an action list.
-
-## Authorization sequence
-
-There is no browser handshake. Paperclip stores the value you supply as a secret and presents it to the server on each call; the connection is created by `POST /api/companies/{companyId}/tools/apps/connect` and completed by `POST /api/companies/{companyId}/tools/apps/{connectionId}/finish`.
-
-## Check that it works
-
-Send one message to the agent from Discord and confirm a task appears in Paperclip. Do not test with a message you would not want an agent to act on.
-
-## If something goes wrong
-
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
-
-## Related
-
-- [Connectors](../connectors.md)
+- [Slack](slack.md), [Microsoft Teams](microsoft-teams.md), [Telegram](telegram.md) — other conversation channels.
 - [How connector access works](access-model.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
+- [Discord bot getting started](https://discord.com/developers/docs/quick-start/getting-started)
