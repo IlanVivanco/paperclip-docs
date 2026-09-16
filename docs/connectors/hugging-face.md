@@ -36,9 +36,9 @@ Two tiers of content, and the difference is worth stating:
 
 Because most of the value here is public content, this is one of the lower-risk connectors to give an agent. The exception is an account with access to private organization repositories — that account's reach becomes the agent's.
 
-Most operations are reads and can stay **Allowed**. If the connection exposes anything that writes to the Hub, treat it as you would any write. See [Set action permissions](action-permissions.md).
+Paperclip asks Hugging Face for the `read-mcp` scope, which is what makes this a low-risk connector to start with. Treat that as the intent rather than a guarantee you need not check: the action list is the provider's, so read it on the **Permissions** tab and set anything that is not a read appropriately. See [Set action permissions](action-permissions.md).
 
-> **Note:** The connection targets the Hub's own tools. It does not expose the interactive applications hosted on Spaces.
+> **Note:** The connection targets the Hub's own tools, and Paperclip requests the endpoint with Gradio tooling switched off — so the interactive applications hosted on Spaces are not part of this connection's surface.
 
 ## Try it
 

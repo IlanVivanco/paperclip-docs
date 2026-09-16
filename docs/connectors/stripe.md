@@ -18,13 +18,17 @@ Do not assume a specific capability from the name. What an agent can do is exact
 
 Restricted keys are the main control on this connector. Stripe lets you grant read-only access to specific resource types, which is far more precise than anything Paperclip can apply afterwards.
 
+> **Warning:** Paperclip's key field shows the placeholder `sk_...`, which is a standard secret key carrying your account's full API access. A **restricted key** — its id begins `rk_` — works in the same field and is what you should use. Do not read the placeholder as a recommendation.
+
+> **Note:** Whether a key is a test-mode or live-mode key is decided in Stripe when you create it, and it determines whether an agent is touching real money. Nothing in Paperclip displays or changes that, so label your connections clearly and check the key's mode in Stripe before connecting anything to production.
+
 ## Connect Stripe
 
 1. Open **Connectors** and select **Stripe**.
 2. On the **Access** step, choose the identity and which agents may use the connection.
 3. Choose how to authenticate:
    - **Sign in with Stripe** — browser sign-in.
-   - **Use an API key** — paste a Stripe key. Use a restricted key scoped to the minimum.
+   - **Use an API key** — paste a Stripe key, created under [API keys](https://dashboard.stripe.com/apikeys) in the Stripe dashboard.
 4. Finish setup.
 
 > **Danger:** A Stripe secret key grants full account access, including moving money. Paste only a restricted key unless you have a specific reason not to, and never a live secret key into an untested setup.

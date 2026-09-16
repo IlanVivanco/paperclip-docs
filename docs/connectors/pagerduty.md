@@ -32,6 +32,17 @@ The token carries that user's permissions. If an agent should only read, issue t
 3. Choose **US service region** or **EU service region**.
 4. Paste the **PagerDuty API key**. Paperclip stores it as a secret.
 
+### Which PagerDuty token to create
+
+Paperclip's field asks for a **user API token**, not a general REST API key. The two are different credentials in PagerDuty:
+
+- A **user API token** acts as one person, and inherits that user's own PagerDuty role and team access. Create one under your PagerDuty user settings.
+- A **general REST API key** is account-wide and is not what this field expects.
+
+Because a user token inherits its user's permissions, **the account you create it under is the access decision.** A token made by a user with read-only PagerDuty permissions gives an agent read-only PagerDuty access, which is the cleanest way to bound this connector. Creating it under an account with broad permissions hands those to the agent.
+
+PagerDuty's own reference is the [PagerDuty MCP server documentation](https://support.pagerduty.com/main/docs/pagerduty-mcp-server).
+
 ## Choose access
 
 Reach is the token's: the services, teams, and incidents the issuing user can see, subject to PagerDuty's own roles and team membership. There is no service or team picker in Paperclip.
@@ -58,8 +69,8 @@ Do not verify by creating a test incident — that pages whoever is on call.
 
 | Problem | Likely cause | Fix |
 | --- | --- | --- |
-| Authentication fails with a valid token | The wrong service region was selected | Make a connection with the other region |
-| It connects but no incidents or services appear | Wrong region, or the token's user has no team access | Check the region first, then the user's teams in PagerDuty |
+| Authentication fails with a token you believe is valid | Often the wrong service region; also possible that a general REST API key was used instead of a user API token | Confirm the token is a user API token, then try the other region |
+| It connects but no incidents or services appear | Wrong region, or the token's user has no team access | Sign in to PagerDuty as that user and check they can see the incidents themselves. If they can, try the other region |
 | Some services are invisible | PagerDuty team membership and role restrict the token's user | Adjust the user's teams or role in PagerDuty |
 | A write action is refused | The token's user role is read-only | Expected if you configured it that way |
 | An incident was resolved unexpectedly | A mutation was set to **Allowed** | Re-open it in PagerDuty and tighten the action settings |

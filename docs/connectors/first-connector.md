@@ -7,7 +7,7 @@ seo_description: Connect one read-only service to Paperclip and give an agent a 
 
 By the end of this you will have one connector set up, one agent allowed to use it, every write action switched off, and one finished task where the agent actually called the service. Most of the elapsed time is the provider's sign-in screen and the agent's own run.
 
-The worked example is **Hugging Face**, chosen because it is the shortest honest path: a free account, a browser sign-in with no OAuth app to register, no administrator approval, and a provider scope (`read-mcp`) that cannot write anything.
+The worked example is **Hugging Face**, chosen because it is the shortest honest path: a free account, a browser sign-in with no OAuth app to register, no administrator approval, and a provider scope named `read-mcp`. Step 4 has you confirm the action list rather than take the scope's name on trust.
 
 > **Note:** Substituting a different connector is fine, but do not expect these exact steps to transfer. This shape — an app tool with a browser sign-in — is the simplest one in the catalog. Others need an OAuth app you register yourself, an administrator, or Google Developer Preview access; messaging channels and model providers work differently again and have no action list to configure at all. [How connector access works](access-model.md) sorts the shapes out, and each provider page lists its own prerequisites.
 
