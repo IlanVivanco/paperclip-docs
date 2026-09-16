@@ -1,144 +1,82 @@
 ---
 seo_title: Google Calendar Connector
-seo_description: Google's calendar. Agents read calendars, and on a write connection create and change events. Set up access and per-action permissions in Paperclip.
+seo_description: Let agents read calendars and availability, and optionally create, update, and delete events. Capability groups, invitation side effects, a read test, and troubleshooting.
 ---
 
 # Google Calendar
 
-Google's calendar. Agents read calendars, and on a write connection create and change events.
+Agents can read the calendars on your Google account, look up events, and check availability. On a managing connection they can also create, update, delete, and respond to events.
 
-## What this connector does
+> **Warning:** Google Calendar needs Google Workspace Developer Preview registration before it will authorize. Google must register the Workspace email that signs in, and the Cloud project that owns the OAuth client if you bring your own. Apply first at [Google Workspace Developer Preview](https://developers.google.com/workspace/preview).
 
-Google Calendar is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+## Before you connect
 
-| Property | Value |
+- A Google Workspace account that can already see the calendars you want agents to use.
+- Developer Preview registration for that account, completed and confirmed by Google. Register every additional account before it connects; an unregistered account fails at authorization, not at connect time.
+- If your instance is not enrolled with Paperclip Cloud, **Connect with Paperclip** is not offered and you will need your own Google OAuth client. Enable the Calendar and Calendar MCP APIs on the Cloud project and register the callback URI Paperclip shows during setup.
+
+## Pick a capability group
+
+The group is fixed for the life of the connection. To change it, make a new connection.
+
+| Group | What agents can do | Scopes requested |
+| --- | --- | --- |
+| **Read only** | Read the calendar list, read and search events, check free/busy | `calendar.calendarlist.readonly`, `calendar.events.freebusy`, `calendar.events.readonly` |
+| **Read & manage** | The above, plus create, update, delete, and respond to events | `calendar.calendarlist.readonly`, `calendar.events.freebusy`, `calendar.events` |
+
+## Connect Google Calendar
+
+1. Open **Connectors** and select **Google Calendar**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Choose the capability group, then the path: **Connect with Paperclip** for the managed Google client, or **Use your own Google OAuth app**.
+4. Complete Google's consent screen with the registered Workspace account.
+
+## Choose access
+
+Which calendars an agent can reach is decided by Google, not Paperclip: it is whatever appears on the authorizing account's calendar list, including calendars shared with that account. There is no calendar picker in Paperclip. If an agent should not see a calendar, remove the sharing in Google Calendar or authorize with an account that does not have it.
+
+Reviewed operations for this connector:
+
+| Operation | Group |
 | --- | --- |
-| Catalog slug | `google-calendar` |
-| Category | Productivity and collaboration |
-| Transport | `mcp_remote` |
-| Highest risk tier | S4 — money, production data, or irreversible actions. |
+| `list-calendars`, `list-events`, `search-events`, `get-event`, `suggest-time` | Both |
+| `create-event`, `update-event`, `respond-to-event` | **Read & manage** only |
+| `delete-event` | **Read & manage** only, classified destructive |
 
-## Before you start
+> **Warning:** Event writes have side effects outside Paperclip. Creating or updating an event with attendees can send invitations and notifications from your account, and `respond-to-event` answers an invitation as you. The connector's own guidance is that all event mutations should be approved — leave them on **Ask first**.
 
-- **Google Developer Preview access required.** Google must register both the Workspace email used to authorize Paperclip and the Google Cloud project that owns the OAuth client. Registration is limited to those emails and projects; it does not enable unrelated Paperclip customers. See [Apply or verify Developer Preview enrollment](https://developers.google.com/workspace/preview).
-- Google Workspace MCP servers are in Developer Preview.
-- All event mutations require approval.
-- The **Connect with Paperclip** option only appears when this Paperclip instance is enrolled with Paperclip Cloud and Cloud advertises the matching connector profile. Without enrollment, use the customer-owned option instead.
+[How connector access works](access-model.md) covers identity and agent selection; [Set action permissions](action-permissions.md) is the how-to.
 
-## Supported setup paths
+## Try it
 
-Open **Connectors**, find **Google Calendar**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
-
-### Connect with Paperclip (`paperclip-read`)
-
-Use Paperclip-managed OAuth for read-only Calendar access.
-
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Read only**
-- Risk tier: S3
-- Endpoints: MCP server `https://calendarmcp.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/calendar.calendarlist.readonly`
-  - `https://www.googleapis.com/auth/calendar.events.freebusy`
-  - `https://www.googleapis.com/auth/calendar.events.readonly`
-
-### Use your own Google OAuth app (`customer-read-oauth`)
-
-Use a customer-owned OAuth client for read-only Calendar access.
-
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Read only**
-- Risk tier: S3
-- Endpoints: MCP server `https://calendarmcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/calendar.calendarlist.readonly`
-  - `https://www.googleapis.com/auth/calendar.events.freebusy`
-  - `https://www.googleapis.com/auth/calendar.events.readonly`
-
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/configure-mcp-servers)
-
-### Connect with Paperclip (`paperclip-write`)
-
-Use Paperclip-managed OAuth to read and manage Calendar events.
-
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Read & manage**
-- Risk tier: S4
-- Endpoints: MCP server `https://calendarmcp.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/calendar.calendarlist.readonly`
-  - `https://www.googleapis.com/auth/calendar.events.freebusy`
-  - `https://www.googleapis.com/auth/calendar.events`
-
-### Use your own Google OAuth app (`customer-write-oauth`)
-
-Use a customer-owned OAuth client to read and manage Calendar events.
-
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Read & manage**
-- Risk tier: S4
-- Endpoints: MCP server `https://calendarmcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/calendar.calendarlist.readonly`
-  - `https://www.googleapis.com/auth/calendar.events.freebusy`
-  - `https://www.googleapis.com/auth/calendar.events`
-
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/configure-mcp-servers)
-
-## Accounts and access
-
-Google Calendar follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Google Calendar's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+Read one event you can confirm by eye, and do not involve anyone else:
 
 ```txt
-You             Paperclip               Google Calendar
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+What is on my Google Calendar tomorrow? List event titles and times only. Do not create, change, or respond to anything.
 ```
 
-The Paperclip-managed path returns through `GET /api/tools/oauth/cloud-connector/callback` instead of the generic callback.
+Compare the result against Google Calendar. Times come back with the event's own timezone, so check against the calendar's display timezone rather than assuming your local one.
 
-## Check that it works
+Do not verify with a test event on a shared calendar — attendees get notified. If you want to confirm writes, create the event on a private calendar with no attendees and delete it afterwards.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| The provider rejects the sign-in | Confirm the prerequisite above is done: google developer preview access required. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Google refuses before the consent screen | Developer Preview registration is incomplete for the signing-in account | Finish registration and retry |
+| **Connect with Paperclip** is not offered | The instance is not enrolled with Paperclip Cloud, or Cloud is not advertising the Calendar profile | Use your own Google OAuth app, or ask an administrator |
+| A calendar is missing | It is not on the authorizing account's calendar list | Subscribe to or share the calendar in Google Calendar; no reconnect needed |
+| Event writes are absent | The connection was made with **Read only** | Make a connection with **Read & manage** |
+| Times look wrong by a fixed offset | The event's timezone differs from the one you are reading in | Compare against the calendar's timezone |
+| **Needs attention** | The Google token expired or the grant was revoked | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one connection covers one Google account. Calendar sharing and access-control changes, and calendar creation or deletion, are not exposed — only events. Google's Workspace MCP servers are in Developer Preview, so treat the surface as subject to change.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
+- [Google Workspace Search](google-workspace-search.md) — one read-only search across Gmail, Drive, Calendar, and Chat.
 - [How connector access works](access-model.md)
-- [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Google Calendar provider documentation](https://developers.google.com/workspace/calendar/api/reference/mcp)
+- [Verify a connector and fix a broken one](verify-and-troubleshoot.md)
+- [Google Calendar API MCP reference](https://developers.google.com/workspace/calendar/api/reference/mcp)

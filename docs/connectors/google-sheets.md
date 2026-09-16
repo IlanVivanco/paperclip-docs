@@ -1,150 +1,111 @@
 ---
 seo_title: Google Sheets Connector
-seo_description: Google's spreadsheets. Agents read sheets, or update them on a write connection, or reach only the files you share with a Paperclip robot account.
+seo_description: Two ways to connect Google Sheets — a Google sign-in, or sharing named spreadsheets with the Paperclip robot account. Capability groups, a read test, and troubleshooting.
 ---
 
 # Google Sheets
 
-Google's spreadsheets. Agents read sheets, and on a write connection update them. A third path shares individual spreadsheets with a Paperclip robot account instead of connecting a Google identity at all.
+Agents can read spreadsheet values and structure, and on a writing connection update them.
 
-## What this connector does
+Sheets is the one connector with two genuinely different setups: sign in with Google, or share named spreadsheets with a Paperclip robot account. They differ in what agents can reach and what they can do, so choose before you start.
 
-Google Sheets is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+## Which setup do you want?
 
-| Property | Value |
+| If you want | Use | Reach |
+| --- | --- | --- |
+| Agents to work across the spreadsheets your Google account can already open | **Google sign-in** | Everything that account can open |
+| Agents limited to a short, explicit list of spreadsheets | **The Paperclip robot account** | Only the spreadsheets you paste in |
+
+The robot account is the stronger boundary, and the only connector where Paperclip itself enforces which resources are reachable. It also exposes a wider set of operations, including row deletion. The Google sign-in path reaches more spreadsheets but cannot delete anything.
+
+## Option A: Google sign-in
+
+> **Warning:** This path needs Google Workspace Developer Preview registration before it will authorize. Google must register the Workspace email that signs in, and the Cloud project that owns the OAuth client if you bring your own. Apply first at [Google Workspace Developer Preview](https://developers.google.com/workspace/preview).
+
+### Before you connect
+
+- A Google Workspace account that can already open the spreadsheets you want agents to use, with Developer Preview registration confirmed.
+- Without Paperclip Cloud enrollment, your own Google OAuth client with the Drive, Sheets, and Sheets MCP APIs enabled and Paperclip's callback URI registered.
+
+### Capability groups
+
+| Group | What agents can do | Scopes requested |
+| --- | --- | --- |
+| **Read only** | Read spreadsheet values and structure | `drive.readonly`, `spreadsheets.readonly` |
+| **Read & edit** | The above, plus update values, formulas, and dimensions | `drive.readonly`, `drive.file`, `spreadsheets` |
+
+Reviewed operations: `get-spreadsheet` and `get-values` in both groups; `update-spreadsheet`, `update-values`, `update-formulas`, and `insert-dimension` in the editing group only. There is no delete operation on this path.
+
+### Steps
+
+1. Open **Connectors** and select **Google Sheets**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Choose the capability group, then **Connect with Paperclip** or **Use your own Google OAuth app**.
+4. Complete Google's consent screen with the registered Workspace account.
+
+> **Note:** The connector's guidance is that spreadsheet updates should be approved. Leave the write operations on **Ask first**.
+
+## Option B: the Paperclip robot account
+
+Instead of connecting a Google identity, you share individual spreadsheets with a robot account that the instance owns. Agents then reach exactly those spreadsheets and nothing else.
+
+This path requires the instance administrator to have configured a service account. If they have not, Paperclip reports *"Google Sheets is not available on this instance yet."* and the option cannot be used. It needs no Developer Preview registration.
+
+### Steps
+
+1. Open **Connectors** and select **Google Sheets**, then choose **Use the Paperclip robot account**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Paperclip shows the robot account's email address. In Google Sheets, share each spreadsheet with that address:
+   - **Viewer** is enough for reading.
+   - **Editor** is required for appending, updating, adding tabs, clearing values, or deleting rows.
+4. Paste the link to each shared spreadsheet. At least one link is required, and Paperclip rejects anything that is not a Google Sheets link.
+5. Finish setup. Paperclip verifies it can reach each spreadsheet you listed.
+
+### What agents can do on this path
+
+| Operation | Class |
 | --- | --- |
-| Catalog slug | `google-sheets` |
-| Category | Data and analytics, Productivity and collaboration |
-| Transport | `mcp_remote`, `local_stdio` |
-| Highest risk tier | S4 — money, production data, or irreversible actions. |
+| `list_spreadsheets`, `get_spreadsheet_info`, `read_values`, `search_rows` | read |
+| `append_rows`, `update_values`, `add_sheet_tab` | write |
+| `clear_values`, `delete_rows` | destructive |
 
-## Before you start
+Every one of these is restricted to the spreadsheets on the connection's list. Adding a spreadsheet later means editing the connection's list — sharing it with the robot account alone is not enough.
 
-- **Google Developer Preview access required.** Google must register both the Workspace email used to authorize Paperclip and the Google Cloud project that owns the OAuth client. Registration is limited to those emails and projects; it does not enable unrelated Paperclip customers. See [Apply or verify Developer Preview enrollment](https://developers.google.com/workspace/preview).
-- Google Workspace MCP servers are in Developer Preview.
-- Spreadsheet updates require approval.
-- The **Connect with Paperclip** option only appears when this Paperclip instance is enrolled with Paperclip Cloud and Cloud advertises the matching connector profile. Without enrollment, use the customer-owned option instead.
+> **Warning:** `clear_values` and `delete_rows` remove data and are not reversible from Paperclip. Leave them **Off** unless an agent genuinely needs them, and rely on Google Sheets version history for recovery.
 
-## Supported setup paths
+## Choose access
 
-Open **Connectors**, find **Google Sheets**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+On the Google sign-in path, reach is whatever the authorizing account can open, and Paperclip does not narrow it. On the robot path, reach is the pasted list and Paperclip does enforce it.
 
-### Connect with Paperclip (`paperclip-read`)
+Either way, the identity that owns the credential and the **Any agent** / **Just agents I pick** choice work as they do for any connector. See [How connector access works](access-model.md).
 
-Use Paperclip-managed OAuth for read-only Sheets access.
-
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Read only**
-- Risk tier: S3
-- Endpoints: MCP server `https://sheetsmcp.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/spreadsheets.readonly`
-
-### Use your own Google OAuth app (`customer-read-oauth`)
-
-Use a customer-owned OAuth client for read-only Sheets access.
-
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Read only**
-- Risk tier: S3
-- Endpoints: MCP server `https://sheetsmcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/spreadsheets.readonly`
-
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/configure-mcp-servers)
-
-### Connect with Paperclip (`paperclip-write`)
-
-Use Paperclip-managed OAuth to read and update Sheets.
-
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Read & edit**
-- Risk tier: S4
-- Endpoints: MCP server `https://sheetsmcp.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/drive.file`
-  - `https://www.googleapis.com/auth/spreadsheets`
-
-### Use your own Google OAuth app (`customer-write-oauth`)
-
-Use a customer-owned OAuth client to read and update Sheets.
-
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Read & edit**
-- Risk tier: S4
-- Endpoints: MCP server `https://sheetsmcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/drive.file`
-  - `https://www.googleapis.com/auth/spreadsheets`
-
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/configure-mcp-servers)
-
-### Use the Paperclip robot account (`local`)
-
-Share selected spreadsheets with the Paperclip robot account instead of connecting a Google identity.
-
-- Connection method: No credential
-- Capability group: **Share selected sheets**
-- Risk tier: S3
-
-## Accounts and access
-
-Google Sheets follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Google Sheets's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Google Sheets
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Read the "Headcount" tab of the hiring plan spreadsheet and tell me the column headers and how many rows have data. Do not change anything.
 ```
 
-The Paperclip-managed path returns through `GET /api/tools/oauth/cloud-connector/callback` instead of the generic callback.
+Compare against the spreadsheet. On the robot path, `list_spreadsheets` is an even smaller first check: it returns the connection's allowlist, which confirms setup without touching cell data.
 
-## Check that it works
+> **Note:** Illustrative task, not a recorded test result.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+## Troubleshooting and limitations
 
-## If something goes wrong
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| **Use the Paperclip robot account** is unavailable | No service account is configured on the instance | Ask an administrator; the message is *"Google Sheets is not available on this instance yet."* |
+| A pasted link is rejected | It is not a Google Sheets link | Use the spreadsheet's own URL, not a Drive folder or a published-to-web link |
+| Robot path: the agent cannot see a spreadsheet you shared | It is not on the connection's list | Add the link to the connection; sharing alone does not grant reach |
+| Robot path: reads work but writes fail | The robot account has **Viewer**, not **Editor** | Change the sharing role in Google Sheets |
+| Google sign-in: authorization refused before consent | Developer Preview registration is incomplete | Finish registration and retry |
+| Google sign-in: writes are absent | The connection was made with **Read only** | Make a connection with **Read & edit** |
+| **Needs attention** | The credential expired or the grant was revoked | Select **Reconnect** |
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| The provider rejects the sign-in | Confirm the prerequisite above is done: google developer preview access required. |
+Limitations: neither path creates or deletes whole spreadsheets. The Google sign-in path has no delete operation at all. Developer Preview applies to the Google sign-in path only.
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+## Related guides
 
-## Related
-
-- [Connectors](../connectors.md)
+- [Google Drive](google-drive.md) — find and create files.
 - [How connector access works](access-model.md)
-- [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Google Sheets provider documentation](https://developers.google.com/workspace/sheets/api/reference/mcp)
+- [Verify a connector and fix a broken one](verify-and-troubleshoot.md)
+- [Google Sheets API MCP reference](https://developers.google.com/workspace/sheets/api/reference/mcp)

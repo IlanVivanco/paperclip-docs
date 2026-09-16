@@ -1,151 +1,84 @@
 ---
 seo_title: Google Chat Connector
-seo_description: Google Workspace's team messaging. Agents search and read conversations, and on a write connection post messages. It is an agent tool, not a chat channel.
+seo_description: Let agents search and read Google Chat conversations, and optionally send messages. This is a tool connector, not a way for people to chat with an agent.
 ---
 
 # Google Chat
 
-Google Workspace's team messaging. Agents search and read conversations, and on a write connection post messages. This is an agent tool, not a way for people to talk to an agent.
+Agents can search Google Chat conversations and read messages, and on a sending connection post messages to spaces the authorizing account belongs to.
 
-## What this connector does
+This is a tool connector: an agent reads and writes Chat using *your* Google account. It is not a channel for people to start work by messaging an agent — Google Chat is not one of Paperclip's conversation channels. If that is what you want, see [Slack](slack.md), [Discord](discord.md), [Microsoft Teams](microsoft-teams.md), or [Telegram](telegram.md).
 
-Google Chat is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+> **Warning:** Google Chat needs Google Workspace Developer Preview registration before it will authorize. Google must register the Workspace email that signs in, and the Cloud project that owns the OAuth client if you bring your own. Apply first at [Google Workspace Developer Preview](https://developers.google.com/workspace/preview).
 
-| Property | Value |
+## Before you connect
+
+- A Google Workspace account that already belongs to the spaces you want agents to read, with Developer Preview registration confirmed.
+- If you bring your own Google OAuth client, you must also **configure a Google Chat app in the Cloud project** — Chat is the one Google connector with this extra requirement. Enable the Chat and Chat MCP APIs and register Paperclip's callback URI.
+- Personal Google accounts do not have Google Chat spaces in the Workspace sense; this connector expects a Workspace account.
+
+## Pick a capability group
+
+| Group | What agents can do | Scopes requested |
+| --- | --- | --- |
+| **Read only** | Search conversations, list and search messages | `chat.spaces.readonly`, `chat.memberships.readonly`, `chat.messages.readonly`, `chat.users.readstate.readonly` |
+| **Read & send** | The above, plus send a message | the read scopes, plus `chat.messages.create` |
+
+The group is fixed for the life of the connection.
+
+## Connect Google Chat
+
+1. Open **Connectors** and select **Google Chat**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Choose the capability group, then **Connect with Paperclip** or **Use your own Google OAuth app**.
+4. Complete Google's consent screen with the registered Workspace account.
+
+## Choose access
+
+Which conversations an agent can reach is decided by Google: the spaces and direct messages the authorizing account is a member of. Paperclip has no space picker. To narrow it, authorize with an account that belongs to fewer spaces.
+
+Reviewed operations:
+
+| Operation | Group |
 | --- | --- |
-| Catalog slug | `google-chat` |
-| Category | Communication, Productivity and collaboration |
-| Transport | `mcp_remote` |
-| Highest risk tier | S4 — money, production data, or irreversible actions. |
+| `search-conversations`, `list-messages`, `search-messages` | Both |
+| `send-message` | **Read & send** only |
 
-## Before you start
+> **Warning:** A sent message is visible to everyone in the space and arrives under the authorizing account's name, not an agent's. The connector's guidance is that sending should be approved — leave `send-message` on **Ask first**.
 
-- **Google Developer Preview access required.** Google must register both the Workspace email used to authorize Paperclip and the Google Cloud project that owns the OAuth client. Registration is limited to those emails and projects; it does not enable unrelated Paperclip customers. See [Apply or verify Developer Preview enrollment](https://developers.google.com/workspace/preview).
-- Google Workspace MCP servers are in Developer Preview.
-- A Google Chat app must be configured in the Cloud project.
-- Sending messages requires approval.
-- The **Connect with Paperclip** option only appears when this Paperclip instance is enrolled with Paperclip Cloud and Cloud advertises the matching connector profile. Without enrollment, use the customer-owned option instead.
+[How connector access works](access-model.md) covers identity and agent selection.
 
-## Supported setup paths
+## Try it
 
-Open **Connectors**, find **Google Chat**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
-
-### Connect with Paperclip (`paperclip-read`)
-
-Use Paperclip-managed OAuth for read-only Chat access.
-
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Read only**
-- Risk tier: S3
-- Endpoints: MCP server `https://chatmcp.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/chat.spaces.readonly`
-  - `https://www.googleapis.com/auth/chat.memberships.readonly`
-  - `https://www.googleapis.com/auth/chat.messages.readonly`
-  - `https://www.googleapis.com/auth/chat.users.readstate.readonly`
-
-### Use your own Google OAuth app (`customer-read-oauth`)
-
-Use a customer-owned OAuth client for read-only Chat access.
-
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Read only**
-- Risk tier: S3
-- Endpoints: MCP server `https://chatmcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/chat.spaces.readonly`
-  - `https://www.googleapis.com/auth/chat.memberships.readonly`
-  - `https://www.googleapis.com/auth/chat.messages.readonly`
-  - `https://www.googleapis.com/auth/chat.users.readstate.readonly`
-
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/configure-mcp-servers)
-
-### Connect with Paperclip (`paperclip-write`)
-
-Use Paperclip-managed OAuth to read Chat and send messages.
-
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Read & send**
-- Risk tier: S4
-- Endpoints: MCP server `https://chatmcp.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/chat.spaces.readonly`
-  - `https://www.googleapis.com/auth/chat.memberships.readonly`
-  - `https://www.googleapis.com/auth/chat.messages.readonly`
-  - `https://www.googleapis.com/auth/chat.users.readstate.readonly`
-  - `https://www.googleapis.com/auth/chat.messages.create`
-
-### Use your own Google OAuth app (`customer-write-oauth`)
-
-Use a customer-owned OAuth client to read Chat and send messages.
-
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Read & send**
-- Risk tier: S4
-- Endpoints: MCP server `https://chatmcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/chat.spaces.readonly`
-  - `https://www.googleapis.com/auth/chat.memberships.readonly`
-  - `https://www.googleapis.com/auth/chat.messages.readonly`
-  - `https://www.googleapis.com/auth/chat.users.readstate.readonly`
-  - `https://www.googleapis.com/auth/chat.messages.create`
-
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/configure-mcp-servers)
-
-## Accounts and access
-
-Google Chat follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Google Chat's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+Read a conversation you can confirm by eye, and do not post anything:
 
 ```txt
-You             Paperclip               Google Chat
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Search Google Chat for recent messages in the "deploys" space and summarize the last few. Do not send a message.
 ```
 
-The Paperclip-managed path returns through `GET /api/tools/oauth/cloud-connector/callback` instead of the generic callback.
+Compare the summary against Chat. A read is the right first check here because the alternative posts in front of colleagues.
 
-## Check that it works
+If you do need to confirm sending, send to a direct message with yourself rather than a shared space.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result.
 
-## If something goes wrong
+## Troubleshooting and limitations
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| The provider rejects the sign-in | Confirm the prerequisite above is done: google developer preview access required. |
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Google refuses before the consent screen | Developer Preview registration is incomplete | Finish registration and retry |
+| Authorization fails on a self-managed client | No Google Chat app is configured in the Cloud project | Configure the Chat app, then retry |
+| **Connect with Paperclip** is not offered | The instance is not enrolled with Paperclip Cloud, or Cloud is not advertising the Chat profile | Use your own Google OAuth app |
+| A space is missing from results | The authorizing account is not a member of it | Join the space in Google Chat; no reconnect needed |
+| `send-message` is absent | The connection was made with **Read only** | Make a connection with **Read & send** |
+| People expect to message an agent and get no reply | Google Chat is not a Paperclip conversation channel | Use a supported channel instead |
+| **Needs attention** | The Google token expired or was revoked | Select **Reconnect** |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Limitations: one connection covers one Google account. Creating, joining, or leaving spaces and changing memberships are not exposed. Reactions, message editing, and deletion are not available. Developer Preview applies.
 
-## Related
+## Related guides
 
-- [Connectors](../connectors.md)
+- [Slack](slack.md), [Discord](discord.md), [Microsoft Teams](microsoft-teams.md), [Telegram](telegram.md) — channels people can use to reach an agent.
+- [Google Workspace Search](google-workspace-search.md) — one read-only search across Gmail, Drive, Calendar, and Chat.
 - [How connector access works](access-model.md)
-- [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Google Chat provider documentation](https://developers.google.com/workspace/chat/api/reference/mcp)
+- [Google Chat API MCP reference](https://developers.google.com/workspace/chat/api/reference/mcp)

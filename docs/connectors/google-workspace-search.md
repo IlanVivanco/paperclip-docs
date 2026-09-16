@@ -1,116 +1,76 @@
 ---
 seo_title: Google Workspace Search Connector
-seo_description: One read-only search across Gmail, Drive, Calendar, and Chat in a Google account, for when an agent needs to find something without knowing where it is.
+seo_description: One read-only search across Gmail, Drive, Calendar, and Chat. When to use it instead of the individual connectors, what it requests, a test, and troubleshooting.
 ---
 
 # Google Workspace Search
 
-One read-only search that spans Gmail, Drive, Calendar, and Chat in a single Google account. Use it when an agent needs to find something without knowing which app holds it.
+One read-only search that spans Gmail, Drive, Calendar, and Chat together, so an agent can answer "where did we discuss this?" without knowing which app holds the answer.
 
-## What this connector does
+It searches all four. There is no way to connect it for a subset.
 
-Google Workspace Search is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+> **Warning:** This connection requests read access to Gmail, Drive, Calendar, and Chat at once. That is broader than any single-app connector. If an agent only needs one app, connect that app instead.
 
-| Property | Value |
+## When to use this instead of an app connector
+
+| You want | Use |
 | --- | --- |
-| Catalog slug | `google-workspace-search` |
-| Category | Data and analytics, Productivity and collaboration |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
+| To find something without knowing which app it is in | This connector |
+| To read, edit, or create in one specific app | [Gmail](gmail.md), [Google Drive](google-drive.md), [Google Calendar](google-calendar.md), or [Google Chat](google-chat.md) |
+| The narrowest possible access | The single-app connector, with its read-only group |
 
-## Before you start
+This connector only searches. It returns results with links; it does not read a full document, create a draft, or change an event. Agents that need to act on what they find also need the relevant app connector.
 
-- **Google Developer Preview access required.** Google must register both the Workspace email used to authorize Paperclip and the Google Cloud project that owns the OAuth client. Registration is limited to those emails and projects; it does not enable unrelated Paperclip customers. See [Apply or verify Developer Preview enrollment](https://developers.google.com/workspace/preview).
-- This requests read access to all four supported search corpora.
-- Google Workspace MCP servers are in Developer Preview.
-- The **Connect with Paperclip** option only appears when this Paperclip instance is enrolled with Paperclip Cloud and Cloud advertises the matching connector profile. Without enrollment, use the customer-owned option instead.
+## Before you connect
 
-## Supported setup paths
+- A Google Workspace account whose mail, files, calendar, and chat you are willing to make searchable.
+- Google Workspace Developer Preview registration for that account, confirmed by Google. Apply at [Google Workspace Developer Preview](https://developers.google.com/workspace/preview).
+- Without Paperclip Cloud enrollment, your own Google OAuth client with the Gmail, Drive, Calendar, Chat, and Workspace MCP APIs enabled and Paperclip's callback URI registered.
 
-Open **Connectors**, find **Google Workspace Search**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+## Connect Google Workspace Search
 
-### Connect with Paperclip (`paperclip-read`)
+1. Open **Connectors** and select **Google Workspace Search**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Connect with Paperclip**, or **Use your own Google OAuth app**.
+4. Complete Google's consent screen with the registered Workspace account.
 
-Use Paperclip-managed OAuth for cross-product Workspace search.
+One capability group, **Search Workspace**, requesting `gmail.readonly`, `drive.readonly`, `calendar.readonly`, and `chat.messages.readonly`. There is a single operation, `search-corpus`.
 
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Search Workspace**
-- Risk tier: S3
-- Endpoints: MCP server `https://workspacemcp.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/gmail.readonly`
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/calendar.readonly`
-  - `https://www.googleapis.com/auth/chat.messages.readonly`
+## Choose access
 
-### Use your own Google OAuth app (`customer-read-oauth`)
+What the search covers is what the authorizing account can already see across those four apps — its own mail, files shared with it, calendars on its list, and spaces it belongs to. Paperclip does not narrow it, and there is no per-app or per-folder filter.
 
-Use a customer-owned OAuth client for cross-product Workspace search.
+Because the scope is wide, the agent-selection choice matters more than usual. Prefer **Just agents I pick**. An **Organization identity** here means eligible agents can search one person's mail and files on any run — rarely what you want.
 
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Search Workspace**
-- Risk tier: S3
-- Endpoints: MCP server `https://workspacemcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/gmail.readonly`
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/calendar.readonly`
-  - `https://www.googleapis.com/auth/chat.messages.readonly`
+[How connector access works](access-model.md) covers identity and agent selection.
 
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/universal-search-mcp)
+## Try it
 
-## Accounts and access
-
-Google Workspace Search follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Google Workspace Search's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+Search for something you know exists and can recognize in the results:
 
 ```txt
-You             Paperclip               Google Workspace Se~
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Search my Google Workspace for "renewal contract" and tell me which app each result came from.
 ```
 
-The Paperclip-managed path returns through `GET /api/tools/oauth/cloud-connector/callback` instead of the generic callback.
+Expect a handful of results, each identifying its source app with a link. Asking where each result came from is the useful check — it confirms the search really spans the corpora rather than returning one app's hits.
 
-## Check that it works
+> **Note:** Illustrative task, not a recorded test result. Use a phrase you know appears in your own mail or files.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+## Troubleshooting and limitations
 
-## If something goes wrong
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Google refuses before the consent screen | Developer Preview registration is incomplete | Finish registration and retry |
+| **Connect with Paperclip** is not offered | The instance is not enrolled with Paperclip Cloud, or Cloud is not advertising the search profile | Use your own Google OAuth app |
+| Results only ever come from one app | The query matches in one corpus, or the account has little content in the others | Try a phrase you know appears elsewhere |
+| A result is found but the agent cannot read the whole item | Expected — this connector searches, it does not read | Add the relevant app connector |
+| You want to search only Drive | Not supported; the group covers all four | Use the [Google Drive](google-drive.md) connector |
+| **Needs attention** | The Google token expired or was revoked | Select **Reconnect** |
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| The provider rejects the sign-in | Confirm the prerequisite above is done: google developer preview access required. |
+Limitations: read-only, search-only, one account, all four corpora or none. Developer Preview applies.
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+## Related guides
 
-## Related
-
-- [Connectors](../connectors.md)
+- [Gmail](gmail.md), [Google Drive](google-drive.md), [Google Calendar](google-calendar.md), [Google Chat](google-chat.md)
 - [How connector access works](access-model.md)
-- [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Google Workspace Search provider documentation](https://developers.google.com/workspace/guides/universal-search-mcp)
+- [Google universal search MCP guide](https://developers.google.com/workspace/guides/universal-search-mcp)

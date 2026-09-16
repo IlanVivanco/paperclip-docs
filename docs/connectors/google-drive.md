@@ -1,138 +1,84 @@
 ---
 seo_title: Google Drive Connector
-seo_description: Google's file storage. Agents search and read files, and on a write connection create and copy them. Set up access and permissions in Paperclip.
+seo_description: Let agents search and read Drive files, and optionally create or copy them. Deleting and sharing are not exposed. Capability groups, file scope, a read test, and troubleshooting.
 ---
 
 # Google Drive
 
-Google's file storage. Agents search and read files, and on a write connection create and copy them.
+Agents can search Drive, read file metadata and content, and on a creating connection add new files or copy existing ones.
 
-## What this connector does
+Deleting, moving, renaming, and changing who a file is shared with are **not** exposed by this connector, in either capability group.
 
-Google Drive is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+> **Warning:** Google Drive needs Google Workspace Developer Preview registration before tools can run. Google must register the Workspace email that signs in, and the Cloud project that owns the OAuth client if you bring your own. Apply first at [Google Workspace Developer Preview](https://developers.google.com/workspace/preview).
 
-| Property | Value |
+## Before you connect
+
+- A Google Workspace account that can already open the files you want agents to use.
+- Developer Preview registration for that account, confirmed by Google.
+- If your instance is not enrolled with Paperclip Cloud, you will need your own Google OAuth client with the Drive and Drive MCP APIs enabled and Paperclip's callback URI registered.
+
+## Pick a capability group
+
+| Group | What agents can do | Scopes requested |
+| --- | --- | --- |
+| **Read only** | Search files, read metadata and content, list recent files, read a file's permissions | `drive.readonly` |
+| **Read & create** | The above, plus create a new file and copy an existing one | `drive.readonly`, `drive.file` |
+
+The group is fixed for the life of the connection; to change it, make a new connection.
+
+## Connect Google Drive
+
+1. Open **Connectors** and select **Google Drive**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Choose the capability group, then **Connect with Paperclip** or **Use your own Google OAuth app**.
+4. Complete Google's consent screen with the registered Workspace account.
+
+## Choose access
+
+File reach comes from Google. The connection sees what the authorizing account can already open: files it owns, files shared with it, and shared-drive content it is a member of. Paperclip has no file or folder picker, so narrowing access means changing sharing in Drive or authorizing with a more limited account.
+
+Reviewed operations:
+
+| Operation | Group |
 | --- | --- |
-| Catalog slug | `google-drive` |
-| Category | Content and design, Productivity and collaboration |
-| Transport | `mcp_remote` |
-| Highest risk tier | S4 — money, production data, or irreversible actions. |
+| `search-files`, `list-recent-files` | Both |
+| `get-file-metadata`, `read-file-content`, `download-file-content` | Both |
+| `get-file-permissions` | Both |
+| `create-file`, `copy-file` | **Read & create** only |
 
-## Before you start
+Two distinctions worth keeping straight. Metadata and content are separate operations, so an agent can list a file it cannot usefully parse. And `get-file-permissions` reads the sharing list — it does not change it.
 
-- **Google Developer Preview access required.** Google must register both the Workspace email used to authorize Paperclip and the Google Cloud project that owns the OAuth client. Registration is limited to those emails and projects; it does not enable unrelated Paperclip customers. See [Apply or verify Developer Preview enrollment](https://developers.google.com/workspace/preview).
-- Before connecting, enroll the signed-in Workspace account and Google Cloud project in Google's Developer Preview Program and wait for the registration confirmation.
-- File creation and copying require approval.
-- The **Connect with Paperclip** option only appears when this Paperclip instance is enrolled with Paperclip Cloud and Cloud advertises the matching connector profile. Without enrollment, use the customer-owned option instead.
+> **Note:** The write group's `drive.file` scope only covers files the app itself created or opened, which is why creating and copying are available but editing arbitrary existing files is not. The connector's guidance is that file creation and copying should be approved; leave them on **Ask first**.
 
-## Supported setup paths
+[How connector access works](access-model.md) covers identity and agent selection.
 
-Open **Connectors**, find **Google Drive**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
-
-### Connect with Paperclip (`paperclip-read`)
-
-Use Paperclip-managed OAuth for read-only Drive access.
-
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Read only**
-- Risk tier: S3
-- Endpoints: MCP server `https://drivemcp.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-
-### Use your own Google OAuth app (`customer-read-oauth`)
-
-Use a customer-owned OAuth client for read-only Drive access.
-
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Read only**
-- Risk tier: S3
-- Endpoints: MCP server `https://drivemcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/configure-mcp-servers)
-
-### Connect with Paperclip (`paperclip-write`)
-
-Use Paperclip-managed OAuth for Drive read and create access.
-
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Read & create**
-- Risk tier: S4
-- Endpoints: MCP server `https://drivemcp.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/drive.file`
-
-### Use your own Google OAuth app (`customer-write-oauth`)
-
-Use a customer-owned OAuth client for Drive read and create access.
-
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Read & create**
-- Risk tier: S4
-- Endpoints: MCP server `https://drivemcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/drive.file`
-
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/configure-mcp-servers)
-
-## Accounts and access
-
-Google Drive follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Google Drive's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Google Drive
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Search my Google Drive for a document containing "quarterly plan" and tell me its title, owner, and last modified date. Do not open or change anything else.
 ```
 
-The Paperclip-managed path returns through `GET /api/tools/oauth/cloud-connector/callback` instead of the generic callback.
+Expect metadata for a file you can find yourself in Drive. This confirms the credential, the account, and the agent's permission without writing anything.
 
-## Check that it works
+> **Note:** Illustrative task, not a recorded test result.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+## Troubleshooting and limitations
 
-## If something goes wrong
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Google refuses before the consent screen | Developer Preview registration is incomplete | Finish registration and retry |
+| **Connect with Paperclip** is not offered | The instance is not enrolled with Paperclip Cloud, or Cloud is not advertising the Drive profile | Use your own Google OAuth app |
+| Search finds nothing you expected | The file is not shared with the authorizing account, or is on a shared drive it does not belong to | Share the file or add the account to the shared drive |
+| A file is listed but its content will not read | The file type has no extractable text, or it is a link to an external item | Check the file type; metadata and content are separate capabilities |
+| Create or copy is missing | The connection was made with **Read only** | Make a connection with **Read & create** |
+| An agent cannot delete or re-share a file | Expected — those are not exposed | Do it in Drive |
+| **Needs attention** | The Google token expired or was revoked | Select **Reconnect** |
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| The provider rejects the sign-in | Confirm the prerequisite above is done: google developer preview access required. |
+Limitations: one connection covers one Google account. No delete, move, rename, or sharing changes. Editing an existing arbitrary file is not available; for document editing use [Google Docs](google-docs.md), [Google Sheets](google-sheets.md), or [Google Slides](google-slides.md). Developer Preview applies.
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+## Related guides
 
-## Related
-
-- [Connectors](../connectors.md)
+- [Google Docs](google-docs.md), [Google Sheets](google-sheets.md), [Google Slides](google-slides.md) — edit content inside specific file types.
+- [Google Workspace Search](google-workspace-search.md) — one read-only search across Gmail, Drive, Calendar, and Chat.
 - [How connector access works](access-model.md)
-- [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Google Drive provider documentation](https://developers.google.com/workspace/drive/api/reference/mcp)
+- [Google Drive API MCP reference](https://developers.google.com/workspace/drive/api/reference/mcp)

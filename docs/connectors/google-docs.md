@@ -1,142 +1,79 @@
 ---
 seo_title: Google Docs Connector
-seo_description: Google's word processor. Agents read documents, and on a write connection edit them. Set up access and per-action permissions in Paperclip.
+seo_description: Let agents read Google Docs documents and optionally update them. Capability groups, document scope, what editing covers, a read test, and troubleshooting.
 ---
 
 # Google Docs
 
-Google's word processor. Agents read documents, and on a write connection edit them.
+Agents can read the text and structure of Google Docs documents, and on an editing connection update them.
 
-## What this connector does
+> **Warning:** Google Docs needs Google Workspace Developer Preview registration before it will authorize. Google must register the Workspace email that signs in, and the Cloud project that owns the OAuth client if you bring your own. Apply first at [Google Workspace Developer Preview](https://developers.google.com/workspace/preview).
 
-Google Docs is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+## Before you connect
 
-| Property | Value |
+- A Google Workspace account that can already open the documents you want agents to use.
+- Developer Preview registration for that account, confirmed by Google.
+- Without Paperclip Cloud enrollment, you need your own Google OAuth client with the Drive, Docs, and Docs MCP APIs enabled and Paperclip's callback URI registered.
+
+## Pick a capability group
+
+| Group | What agents can do | Scopes requested |
+| --- | --- | --- |
+| **Read only** | Read document text and structure | `drive.readonly`, `documents.readonly` |
+| **Read & edit** | The above, plus update a document | `drive.readonly`, `drive.file`, `documents` |
+
+The group is fixed for the life of the connection.
+
+## Connect Google Docs
+
+1. Open **Connectors** and select **Google Docs**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Choose the capability group, then **Connect with Paperclip** or **Use your own Google OAuth app**.
+4. Complete Google's consent screen with the registered Workspace account.
+
+## Choose access
+
+Document reach comes from Google: the connection can open what the authorizing account can open. There is no document picker in Paperclip.
+
+Reviewed operations:
+
+| Operation | Group |
 | --- | --- |
-| Catalog slug | `google-docs` |
-| Category | Content and design, Productivity and collaboration |
-| Transport | `mcp_remote` |
-| Highest risk tier | S4 — money, production data, or irreversible actions. |
+| `read-doc` | Both |
+| `update-doc` | **Read & edit** only |
 
-## Before you start
+This is a deliberately small surface, and it is worth being clear about what it is not. `update-doc` applies document updates through the Docs API; it is not the full Google Docs editor. Do not promise an agent will reproduce native editing behaviour — complex formatting, suggestions and comment threads, revision history operations, and collaborative features are not exposed here.
 
-- **Google Developer Preview access required.** Google must register both the Workspace email used to authorize Paperclip and the Google Cloud project that owns the OAuth client. Registration is limited to those emails and projects; it does not enable unrelated Paperclip customers. See [Apply or verify Developer Preview enrollment](https://developers.google.com/workspace/preview).
-- Google Workspace MCP servers are in Developer Preview.
-- Document updates require approval.
-- The **Connect with Paperclip** option only appears when this Paperclip instance is enrolled with Paperclip Cloud and Cloud advertises the matching connector profile. Without enrollment, use the customer-owned option instead.
+> **Note:** The connector's guidance is that document updates should be approved. Leave `update-doc` on **Ask first**; an edit lands in a real document that other people may be working in.
 
-## Supported setup paths
+[How connector access works](access-model.md) covers identity and agent selection.
 
-Open **Connectors**, find **Google Docs**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
-
-### Connect with Paperclip (`paperclip-read`)
-
-Use Paperclip-managed OAuth for read-only Docs access.
-
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Read only**
-- Risk tier: S3
-- Endpoints: MCP server `https://docsmcp.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/documents.readonly`
-
-### Use your own Google OAuth app (`customer-read-oauth`)
-
-Use a customer-owned OAuth client for read-only Docs access.
-
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Read only**
-- Risk tier: S3
-- Endpoints: MCP server `https://docsmcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/documents.readonly`
-
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/configure-mcp-servers)
-
-### Connect with Paperclip (`paperclip-write`)
-
-Use Paperclip-managed OAuth to read and update Docs.
-
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Read & edit**
-- Risk tier: S4
-- Endpoints: MCP server `https://docsmcp.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/drive.file`
-  - `https://www.googleapis.com/auth/documents`
-
-### Use your own Google OAuth app (`customer-write-oauth`)
-
-Use a customer-owned OAuth client to read and update Docs.
-
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Read & edit**
-- Risk tier: S4
-- Endpoints: MCP server `https://docsmcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/drive.file`
-  - `https://www.googleapis.com/auth/documents`
-
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/configure-mcp-servers)
-
-## Accounts and access
-
-Google Docs follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Google Docs's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Google Docs
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Read the Google Doc titled "Team charter" and summarize its main sections. Do not edit it.
 ```
 
-The Paperclip-managed path returns through `GET /api/tools/oauth/cloud-connector/callback` instead of the generic callback.
+Expect a summary whose headings match what you see in the document. If you want to confirm editing, do it on a scratch document you created for the purpose, not a live one.
 
-## Check that it works
+> **Note:** Illustrative task, not a recorded test result. Substitute a document title from your own account.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+## Troubleshooting and limitations
 
-## If something goes wrong
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Google refuses before the consent screen | Developer Preview registration is incomplete | Finish registration and retry |
+| **Connect with Paperclip** is not offered | The instance is not enrolled with Paperclip Cloud, or Cloud is not advertising the Docs profile | Use your own Google OAuth app |
+| A document cannot be found | It is not shared with the authorizing account | Share it in Google Drive; no reconnect needed |
+| `update-doc` is missing | The connection was made with **Read only** | Make a connection with **Read & edit** |
+| An edit did not produce the formatting you expected | The update goes through the Docs API, which does not cover every editor feature | Finish the formatting in Google Docs |
+| **Needs attention** | The Google token expired or was revoked | Select **Reconnect** |
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| The provider rejects the sign-in | Confirm the prerequisite above is done: google developer preview access required. |
+Limitations: one connection covers one Google account. Creating a document is not part of this connector — use [Google Drive](google-drive.md) with the create group. Comments, suggestions, and revision history are not exposed. Developer Preview applies.
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+## Related guides
 
-## Related
-
-- [Connectors](../connectors.md)
+- [Google Drive](google-drive.md) — find and create files.
 - [How connector access works](access-model.md)
-- [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Google Docs provider documentation](https://developers.google.com/workspace/docs/api/reference/mcp)
+- [Verify a connector and fix a broken one](verify-and-troubleshoot.md)
+- [Google Docs API MCP reference](https://developers.google.com/workspace/docs/api/reference/mcp)

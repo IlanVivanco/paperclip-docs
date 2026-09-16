@@ -1,142 +1,76 @@
 ---
 seo_title: Google Slides Connector
-seo_description: Google's presentations. Agents read decks, and on a write connection edit them. Set up access and per-action permissions in Paperclip.
+seo_description: Let agents read Google Slides presentations and optionally update them. Capability groups, what editing covers, a read test, and troubleshooting.
 ---
 
 # Google Slides
 
-Google's presentations. Agents read decks, and on a write connection edit them.
+Agents can read the slides and content of a Google Slides presentation, and on an editing connection update it.
 
-## What this connector does
+> **Warning:** Google Slides needs Google Workspace Developer Preview registration before it will authorize. Google must register the Workspace email that signs in, and the Cloud project that owns the OAuth client if you bring your own. Apply first at [Google Workspace Developer Preview](https://developers.google.com/workspace/preview).
 
-Google Slides is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+## Before you connect
 
-| Property | Value |
+- A Google Workspace account that can already open the presentations you want agents to use, with Developer Preview registration confirmed.
+- Without Paperclip Cloud enrollment, your own Google OAuth client with the Drive, Slides, and Slides MCP APIs enabled and Paperclip's callback URI registered.
+
+## Pick a capability group
+
+| Group | What agents can do | Scopes requested |
+| --- | --- | --- |
+| **Read only** | Read presentation slides and content | `drive.readonly`, `presentations.readonly` |
+| **Read & edit** | The above, plus update a presentation | `drive.readonly`, `drive.file`, `presentations` |
+
+The group is fixed for the life of the connection.
+
+## Connect Google Slides
+
+1. Open **Connectors** and select **Google Slides**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Choose the capability group, then **Connect with Paperclip** or **Use your own Google OAuth app**.
+4. Complete Google's consent screen with the registered Workspace account.
+
+## Choose access
+
+Presentation reach comes from Google: the connection can open what the authorizing account can open. There is no file picker in Paperclip.
+
+Reviewed operations:
+
+| Operation | Group |
 | --- | --- |
-| Catalog slug | `google-slides` |
-| Category | Content and design, Productivity and collaboration |
-| Transport | `mcp_remote` |
-| Highest risk tier | S4 — money, production data, or irreversible actions. |
+| `read-presentation` | Both |
+| `update-presentation` | **Read & edit** only |
 
-## Before you start
+Be realistic about what editing means here. `update-presentation` applies changes through the Slides API. It is good at text content and structural slide operations. It is not the Slides editor, and it does not give an agent design judgement — themes and master layouts, precise positioning, animations and transitions, speaker-note formatting, and embedded chart refreshes are either unavailable or will not look the way a person would arrange them. Treat agent edits as a first draft that someone opens in Slides afterwards.
 
-- **Google Developer Preview access required.** Google must register both the Workspace email used to authorize Paperclip and the Google Cloud project that owns the OAuth client. Registration is limited to those emails and projects; it does not enable unrelated Paperclip customers. See [Apply or verify Developer Preview enrollment](https://developers.google.com/workspace/preview).
-- Google Workspace MCP servers are in Developer Preview.
-- Presentation updates require approval.
-- The **Connect with Paperclip** option only appears when this Paperclip instance is enrolled with Paperclip Cloud and Cloud advertises the matching connector profile. Without enrollment, use the customer-owned option instead.
+> **Note:** The connector's guidance is that presentation updates should be approved. Leave `update-presentation` on **Ask first**.
 
-## Supported setup paths
-
-Open **Connectors**, find **Google Slides**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
-
-### Connect with Paperclip (`paperclip-read`)
-
-Use Paperclip-managed OAuth for read-only Slides access.
-
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Read only**
-- Risk tier: S3
-- Endpoints: MCP server `https://slidesmcp.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/presentations.readonly`
-
-### Use your own Google OAuth app (`customer-read-oauth`)
-
-Use a customer-owned OAuth client for read-only Slides access.
-
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Read only**
-- Risk tier: S3
-- Endpoints: MCP server `https://slidesmcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/presentations.readonly`
-
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/configure-mcp-servers)
-
-### Connect with Paperclip (`paperclip-write`)
-
-Use Paperclip-managed OAuth to read and update Slides.
-
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Read & edit**
-- Risk tier: S4
-- Endpoints: MCP server `https://slidesmcp.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/drive.file`
-  - `https://www.googleapis.com/auth/presentations`
-
-### Use your own Google OAuth app (`customer-write-oauth`)
-
-Use a customer-owned OAuth client to read and update Slides.
-
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Read & edit**
-- Risk tier: S4
-- Endpoints: MCP server `https://slidesmcp.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/drive.readonly`
-  - `https://www.googleapis.com/auth/drive.file`
-  - `https://www.googleapis.com/auth/presentations`
-
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/configure-mcp-servers)
-
-## Accounts and access
-
-Google Slides follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Google Slides's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+## Try it
 
 ```txt
-You             Paperclip               Google Slides
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Read the "Q3 review" presentation and list the title of each slide in order. Do not change it.
 ```
 
-The Paperclip-managed path returns through `GET /api/tools/oauth/cloud-connector/callback` instead of the generic callback.
+Compare the slide titles against the presentation. If you want to confirm editing, do it on a copy rather than the deck someone is about to present.
 
-## Check that it works
+> **Note:** Illustrative task, not a recorded test result.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+## Troubleshooting and limitations
 
-## If something goes wrong
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Google refuses before the consent screen | Developer Preview registration is incomplete | Finish registration and retry |
+| **Connect with Paperclip** is not offered | The instance is not enrolled with Paperclip Cloud, or Cloud is not advertising the Slides profile | Use your own Google OAuth app |
+| A presentation cannot be found | It is not shared with the authorizing account | Share it in Google Drive; no reconnect needed |
+| `update-presentation` is missing | The connection was made with **Read only** | Make a connection with **Read & edit** |
+| An edit landed but looks wrong | The Slides API does not cover every layout and design feature | Adjust it in Google Slides |
+| **Needs attention** | The Google token expired or was revoked | Select **Reconnect** |
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| The provider rejects the sign-in | Confirm the prerequisite above is done: google developer preview access required. |
+Limitations: one connection covers one Google account. Creating a presentation is not part of this connector — use [Google Drive](google-drive.md) with the create group. Comments and revision history are not exposed. Developer Preview applies.
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+## Related guides
 
-## Related
-
-- [Connectors](../connectors.md)
+- [Google Drive](google-drive.md) — find and create files.
+- [Google Docs](google-docs.md)
 - [How connector access works](access-model.md)
-- [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Google Slides provider documentation](https://developers.google.com/workspace/slides/api/reference/mcp)
+- [Google Slides API MCP reference](https://developers.google.com/workspace/slides/api/reference/mcp)

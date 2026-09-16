@@ -1,114 +1,75 @@
 ---
 seo_title: Google People Connector
-seo_description: The contacts and directory behind a Google account. Agents look up people and profiles. Read-only: this connector has no write connection at all.
+seo_description: Let agents look up contacts and Workspace directory profiles. Read-only, no writes in any group. Account requirements, a lookup test, and troubleshooting.
 ---
 
 # Google People
 
-The contacts and directory behind a Google account. Agents look up people and profiles. Read-only; there is no write connection.
+Agents can search your Google contacts, search your organization's Workspace directory, and read your own profile.
 
-## What this connector does
+This connector is read-only. There is no capability group that writes, so an agent cannot create, edit, or delete a contact.
 
-Google People is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
+> **Warning:** Google People needs Google Workspace Developer Preview registration before it will authorize. Google must register the Workspace email that signs in, and the Cloud project that owns the OAuth client if you bring your own. Apply first at [Google Workspace Developer Preview](https://developers.google.com/workspace/preview).
 
-| Property | Value |
-| --- | --- |
-| Catalog slug | `google-people` |
-| Category | Communication, Productivity and collaboration |
-| Transport | `mcp_remote` |
-| Highest risk tier | S3 — account data that can be changed. |
+## Before you connect
 
-## Before you start
+- A Google account with Developer Preview registration confirmed.
+- For directory search, a Google Workspace account. Directory availability depends on the Workspace account and its administrator's settings — a personal Google account has contacts but no organization directory.
+- Without Paperclip Cloud enrollment, your own Google OAuth client with the People and People MCP APIs enabled and Paperclip's callback URI registered.
 
-- **Google Developer Preview access required.** Google must register both the Workspace email used to authorize Paperclip and the Google Cloud project that owns the OAuth client. Registration is limited to those emails and projects; it does not enable unrelated Paperclip customers. See [Apply or verify Developer Preview enrollment](https://developers.google.com/workspace/preview).
-- Google Workspace MCP servers are in Developer Preview.
-- Directory search availability depends on your Workspace account.
-- The **Connect with Paperclip** option only appears when this Paperclip instance is enrolled with Paperclip Cloud and Cloud advertises the matching connector profile. Without enrollment, use the customer-owned option instead.
+## Connect Google People
 
-## Supported setup paths
+1. Open **Connectors** and select **Google People**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Select **Connect with Paperclip**, or **Use your own Google OAuth app**.
+4. Complete Google's consent screen.
 
-Open **Connectors**, find **Google People**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
+There is one capability group, **Read contacts**, requesting `directory.readonly`, `userinfo.profile`, and `contacts.readonly`.
 
-### Connect with Paperclip (`paperclip-read`)
+## Choose access
 
-Use Paperclip-managed OAuth for Google People access.
+Two distinct sources of people, and it is worth knowing which one an answer came from:
 
-- Connection method: Connect with Paperclip
-- OAuth client: Paperclip's managed client
-- Capability group: **Read contacts**
-- Risk tier: S3
-- Endpoints: MCP server `https://people.googleapis.com/mcp/v1`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/directory.readonly`
-  - `https://www.googleapis.com/auth/userinfo.profile`
-  - `https://www.googleapis.com/auth/contacts.readonly`
+| Source | What it covers | Operation |
+| --- | --- | --- |
+| Your contacts | The personal contact list on the authorizing account | `search-contacts` |
+| The organization directory | Workspace colleagues, subject to your administrator's directory settings | `search-directory-people` |
+| Your own profile | The authorizing account's own profile | `get-user-profile` |
 
-### Use your own Google OAuth app (`customer-read-oauth`)
+Directory reach is Google's decision, not Paperclip's. A Workspace administrator can limit or disable directory sharing, in which case directory searches return little or nothing even though authorization succeeded.
 
-Use a customer-owned OAuth client for Google People access.
+> **Warning:** This connector returns personal data about real people — names, email addresses, and whatever else your directory exposes. Prefer **Just agents I pick** over **Any agent**, and give agents specific lookups rather than instructions that enumerate the directory.
 
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Capability group: **Read contacts**
-- Risk tier: S3
-- Endpoints: MCP server `https://people.googleapis.com/mcp/v1`; authorization `https://accounts.google.com/o/oauth2/v2/auth`; token `https://oauth2.googleapis.com/token`; metadata `https://accounts.google.com/.well-known/openid-configuration`
-- Requested scopes:
-  - `https://www.googleapis.com/auth/directory.readonly`
-  - `https://www.googleapis.com/auth/userinfo.profile`
-  - `https://www.googleapis.com/auth/contacts.readonly`
+[How connector access works](access-model.md) covers identity and agent selection.
 
-Provider console: [register an app](https://console.cloud.google.com/auth/clients) · [provider docs](https://developers.google.com/workspace/guides/configure-mcp-servers)
+## Try it
 
-## Accounts and access
-
-Google People follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
-
-## Actions
-
-Google People's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
-
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
-
-## Authorization sequence
+Look up one person you can verify, rather than listing everyone:
 
 ```txt
-You             Paperclip               Google People
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Look up the email address for Priya in our Google directory.
 ```
 
-The Paperclip-managed path returns through `GET /api/tools/oauth/cloud-connector/callback` instead of the generic callback.
+Expect a single match you can confirm. Keep verification to a named lookup — a broad enumeration collects personal data you did not need.
 
-## Check that it works
+> **Note:** Illustrative task, not a recorded test result. Substitute a colleague's first name.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+## Troubleshooting and limitations
 
-## If something goes wrong
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| Google refuses before the consent screen | Developer Preview registration is incomplete | Finish registration and retry |
+| **Connect with Paperclip** is not offered | The instance is not enrolled with Paperclip Cloud, or Cloud is not advertising the People profile | Use your own Google OAuth app |
+| Directory searches return nothing, contacts work | The account is not a Workspace account, or an administrator has restricted directory sharing | Ask your Workspace administrator about directory visibility |
+| A colleague is missing from directory results | They are outside the shared directory scope your administrator configured | Nothing to fix in Paperclip |
+| An agent cannot add or edit a contact | Expected — this connector is read-only | Do it in Google Contacts |
+| **Needs attention** | The Google token expired or was revoked | Select **Reconnect** |
 
-| What you see | What it means |
-| --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
-| The provider rejects the sign-in | Confirm the prerequisite above is done: google developer preview access required. |
+Limitations: read-only in every group. One connection covers one Google account. Contact groups and labels, and other people's private contact lists, are not exposed. Developer Preview applies.
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+## Related guides
 
-## Related
-
-- [Connectors](../connectors.md)
+- [Google Workspace Search](google-workspace-search.md) — one read-only search across Gmail, Drive, Calendar, and Chat.
 - [How connector access works](access-model.md)
-- [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
-- [Google People provider documentation](https://developers.google.com/people/api/mcp)
+- [Verify a connector and fix a broken one](verify-and-troubleshoot.md)
+- [Google People API MCP reference](https://developers.google.com/people/api/mcp)
