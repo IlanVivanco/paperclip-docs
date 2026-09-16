@@ -51,7 +51,7 @@ Setup asks for access first, then the credential.
 1. Select **Connectors** in the sidebar.
 2. Find **Gmail** and select **Connect**.
 3. On the **Access** step, choose the identity and which agents may use the connection:
-   - Under **Identity**, **Just me** is the usual answer for a mailbox — agents use the credential only on runs where you are the responsible person. An **Organization identity** makes one mailbox available to eligible agents on any run, whoever started it; it requires the connection-manager permission and suits a genuinely shared inbox, not a person's mail.
+   - Under **Identity**, **Just me** is the usual answer for a mailbox — agents use the credential only on runs where you are the responsible person. An **Organization identity** makes one mailbox available on runs started by anyone in its **human audience**, which you set on the connection's identity card as either **Any human in the company** or **Humans I pick** with a named list. Narrow that audience for a mailbox: leaving it open means any colleague's run can read the inbox. It requires the connection-manager permission and suits a genuinely shared inbox, not a person's mail.
    - Under **Which agents can use this connection**, choose **Just agents I pick** and name them. A mailbox is not something to hand to every agent by default.
 4. Choose the capability group from step 3 and the setup path:
    - **Connect with Paperclip** — Paperclip's managed Google client. Offered only when the instance is enrolled with Paperclip Cloud and Cloud advertises the Gmail profile.
@@ -63,11 +63,13 @@ Setup asks for access first, then the credential.
 Open the **Permissions** tab.
 
 - Leave the reads **Allowed**.
-- If you connected the draft group, set `create-draft` to **Ask first**. Drafts land in a real mailbox; the connector's own guidance is that draft creation requires approval.
+- If you connected the draft group, consider setting `create-draft` to **Ask first**. Drafts land in a real mailbox, and the connector's own guidance recommends approval for them. This is advice, not something Paperclip enforces — unlike sending, which is blocked outright whatever you set.
 
 ## 6. Verify with a read
 
 As the agent you intend to use, run one read whose answer you already know — a thread search against a sender you can see in Gmail — and confirm the result matches. This confirms the credential, the account, and the agent's permission together.
+
+Then check the connection's activity shows the Gmail calls. Matching output alone does not establish that the mailbox was actually read.
 
 Do not verify by creating a draft.
 

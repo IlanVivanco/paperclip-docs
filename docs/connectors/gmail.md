@@ -66,6 +66,8 @@ Search my Gmail for the most recent message from our domain registrar and tell m
 
 Compare the subject and date against Gmail. That confirms the credential, the account, and the agent's permission in one step, and leaves nothing behind.
 
+Then open the connection's activity and confirm the Gmail calls are recorded there. A plausible subject line is not by itself evidence the mailbox was read — the activity record is what distinguishes a retrieved message from a confident guess.
+
 Do not verify with a draft. A draft is a write and it puts something in a real mailbox.
 
 > **Note:** Illustrative task, not a recorded test result. Use a query you can confirm by eye.

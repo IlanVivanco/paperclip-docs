@@ -27,22 +27,25 @@ The defaults work without touching anything else.
 
 ## Narrow the connection
 
-PostHog is one of the few connectors with real scoping controls in Paperclip, and they are worth using:
+PostHog offers more scoping controls at setup than most connectors, and they are worth using:
 
 | Control | What it does |
 | --- | --- |
-| **Pin to project ID** | Ties the connection to one project and removes PostHog's project-switching tool, so an agent cannot move to another project |
-| **Read-only mode** | Hides the tools that can change PostHog data |
+| **Pin to project ID** | Scopes the connection to one project |
+| **Read-only mode** | Asks PostHog for a read-only session |
 | **Feature groups** | Leave blank for every feature group, or list the ones you want |
 | **Individual tools** | Leave blank for all tools, or name exactly the ones to expose |
+| **Tool response mode** | How much detail tool responses carry |
 
-Pinning to a project is the single most useful setting here. Without it, an agent with the connection can switch between every project the account can see.
+> **Note:** These are **requests Paperclip sends to PostHog**, not boundaries Paperclip enforces. The pinned project travels as a request header and the rest as query parameters, so PostHog is what honours them. The effect you will see is a narrower tool list and project scope, and it is worth configuring — but if you need a boundary that does not depend on the provider, use an account or key that cannot reach the other projects in the first place, and set the action permissions.
 
-For an analysis-only agent, pin the project and turn on read-only mode. That combination gives a narrow, predictable surface.
+Pinning to a project is still the most useful setting here. Without it, the connection's reach is every project the authorizing account can see.
+
+For an analysis-only agent, pin the project and turn on read-only mode.
 
 ## Choose access
 
-Project reach is the PostHog account's, unless you pin. Within that, Paperclip's action settings apply as usual.
+Project reach is the PostHog account's, narrowed by the pin you set and honoured by PostHog. On top of that, Paperclip's action settings apply as usual — and those are enforced on Paperclip's side.
 
 Risk classification is deliberately conservative for this provider:
 

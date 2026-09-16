@@ -9,7 +9,7 @@ AgentMail gives an agent its own email address. Mail that arrives becomes a Pape
 
 This is a conversation channel, not a set of tools an agent calls against your own mail. It does not read an existing mailbox — the inbox belongs to the agent. For reading your own Gmail, see [Gmail](gmail.md).
 
-> **Warning:** Anyone who knows the address can email an unrestricted inbox, and an incoming message can create a task and start agent work. Sender restrictions are configured in AgentMail, and Paperclip does not verify them. Set up an allowlist before publishing the address anywhere.
+> **Warning:** Anyone who knows the address can email an unrestricted inbox, and an incoming message can create a task and start agent work. Two separate controls govern this — AgentMail's own allowlists, and Paperclip's **Allow unlinked people** setting. Set both before publishing the address anywhere; see [Two sender controls, on two different sides](#two-sender-controls-on-two-different-sides).
 
 ## Before you connect
 
@@ -48,7 +48,18 @@ An agent may only use inboxes assigned to it. A request against a thread on an i
 
 The connection's own settings — the identity that owns the credential, and **Any agent** or **Just agents I pick** — work as they do for any connector. [How connector access works](access-model.md) has the detail. Note that inbox assignment, not the agent list, is what decides whose mail an agent can read.
 
-Who may email the inbox is an AgentMail setting, not a Paperclip one. AgentMail keeps separate lists for new messages and for replies, so check both when restricting senders. See AgentMail's [allowlists and blocklists](https://docs.agentmail.to/knowledge-base/allowlists-blocklists).
+### Two sender controls, on two different sides
+
+Restricting who can reach the agent by email uses both of these, and they do different jobs:
+
+| Control | Where | What it does |
+| --- | --- | --- |
+| **Allowlists and blocklists** | AgentMail | Decides which senders' mail reaches the inbox at all. AgentMail keeps **separate lists for new messages and for replies** — check both, or a restriction will leak through one of them |
+| **Allow unlinked people** | Paperclip, on the connection's **Access** tab under **External identity access** | Decides what happens to mail that did arrive from a sender Paperclip does not recognize. Off means only senders linked to a Paperclip person can start work; on means they run as restricted guests, in an isolated workspace and sandbox, unable to approve, hire, spend, or manage access |
+
+Paperclip does not verify or read AgentMail's lists, so the first row is genuinely the provider's to get right. But the second row is yours, and it is the reason "anyone who knows the address can email it" does not have to mean "anyone can direct an agent." Set both before you publish the address.
+
+AgentMail's own reference is [allowlists and blocklists](https://docs.agentmail.to/knowledge-base/allowlists-blocklists).
 
 ## Try it
 
