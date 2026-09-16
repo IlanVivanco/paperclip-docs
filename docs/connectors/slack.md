@@ -1,104 +1,128 @@
 ---
 seo_title: Slack Connector
-seo_description: Team messaging, with two separate purposes: agents reading and posting in channels you pick, and people working with one agent from Slack.
+seo_description: Two independent Slack setups — Slack as an agent tool, or Slack as a channel people use to reach an agent. Which to pick, how to set up each, and troubleshooting.
 ---
 
 # Slack
 
-Team messaging. Two separate purposes: as an app integration agents read and post in the workspace and channels you pick; as a chat channel people work with one agent from Slack.
+Slack does two unrelated jobs in Paperclip, and they are separate connections with separate credentials.
 
-## What this connector does
+## Which do you want?
 
-Slack is an **app integration**: it gives agents actions to call. Once it is connected, the provider's server supplies the action list, and Paperclip governs which agents may call which of those actions.
-
-| Property | Value |
-| --- | --- |
-| Catalog slug | `slack` |
-| Category | Communication |
-| Transport | `mcp_remote`, `chat_sdk` |
-| Highest risk tier | S3 — account data that can be changed. |
-
-## Before you start
-
-- An account with the provider, and permission in Paperclip to create a connection. Sharing one with the whole company or with a dedicated agent identity additionally needs the connection-manager permission.
-
-## Supported setup paths
-
-Open **Connectors**, find **Slack**, and select **Connect**. Paperclip offers exactly the paths below; no other setup path is supported.
-
-### Use this connection as an agent tool (`mcp-oauth`)
-
-Use the provider-hosted connection for the quickest setup.
-
-- Connection method: Your own OAuth app
-- OAuth client: yours to register and supply
-- Risk tier: S3
-- Endpoints: MCP server `https://mcp.slack.com/mcp`; authorization `https://slack.com/oauth/v2/authorize`; token `https://slack.com/api/oauth.v2.access`
-- Requested scopes:
-  - `channels:read`
-  - `chat:write`
-  - `search:read`
-
-### Chat with an agent (`chat-agent`)
-
-Let people in Slack start and continue work with one Paperclip agent.
-
-- Connection method: Provider app registration
-- Risk tier: S3
-
-| Field | Required | What it is |
+| If you want | Set up | What it gives you |
 | --- | --- | --- |
-| **Bot User OAuth Token** | Yes | Credential value; Paperclip stores it as a secret. |
-| **Signing Secret** | Yes | Credential value; Paperclip stores it as a secret. |
+| Agents to search Slack and post messages as part of their own work | **Use this connection as an agent tool** | Slack actions an agent can call, governed by action permissions |
+| People to start and continue work by talking to an agent in Slack | **Chat with an agent** | A Slack app that turns mentions and DMs into Paperclip tasks |
 
-Provider console: [register an app](https://api.slack.com/apps) · [provider docs](https://api.slack.com/start/quickstart)
+Connecting one does not connect the other. They need different credentials, have different prerequisites, and are tested differently. If you want both, set up both.
 
-## Accounts and access
+---
 
-Slack follows the standard connector access model. At setup you choose the identity — **Just me**, an **Organization identity**, or a **Dedicated agent identity** — and then which agents may use it: **Any agent** or **Just agents I pick**. [How connector access works](access-model.md) explains what each choice means; [Share a connector with people and agents](share-access.md) is the step-by-step.
+## Slack as an agent tool
 
-## Actions
+An agent uses a Slack workspace credential to search messages, read channel lists, and post — on its own initiative, inside its own task.
 
-Slack's action list comes from the provider's MCP server, so it changes when the provider changes it. Paperclip does not ship a frozen copy. To read the current list for your connection, open the connector and use the **Permissions** tab; **Refresh actions** re-reads the server. The equivalent API calls are `GET /api/tool-connections/{connectionId}/catalog` and `POST /api/tool-connections/{connectionId}/catalog/refresh`.
+### Before you connect
 
-Every discovered action is classified **read**, **write**, or **destructive**, and each one can be set to **Allowed**, **Ask first**, or **Off** per connection. See [Set action permissions](action-permissions.md).
+- A Slack workspace, and the ability to create a Slack app in it. Many workspaces restrict this to administrators or require app approval.
+- You must register your own Slack OAuth app for this route. Slack does not support automatic client registration here, so unlike most connectors there is no path that skips the developer console.
 
-## Authorization sequence
+### Connect it
+
+1. At [Slack API apps](https://api.slack.com/apps), create an app for your workspace and configure it as an OAuth client with the redirect URI Paperclip shows during setup.
+2. Open **Connectors**, select **Slack**, then **Use this connection as an agent tool**.
+3. On the **Access** step, choose the identity and which agents may use the connection.
+4. Supply your Slack app's client ID and secret, then complete Slack's authorization.
+
+The connection requests the scopes Paperclip needs for this route — reading channels, searching, and posting.
+
+### Access and actions
+
+Channel reach is Slack's decision: the authorized token sees what its scopes and the workspace allow, and private channels require the authorizing user or bot to be a member. Paperclip does not have a channel picker, so narrow access on the Slack side.
+
+Slack's server supplies the action list. Posting is classified as a write, so leave it on **Ask first** unless you want an agent posting to a shared workspace unprompted. Open the connection's **Permissions** tab for the live list. See [Set action permissions](action-permissions.md).
+
+### Try it
 
 ```txt
-You             Paperclip               Slack
-|               |                       |
-+--------------->                       |  Connect: POST /api/companies/{companyId}/tools/apps/connect
-|               |                       |
-|               +----------------------->  authorization request
-|               |                       |
-+--------------------------------------->  sign in and consent
-|               |                       |
-|               <-----------------------+  redirect with code
-|               |                       |
-|               +----------------------->  GET /api/tools/oauth/callback, code to token
-|               |                       |
-+--------------->                       |  choose access and actions: POST .../tools/apps/{connectionId}/finish
-|               |                       |
+Search Slack for the most recent message mentioning "deploy" and tell me which channel it was in. Do not post anything.
 ```
 
-## Check that it works
+A read confirms the credential without putting a message in front of colleagues.
 
-Use a read-only action first. [Verify a connector and fix a broken one](verify-and-troubleshoot.md) has the full procedure, including the built-in test call and what each status word in the connector list means.
+> **Note:** Illustrative task, not a recorded test result.
 
-## If something goes wrong
+---
 
-| What you see | What it means |
+## Slack as a channel
+
+People mention the agent in a channel or send it a direct message, and Paperclip creates a task. Replies come back in the thread.
+
+### Before you connect
+
+- **Chat connectors** must be switched on for the instance. It is an experimental setting, off by default, enabled by an instance administrator under experimental settings.
+- A publicly reachable HTTPS address for the instance. Slack delivers events by calling Paperclip; this route does not use Slack's socket mode.
+- Permission to create and install a Slack app in the workspace.
+- The agent that will answer.
+
+### Connect it
+
+1. Open **Connectors**, select **Slack**, then **Chat with an agent**.
+2. On the **Access** step, choose the identity and which agents may use the connection.
+3. Paperclip generates a **Slack app manifest** containing exactly the scopes, events, and request URL this route needs. Copy it.
+4. At [Slack API apps](https://api.slack.com/apps), create an app **from the manifest** rather than configuring scopes by hand, then install it in the workspace.
+5. Back in Paperclip, paste the **Bot User OAuth Token** (it starts with `xoxb-`) and the **Signing Secret**.
+6. Choose the agent that will answer, and finish.
+
+Use the generated manifest. It is the supported configuration, and hand-picking scopes is the most common reason a channel setup half-works.
+
+> **Danger:** The bot token and signing secret are full credentials for the app. Paste them only into Paperclip. If either leaks, rotate it in Slack and reconnect.
+
+### How a conversation becomes work
+
+| In Slack | In Paperclip |
 | --- | --- |
-| **Setup incomplete** | The connection record exists but setup never finished. Select **Finish setup**. |
-| **Needs attention** | The credential stopped working. Select **Reconnect** and sign in again. |
-| **Paused** | Agents cannot use the connection right now. |
+| Someone mentions the agent in a channel | One task per new mentioned thread |
+| Someone sends the agent a direct message | The agent replies in the DM |
+| The conversation continues in the thread | It continues on the same task |
 
-[Verify a connector and fix a broken one](verify-and-troubleshoot.md) covers the rest.
+Paperclip acknowledges with a reaction so people can see a message was picked up before the agent has finished thinking.
 
-## Related
+### Access
 
-- [Connectors](../connectors.md)
+Reach is decided by where the app is installed and which channels it is invited to, in Slack. Anyone who can mention the agent in a channel it is in can start work, so channel membership is the control.
+
+### Try it
+
+1. Invite the app to a private channel you control.
+2. Mention it: `@YourAgent hello, can you confirm you are connected?`
+3. Expect a reaction, then a threaded reply, and a matching task in Paperclip.
+
+> **Note:** Procedure, not a recorded test result. Use a private channel for the first attempt.
+
+---
+
+## Troubleshooting
+
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| **Chat with an agent** is not offered | **Chat connectors** is off for the instance | Ask an administrator to enable it |
+| The tool route asks for a client ID and secret | Expected — Slack requires your own OAuth app on this route | Register the app in Slack's console |
+| Slack refuses to install the app | The workspace restricts app installation or requires approval | Ask a workspace administrator |
+| The channel app is installed but silent | Slack cannot reach the instance, or the app was not created from Paperclip's manifest | Confirm the public HTTPS address, then recreate the app from the manifest |
+| A mention in a channel does nothing | The app is not a member of that channel | Invite it to the channel |
+| Private channel content is missing on the tool route | The authorizing identity is not a member | Add it to the channel in Slack |
+| Signature verification failures | The signing secret does not match the installed app | Copy the current signing secret and reconnect |
+| Connecting the channel did not give agents Slack actions | The two routes are independent | Set up the tool connection as well |
+
+## Limitations
+
+One workspace per connection on either route. No channel picker in Paperclip on either route. The channel route needs public ingress and does not support socket mode. Private channels require explicit membership.
+
+## Related guides
+
+- [Discord](discord.md), [Microsoft Teams](microsoft-teams.md), [Telegram](telegram.md) — other conversation channels.
+- [GitHub](github.md) — the other mixed-purpose connector, with the same tool-versus-channel split.
 - [How connector access works](access-model.md)
 - [Set action permissions](action-permissions.md)
-- [Reauthorize, revoke, or disconnect](reauthorize-and-disconnect.md)
+- [Slack app quickstart](https://api.slack.com/start/quickstart)
