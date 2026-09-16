@@ -26,26 +26,45 @@ Deciding *which* identity and *which* repositories is the part worth slowing dow
 
 For anything that pushes code, a dedicated account is the better answer. Its actions are attributable, and revoking it does not disturb a person's own access.
 
-### 2. Connect
-
-Setup asks for access first, then the credential.
+### 2. Start the connection and pick a credential path
 
 1. Select **Connectors** in the sidebar.
 2. Find **GitHub** and select **Connect**.
 3. On the **Access** step, choose which agents may use the connection: **Any agent**, or **Just agents I pick**. For a dedicated identity this is already settled — that agent owns the account.
 4. Choose the credential path:
-   - **Use this connection as an agent tool** — Paperclip's managed GitHub App. Offered only when the instance is enrolled with Paperclip Cloud and Cloud advertises the GitHub connector profile.
-   - **Personal access token (advanced)** — paste a fine-grained token in the **GitHub token** field. Limit the token to the repositories agents should use.
-5. On the managed path, answer **Connect GitHub as** with the identity from step 1. For a dedicated account, Paperclip asks **Which agent owns this GitHub account?**
-6. Select **Continue to GitHub** and authorize.
 
-### 3. Choose repositories in GitHub
+| Path | What it is | Offered when |
+| --- | --- | --- |
+| **Use this connection as an agent tool** | Paperclip's managed GitHub App authorization | Only when the instance is enrolled with Paperclip Cloud and Cloud advertises the GitHub connector profile |
+| **Personal access token (advanced)** | A fine-grained token you create and control | Always |
 
-GitHub's installation screen, not Paperclip, decides repository scope.
+**The two branches do not share steps from here.** Follow 3a or 3b, not both.
 
-Select the specific repositories the agent should reach. Avoid **All current and future repositories** unless that is genuinely the intent — Paperclip flags such an installation in the repository row, because it widens on its own as the organization grows.
+### 3a. Managed path — authorize and choose repositories in GitHub
+
+1. Answer **Connect GitHub as** with the identity from step 1. For a dedicated account, Paperclip asks **Which agent owns this GitHub account?**
+2. Select **Continue to GitHub** and authorize.
+3. On GitHub's installation screen, select the specific repositories the agent should reach. Avoid **All current and future repositories** unless that is genuinely the intent — Paperclip flags such an installation in the repository row, because it widens on its own as the organization grows.
 
 Back in Paperclip, the identity card shows **Accessible GitHub repositories**. To change the list later use **Add More Repos on GitHub** or **Configure access on GitHub**, then **Refresh access** so Paperclip re-reads the installation.
+
+This branch is the only one that produces a durable identity for shell Git and `gh`.
+
+### 3b. Token path — create the token, then paste it
+
+There is no authorization redirect and no GitHub installation screen on this branch. **Repository scope lives on the token**, so you set it while creating the token rather than afterwards in Paperclip.
+
+1. In GitHub, go to **Settings** → **Developer settings** → **Personal access tokens** → **Fine-grained tokens**, and select **Generate new token**. Direct link: [github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new).
+2. Set the **Resource owner** to the account or organization that owns the repositories. If it is an organization, the token may need an organization owner's approval before it works — expect that delay rather than assuming the token is broken.
+3. Under **Repository access**, choose **Only select repositories** and pick exactly the repositories agents should use.
+4. Set an **Expiration**. A token that expires is a feature here; note the date, because the connection will stop working on it.
+5. Grant repository permissions to match what you want agents to do, and no more. Read-only **Contents**, **Metadata**, **Issues**, and **Pull requests** is a sensible starting point; add write permissions deliberately, one at a time.
+6. Generate the token and copy it. GitHub shows it once. It begins `github_pat_`.
+7. Back in Paperclip, paste it into the **GitHub token** field and finish. The connection is complete at that point — there is nothing further to authorize.
+
+> **Note:** Because the permissions are the ones you ticked on the token, this path is the easier of the two to audit. What it does not give you is a durable shell identity: for that, use the managed path.
+
+To change repository scope later, edit the token in GitHub or issue a new one and reconnect. **Refresh access** re-reads an installation and does not apply here.
 
 ### 4. Set the actions
 
@@ -77,19 +96,25 @@ This route lets people start and continue work from issue, pull-request, and rev
 
 - **Chat connectors** must be switched on for the instance. It is an experimental setting, off by default, enabled by an instance administrator under experimental settings.
 - You need permission to create a GitHub App in the organization and to install it.
+- **Your Paperclip instance must be reachable from the internet over HTTPS.** GitHub delivers comments by calling a Paperclip URL. Paperclip builds that URL from the instance's configured public address, so an instance with none configured shows no webhook URL and cannot receive anything. If the URL is missing in step 2, ask an administrator to configure the instance's public address.
 - Decide which agent will answer.
 
-### 2. Start in Paperclip and generate the webhook secret
+### 2. Start in Paperclip to get the webhook URL and secret
+
+Both values come from Paperclip, not from you, and both are needed before you create the App.
 
 1. Open **Connectors**, select **GitHub**, then **Chat with an agent**.
 2. On the **Access** step, choose the identity and which agents may use the connection.
-3. Generate the webhook secret. Keep it to hand — GitHub needs it in the next step.
+3. Copy the **webhook URL** Paperclip shows. It is specific to this connection.
+4. Generate the **webhook secret** and keep it to hand. GitHub needs both in the next step.
+
+> **Note:** Regenerating the secret later immediately invalidates GitHub's webhook signatures until you paste the new one into the App's settings. Expect deliveries to fail in between.
 
 ### 3. Create one private GitHub App
 
 At [GitHub's new App form](https://github.com/settings/apps/new), create a **private** App with:
 
-- **Webhooks** active and SSL verification enabled, using Paperclip's webhook URL and the secret from step 2.
+- **Webhooks** active and SSL verification enabled, using the webhook URL and secret from step 2.
 - **Issues** — read and write.
 - **Pull requests** — read and write.
 - Subscribed events: **issue_comment** and **pull_request_review_comment**.
@@ -108,6 +133,8 @@ Install the App on the specific repositories where people may mention the agent.
 
 Paste the **GitHub App ID** and the **private key (PEM)**, choose the answering agent, and finish.
 
+Paperclip waits for GitHub to deliver a signed webhook ping before it treats the endpoint as verified, showing *"Waiting for GitHub to deliver its signed webhook ping…"* until it arrives and *"GitHub has verified this webhook."* afterwards. If it stays waiting, the URL, the secret, or public reachability is the cause.
+
 ### 6. Verify with a scratch issue
 
 1. In a repository where the App is installed, open a scratch issue.
@@ -119,6 +146,9 @@ Paste the **GitHub App ID** and the **private key (PEM)**, choose the answering 
 | Problem | Likely cause | Fix |
 | --- | --- | --- |
 | The managed tool option is missing | No Paperclip Cloud enrollment, or the GitHub connector profile is not advertised | Use **Personal access token (advanced)** |
+| A fine-grained token is rejected, or reaches nothing | It targets an organization that has not approved it, or its repository selection is empty | Check for a pending approval under the organization's personal-access-token settings, and confirm the token's selected repositories |
+| A token connection stops working on a particular date | The token expired | Issue a new token with the same scope and reconnect |
+| No webhook URL is shown on the chat setup | The instance has no public base URL configured | Ask an administrator to configure it |
 | **Chat with an agent** is missing | **Chat connectors** is off for the instance | Ask an administrator to enable it |
 | Fewer repositories than expected | The installation does not include them | Fix it on GitHub, then **Refresh access** |
 | *"You don't have permission to reconnect this identity."* | The identity belongs to someone else, or to another agent | Ask its owner, or use your own |

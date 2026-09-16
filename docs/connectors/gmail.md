@@ -39,7 +39,7 @@ The practical effect: no action setting, capability group, or approved review re
 | `list-drafts`, `get-draft`, `list-labels` | Both |
 | `create-draft` | **Read & create drafts** only |
 
-Operation names are normalized before matching, so a provider variant such as `google.gmail/get_message` resolves to the same entry. The live list for your connection is on its **Permissions** tab; **Refresh actions** re-reads it, and newly discovered operations arrive switched off.
+Operation names are normalized before matching, so a provider variant such as `google.gmail/get_message` resolves to the same entry. The live list for your connection is on its **Permissions** tab, and **Refresh actions** re-reads it. Anything Google adds that is not on the reviewed list comes back **disabled** — that block is what the reviewed list enforces, and it holds however the connection was created.
 
 > **Note:** This is Paperclip's reviewed list, not a promise about Google's server. Google supplies the catalog and can change it; the reviewed list is what Paperclip will enable from it.
 

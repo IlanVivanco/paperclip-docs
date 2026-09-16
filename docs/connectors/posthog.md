@@ -7,7 +7,7 @@ seo_description: Let agents analyze product usage, errors, and feature flags in 
 
 Agents can query product analytics, investigate errors, and inspect feature flags and experiments in PostHog.
 
-PostHog has a large and fast-moving tool catalog, which shapes how Paperclip handles it: unknown tools are treated as writes rather than reads, and new tools arrive switched off. That is deliberate, and it is explained below.
+PostHog has a large and fast-moving tool catalog, which shapes how Paperclip handles it: a tool PostHog does not annotate as read-only is classified as a **write**, and `exec` is always **destructive**. That conservative classification is deliberate, and it is explained below.
 
 ## Before you connect
 
@@ -48,9 +48,11 @@ Risk classification is deliberately conservative for this provider:
 
 - A PostHog tool that PostHog does not explicitly annotate as read-only is classified **write**, not read. Silently assuming "read" for an unfamiliar tool is the failure worth avoiding when the catalog changes often.
 - The `exec` tool is always classified **destructive**, whatever else it looks like.
-- New connections start in a safe posture, and newly discovered tools arrive switched off rather than inheriting a permissive default.
+- Because classification drives the defaults the setup wizard projects into policies, a PostHog connection starts more restrictive than a connector whose provider annotates its tools carefully.
 
-The practical effect is that you will see more tools defaulting to review than on other connectors. That is the intended behaviour, not a misclassification. See [Set action permissions](action-permissions.md).
+The practical effect is that you will see more tools defaulting to review than on other connectors. That is the intended behaviour, not a misclassification.
+
+> **Warning:** Classification is not a review queue. On a PostHog connection made with your own API key, a tool PostHog adds later becomes **active** when you **Refresh actions** — it is governed by the policies already in force, not held back for your approval. Check the list after a refresh. [Set action permissions](action-permissions.md) explains which connections do hold new actions back.
 
 ## Try it
 
@@ -71,7 +73,7 @@ Compare against the same figure in the PostHog UI. A small, bounded query is the
 | A read-looking tool is classified write | PostHog did not annotate it as read-only | Set it to **Allowed** deliberately if you have checked what it does |
 | `exec` cannot be allowed casually | It is always classified destructive | Leave it **Off** unless you have a specific, reviewed reason |
 | Write tools are missing | **Read-only mode** is on | Turn it off, or make a connection without it |
-| A new PostHog tool does nothing | Newly discovered actions arrive switched off | Use **Refresh actions**, then enable it |
+| A new PostHog tool is missing from the list | The list is stale; PostHog changed its catalog | Use **Refresh actions**, then check the new tool's setting — on a self-credentialed connection it arrives active under existing policy, so confirm it is where you want it |
 | Queries time out or are throttled | PostHog's own query limits, not Paperclip's | Narrow the time range or the query |
 
 Limitations: one PostHog account per connection. Pinning restricts the project but not what the account could otherwise reach if you unpin. Query cost and rate limits are PostHog's.

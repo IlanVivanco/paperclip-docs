@@ -51,7 +51,7 @@ A custom server is not a lesser citizen. The same four gates apply: the connecti
 Because the server has not been reviewed, two habits are worth keeping:
 
 - Start with every write **Off** and promote deliberately. A name-based classification is the fallback when a server publishes no annotations, and an unfamiliar naming scheme can under-classify.
-- Re-run **Refresh actions** after you change the server. New actions arrive switched off, which is what makes that safe.
+- Re-run **Refresh actions** after you change the server, then review the list. On a pasted-URL connection a newly discovered action becomes active under the policies already in force — it is not held back for approval — so a refresh can widen what agents can call.
 
 ## Not the same as an adapter MCP server
 

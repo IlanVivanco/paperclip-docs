@@ -28,7 +28,7 @@ Paperclip states this when you change a GitHub permission:
 
 Three things this does **not** mean:
 
-- **It is not a claim that other connectors are sandboxed.** Other connectors' calls go through the gateway and obey their action settings. This is a statement about shell Git and `gh` specifically, in either direction.
+- **It is not a claim about other connectors, in either direction.** This warning is about shell Git and `gh` on this connection. It says nothing about how any other connector behaves, and you should not read it as a promise that everything else is confined to the gateway — model-provider connections supply a credential rather than making tool calls at all, and messaging channels carry conversation over their own transport. [How connector access works](access-model.md) sets out which controls apply to which kind of connection.
 - **It is not a claim that the agent is unrestricted.** The ceiling is whatever the GitHub account can do: the repositories selected on the installation, and that account's permissions on them. Narrow the account, not the switches.
 - **Human approval is not code review.** An approved **Ask first** call means a person said yes to one API call. A pull request review is a separate control, on GitHub, done by a reviewer. Neither substitutes for the other.
 
@@ -71,7 +71,9 @@ Prefer selected repositories. An installation granting all current and future re
 
 ### Actions
 
-GitHub's hosted server supplies the action list, so Paperclip does not ship a frozen copy. Read the live list on the connection's **Permissions** tab and use **Refresh actions** after GitHub changes it. Newly discovered actions arrive switched off.
+GitHub's hosted server supplies the action list, so Paperclip does not ship a frozen copy. Read the live list on the connection's **Permissions** tab and use **Refresh actions** after GitHub changes it.
+
+What happens to an action GitHub adds depends on which credential path you took. On the **managed** path new and changed actions are held back until you turn them on. On a **personal access token** connection they become active under the policies already in force — so review the list after a refresh rather than assuming it can only narrow. [Set action permissions](action-permissions.md) has the full rule.
 
 Actions are classified read, write, or destructive and can be set **Allowed**, **Ask first**, or **Off** — remembering what those settings do and do not bound. See [Set action permissions](action-permissions.md).
 

@@ -35,7 +35,9 @@ Two separate layers, and it is worth knowing which one to reach for:
 | Which actions exist at all | Zapier, on the MCP server | Remove capability entirely |
 | Whether an agent may call an exposed action | Paperclip, on the **Permissions** tab | Require approval, or switch one off |
 
-Changing the exposed action set in Zapier does not require reconnecting — use **Refresh actions** in Paperclip afterwards to re-read the list. Newly discovered actions arrive switched off.
+Changing the exposed action set in Zapier does not require reconnecting — use **Refresh actions** in Paperclip afterwards to re-read the list.
+
+> **Warning:** On this connection, an action you expose in Zapier becomes **active** in Paperclip once you refresh, governed by the policies already in force rather than held back for approval. Widening the Zapier side is the access decision; review the Paperclip list after every refresh.
 
 Anyone in Zapier who can edit that MCP server can widen what the agent can reach, without touching Paperclip. Keep the list of people who can edit it small, and review it when you review the connection.
 
@@ -60,7 +62,7 @@ A read confirms the URL, the server, and the agent's permission without acting o
 | **Check link** fails | The URL is incomplete, or the server was deleted in Zapier | Copy the complete URL again from Zapier |
 | The action list is empty | No actions are enabled on the Zapier MCP server | Enable actions in Zapier, then **Refresh actions** |
 | An action you enabled in Zapier is missing | Paperclip has not re-read the list | Use **Refresh actions** |
-| A newly appeared action does nothing | New actions arrive switched off | Set it to **Allowed** or **Ask first** |
+| An action you exposed in Zapier is missing | Paperclip's copy of the list is stale | Use **Refresh actions**, then confirm the new action's setting — it arrives active under existing policy rather than switched off |
 | An action fails inside Zapier | The underlying app connection in Zapier has expired | Reconnect that app in Zapier |
 | You suspect the URL leaked | The URL is a bearer credential | Regenerate the server URL in Zapier and reconnect in Paperclip |
 

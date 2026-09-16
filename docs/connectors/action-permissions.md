@@ -52,13 +52,24 @@ GET  /api/tool-connections/{connectionId}/catalog
 POST /api/tool-connections/{connectionId}/catalog/refresh
 ```
 
-The refresh reports how many actions it discovered and how many it quarantined.
+The refresh reports how many actions it discovered — *"Found 24 actions"* — and, when any were held back, how many need you: *"3 new actions need your OK."*
 
 ## What happens to a brand-new action
 
-A newly discovered action does not inherit a neighbour's setting and does not arrive **Allowed**. The UI states it directly: *"New actions wait, switched off, until you turn them on."* An action you have not seen reads *"This action is new and hasn't been turned on yet."*
+**This depends on how the connection was created.** It is worth knowing which case you are in before you refresh a production connection.
 
-This is the behaviour that makes **Refresh actions** safe to run on a production connection.
+| How the connection was set up | A newly discovered or changed action |
+| --- | --- |
+| **Managed — "Connect with Paperclip"** | Is held back. It appears in a **New** group reading *"New actions wait, switched off, until you turn them on,"* and stays unusable until you turn it on |
+| **Your own credential or OAuth client** — the ordinary catalog setup for most connectors | Becomes **active** on discovery. It is then governed by the action policies already in force for that connection, not held in a separate review queue |
+| **A custom MCP server you pasted a URL for** | Becomes active on discovery, as above |
+| **A Paperclip example connection** | Is held back, as in the managed case |
+
+For the ordinary case, the wizard projects the app's action defaults into policies when you finish setup, rather than using a review queue as the access state. That is a deliberate design choice, not an oversight — but it does mean **you should not assume a refresh can only ever reduce what an agent can do.**
+
+> **Warning:** If you need the guarantee that nothing new is ever usable without your approval, you need a managed connection. On a self-credentialed connection, review the action list after refreshing a provider that has added tools, and set anything you do not want to **Off**.
+
+Two details worth knowing wherever held-back review does apply: an action you had already set to **Off** stays off rather than reappearing for review, and a connection configured for safe defaults exempts actions classified **read**, holding back only writes and destructive actions.
 
 ## Limits you cannot lift
 

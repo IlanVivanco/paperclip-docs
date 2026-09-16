@@ -16,7 +16,10 @@ This is the most involved channel to set up. It needs an Entra application, a si
 - **Chat connectors** must be switched on for the instance. It is an experimental setting, off by default, enabled by an instance administrator under experimental settings.
 - A Microsoft 365 work or school tenant, and permission to register an Entra application in it.
 - A tenant administrator who can grant the application's permissions and allow the Teams app to be installed. If that is not you, involve them before starting — the setup cannot be finished without them.
+- **Your Paperclip instance must be reachable from the internet over HTTPS.** Azure delivers every message by calling a Paperclip URL, so an instance with no public base URL configured cannot receive anything. If Paperclip shows no messaging endpoint in step 2, this is why — ask an administrator to configure the instance's public address.
 - The agent that will answer.
+
+> **Warning:** This release supports Microsoft 365 commercial cloud tenants only. GCC, GCC High, DoD, and Microsoft 365 operated by 21Vianet are not supported.
 
 ## What the installation can read
 
@@ -28,30 +31,54 @@ That is how Teams delivers messages to an installed bot, not a Paperclip choice,
 
 ## Connect Microsoft Teams
 
+Four portals are involved and the order matters: Paperclip generates the messaging endpoint that Azure needs, so **start in Paperclip** rather than finishing there. The same Application ID is reused in three places.
+
 ### 1. Register the Entra application
 
-In the Microsoft Entra admin centre, register a single-tenant application and create a client secret. Note three values:
+In the **Microsoft Entra admin center** → **App registrations**, select **New registration** and choose **Accounts in this organizational directory only (Single tenant)**. Register it, then copy:
 
-- **Application / Client ID**
-- **Directory / Tenant ID**
-- **Client secret** — copy the secret *value*, which Entra shows only once
+- **Application (client) ID**
+- **Directory (tenant) ID**
 
-### 2. Create the Azure Bot and Teams app
+Then under **Certificates & secrets** → **Client secrets**, select **New client secret** and copy its **Value** — not its Secret ID. Entra shows the value once.
 
-1. Create a single-tenant Azure Bot backed by that application.
-2. In the [Teams Developer Portal](https://dev.teams.microsoft.com/apps), build the app package for the bot.
-3. Enable the **personal**, **team**, and **groupChat** bot scopes, so the agent can be reached in all three contexts.
-4. Add the **ChannelMessage.Read.Group** and **ChatMessage.Read.Chat** resource-specific application permissions.
-5. Have a tenant administrator grant consent, then upload or install the app.
-
-Microsoft's walkthrough is [Create a bot for Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/create-a-bot-for-teams).
-
-### 3. Connect it in Paperclip
+### 2. Open the setup in Paperclip and copy the messaging endpoint
 
 1. Open **Connectors** and select **Microsoft Teams**.
 2. On the **Access** step, choose the identity and which agents may use the connection.
-3. Paste the **Application / Client ID**, **Directory / Tenant ID**, and **Client secret**.
-4. Choose the agent that will answer, and finish.
+3. The setup screen shows a **Paperclip messaging endpoint**. Copy it — Azure needs it in the next step. Leave this screen open; you will come back to it to finish.
+
+### 3. Create the Azure Bot, point it at Paperclip, and add the Teams channel
+
+In **Azure** → **Create Azure Bot**:
+
+1. Set **Microsoft App ID** type to **Single Tenant** and **Creation type** to **Use existing app registration**, then enter the Application ID and Tenant ID from step 1.
+2. After creation, open **Settings** → **Configuration** and paste the Paperclip **Messaging endpoint** from step 2.
+3. Open **Settings** → **Channels** and enable **Microsoft Teams**.
+
+> **Warning:** Both of those last two are required. Creating the bot is not enough — without the messaging endpoint Azure has nowhere to deliver messages, and without the Teams channel Teams will not route to the bot at all. A setup that skips either looks complete and silently receives nothing.
+
+### 4. Build the Teams app package
+
+In the [Teams Developer Portal](https://dev.teams.microsoft.com/apps) → **Apps**, select **New app**:
+
+1. Under **Configure** → **App features** → **Bot**, add an existing bot using the **same Application ID**, and enable the **Personal**, **Team**, and **Group chat** scopes plus file support.
+2. Under **Configure** → **Permissions**, add the two resource-specific consent **Application** permissions. Paperclip shows the exact manifest block to use — enter your Client ID on the Paperclip setup screen first, then use **Copy manifest settings**.
+3. Complete the required app details and icons, explain in them that the app can receive every message in an installed team or group chat, then download the app package.
+
+> **Note:** These resource-specific consent permissions bind to the Entra app through the Teams manifest. They are *not* Microsoft Graph permissions, and you will not find them in Entra's API permissions list.
+
+### 5. Install it where mentions should work
+
+In **Teams** → **Apps** → **Manage your apps**, select **Upload an app** → **Upload a custom app**, choose the downloaded package, and install it in each intended personal chat, group chat, or team.
+
+One team installation covers that team's standard channels. If upload is unavailable, a Teams administrator must enable or approve custom apps.
+
+### 6. Finish in Paperclip
+
+Return to the setup screen and paste the **Application / Client ID**, **Directory / Tenant ID**, and **Client secret value**. Choose the agent that will answer, and finish.
+
+Microsoft's own walkthrough is [Create a bot for Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/create-a-bot-for-teams).
 
 ## How a conversation becomes work
 
@@ -90,10 +117,13 @@ Only after that works, install into a team — and tell its members what the app
 | Consent cannot be completed | The permissions need tenant administrator approval | Ask a tenant administrator to grant consent |
 | Authentication fails after setup | The client secret was copied from the ID field, or has expired | Create a new secret, copy its value, and reconnect |
 | The bot replies in personal chats but not a channel | The app is not installed in that team, or the channel is private or shared | Install into the team; private and shared channels are not supported |
+| Nothing arrives anywhere, though setup completed | The Azure Bot's messaging endpoint is unset or wrong, or its **Microsoft Teams** channel was never enabled | Check both in Azure under **Settings · Configuration** and **Settings · Channels** |
+| Paperclip shows no messaging endpoint to copy | The instance has no public base URL configured | Ask an administrator to configure it; Azure cannot deliver to an unreachable instance |
+| Azure reports delivery failures to the endpoint | Paperclip is not reachable from the internet at that URL | Confirm public HTTPS ingress to the instance |
 | Messages arrive but no task is created | The connection is unhealthy, or no agent is assigned | Check the connection's status and assigned agent |
 | People are surprised the bot sees everything | The RSC grants deliver all messages in the installed team or chat | Explain the access, or uninstall from that team |
 
-Limitations: one tenant and one agent per connection. No private or shared channel support. Paperclip cannot narrow what an installed app receives — that is fixed by the Teams permission model.
+Limitations: one tenant and one agent per connection. No private or shared channel support. Microsoft 365 commercial cloud tenants only — not GCC, GCC High, DoD, or 21Vianet. Paperclip cannot narrow what an installed app receives; that is fixed by the Teams permission model.
 
 ## Related guides
 
