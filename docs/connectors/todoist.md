@@ -29,7 +29,12 @@ Shared projects are worth pausing on. A personal Todoist account often belongs t
 
 If that matters, either connect an account that belongs to fewer shared projects, or keep writes restricted.
 
-To restrict writes, set the create, update, and complete actions to **Ask first** or **Off** on the connection's **Permissions** tab, leaving reads **Allowed**. That gives you an agent that can consult your task list without editing it, which is the useful default for most first setups. See [Set action permissions](action-permissions.md).
+To restrict writes, set the create, update, and complete actions on the connection's **Permissions** tab, leaving reads **Allowed**. The two settings are not equivalent, and the difference matters here:
+
+- **Off** is read-only. The agent cannot change your tasks at all.
+- **Ask first** is not read-only. The agent can still change your tasks; it just has to wait for a person to approve each call. If you approve, the edit happens.
+
+Choose **Off** if you want an agent that consults your task list and never edits it. Choose **Ask first** if you want it to propose edits you sign off on. See [Set action permissions](action-permissions.md).
 
 > **Note:** Completing a task in Todoist is a write, and for a recurring task it advances the recurrence. Treat completion as a change rather than a harmless acknowledgement.
 

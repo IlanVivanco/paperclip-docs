@@ -24,7 +24,7 @@ Paperclip registers its client automatically, so there is nothing to configure i
 
 Reach is the authorizing Miro account's: the teams it belongs to and the boards it can open. There is no board picker in Paperclip.
 
-Be realistic about what an agent can do with a board. Miro's connection works with structured board objects — the kinds of item the API models, such as sticky notes, text, shapes, and frames, along with board metadata. It is not the Miro canvas:
+Be realistic about what an agent can do with a board. Miro's connection works with structured board objects rather than the canvas as a person experiences it. Which object types are exposed is Miro's decision and it changes — read the live list on the connection's **Permissions** tab before planning work around a particular item type, rather than trusting any list in documentation, including this page:
 
 - An agent reads objects and their content and position. It does not "see" the board the way a person does, so spatial meaning conveyed only by layout may be lost.
 - Freehand drawings, embedded content, and interactive widgets are not equivalent to structured items.
@@ -34,8 +34,11 @@ Writes land on a board colleagues may be using at that moment. Keep them on **As
 
 ## Try it
 
+Identify the board by its URL rather than its name, and check the result against a board you can open:
+
 ```txt
-Read the Miro board "Q3 retro" and list the sticky notes grouped by their frame. Do not add or move anything.
+Read this Miro board — https://miro.com/app/board/YOUR_BOARD_ID/ — and list the
+sticky notes grouped by their frame. Do not add or move anything.
 ```
 
 Compare against the board. Reading a board you can open yourself confirms the credential, the team, and the agent's permission without rearranging anyone's work.

@@ -48,7 +48,9 @@ Verify with a read:
 List the verified sending domains on the Resend account and tell me the delivery status of the most recent email. Do not send anything.
 ```
 
-Compare against the Resend dashboard. This confirms the credential and shows you the domain scope at the same time, with nothing delivered.
+Compare against the Resend dashboard. This confirms the credential and shows you the domain configuration at the same time, with nothing delivered.
+
+> **Note:** A verified domain means Resend has confirmed its DNS, not that this credential may send from it. Whether an agent can actually send depends on the API key's own permissions and on the send action's setting in Paperclip — listing domains tells you neither. Keep those three things separate when you reason about what this connection can do.
 
 If you eventually need to confirm sending, send to an address you personally control, from a domain you own, and only once you have decided the agent should have that capability.
 

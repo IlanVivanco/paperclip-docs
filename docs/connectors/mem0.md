@@ -38,8 +38,14 @@ Deletions remove memory permanently; keep them **Off** unless you have a reason.
 Use a scoped read rather than writing something you then have to clean up:
 
 ```txt
-Search Mem0 for memories about the onboarding project and tell me what is stored. Do not add or delete any memory.
+Search Mem0 for memories about the onboarding project and tell me what is stored,
+including the user or agent identifier each memory is filed under. Do not add or
+delete any memory.
 ```
+
+Asking for the identifier matters, because that is what determines which memories a search can see. Without it you cannot tell a correctly scoped empty result from a misconfigured one.
+
+> **Warning:** An empty result proves very little on this connector. It is consistent with a working connection that has nothing stored yet, and equally consistent with the agent searching a different namespace from the one you populated. Confirm the connection by writing one disposable memory and reading it back under the same identifier, on a project you do not mind cluttering — not by concluding from silence.
 
 On a new store this correctly returns nothing, which is still a useful result — it confirms the key and the connection without seeding data. To test writing as well, add one clearly labelled throwaway memory and delete it afterwards.
 

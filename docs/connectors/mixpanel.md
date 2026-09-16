@@ -12,7 +12,7 @@ Agents can query your Mixpanel product analytics — running reports, checking e
 ## Before you connect
 
 - A Mixpanel account with access to the project you want agents to query.
-- If your organization uses Mixpanel's EU or other regional residency, make sure the account you sign in with is the one in that region — data residency determines where the project lives.
+- If your organization uses Mixpanel's EU or other regional residency, sign in with the account belonging to that region. Paperclip has no region selector on this connection, so region follows the account you authorize with; getting it wrong typically shows up as a connection that authorizes cleanly and then finds no data.
 
 ## Connect Mixpanel
 
@@ -57,7 +57,9 @@ Compare against the same figure in the Mixpanel UI. A single event over a short 
 | A tool disappeared or changed | The hosted server is in beta | Use **Refresh actions** and re-check the list |
 | **Needs attention** | The grant expired or was revoked | Select **Reconnect** |
 
-Limitations: one project per connection. Beta provider surface. Query cost and rate limits are Mixpanel's.
+Limitations: Beta provider surface, so the tool list moves. Query cost and rate limits are Mixpanel's.
+
+> **Note:** Paperclip has no project picker on this connector, so which projects are reachable follows the authorizing Mixpanel account and that account's own project permissions. Whether the provider's server further narrows a session to a single project is Mixpanel's behaviour and we have not verified it — if an agent must be confined to one project, authorize with an account that has access to only that project rather than relying on a ceiling we cannot evidence.
 
 ## Related guides
 

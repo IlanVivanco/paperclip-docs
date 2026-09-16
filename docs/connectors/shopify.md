@@ -66,7 +66,7 @@ Expect details matching the public product page. Keep the first check to a produ
 
 | Problem | Likely cause | Fix |
 | --- | --- | --- |
-| Setup fails with an authorization error | The storefront is private or password-protected | Select a plan and set storefront visibility to public in **Online Store → Preferences** |
+| Setup fails with an authorization error | The storefront is not publicly reachable — it is password-protected, or the store is not on a plan that serves a public storefront | Confirm the storefront loads for a signed-out visitor. Making it public is a real commercial decision about your store, not a setup step to take lightly; if it should stay private, this connector is not usable for it |
 | The store domain is rejected | A custom domain or a full URL was entered | Use the bare `your-store.myshopify.com` host |
 | An agent cannot see orders or customers | Expected — this is not Admin API access | Nothing to fix here; this connector does not cover admin data |
 | Products are missing from results | They are unpublished, or not available to the storefront's sales channel | Publish them in Shopify Admin |

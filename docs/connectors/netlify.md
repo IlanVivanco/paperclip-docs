@@ -30,9 +30,12 @@ The distinction that matters here is between observing a deploy and causing one:
 | --- | --- |
 | Reads deploy status, logs, and build history | Nothing changes. Safe to leave **Allowed** |
 | Reads site and environment configuration | May expose environment variable names, and sometimes values |
-| Starts a deploy, or changes site configuration | Changes what is live |
+| Starts a deploy | Depends on the target — see below |
+| Changes site configuration | Can change how the production site builds and behaves |
 
-> **Warning:** A deploy puts code in front of real users, and a configuration change can break a production site. Keep deploy and configuration actions on **Ask first** or **Off**. Reading build logs to diagnose a failure is the common, safe use of this connector; triggering the rebuild is the part a person should approve.
+Not every deploy is a production deploy. Netlify distinguishes production deploys from deploy previews and branch deploys, and only the first replaces what visitors see. Treat that as a reason to be careful about *which* deploy an agent can trigger, not a reason to assume every deploy is safe or that every deploy is live — check what a given action targets before allowing it.
+
+> **Warning:** A production deploy puts code in front of real users, and a configuration change can break a site. Keep deploy and configuration actions on **Ask first** or **Off**. Reading build logs to diagnose a failure is the common, safe use of this connector; triggering the rebuild is the part a person should approve.
 
 Netlify environment variables frequently hold API keys. An agent that can read site configuration may surface them, so prefer **Just agents I pick** for a connection with configuration access. See [Set action permissions](action-permissions.md).
 
@@ -52,7 +55,7 @@ Compare against the Netlify dashboard. A deploy-status read is the natural first
 | --- | --- | --- |
 | A site is missing | The authorizing account is not a member of that team | Add it to the team in Netlify; no reconnect needed |
 | An action is refused | The account's Netlify role does not permit it | Adjust the role in Netlify, or leave the capability off |
-| A deploy started unexpectedly | A deploy action was set to **Allowed** | Set it to **Ask first**, and cancel or roll back in Netlify |
+| A deploy started unexpectedly | A deploy action was set to **Allowed** | Set it to **Ask first**. Recovery is yours to do in Netlify — cancel the running build, or publish a previous deploy. Paperclip does not roll anything back |
 | Build logs are truncated | Netlify's own log retention and size limits | Check the full log in the Netlify dashboard |
 | An expected capability is absent | Netlify's server does not expose it | Use **Refresh actions**; otherwise it is unavailable |
 | **Needs attention** | The grant expired or was revoked | Select **Reconnect** |
