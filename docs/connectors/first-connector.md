@@ -15,7 +15,7 @@ The worked example is **Hugging Face**, chosen because it offers a simple setup:
 
 - Paperclip running, with a company you can administer. See [Installation](../guides/getting-started/installation.md).
 - At least one hired agent. See [Hire your first agent](../guides/getting-started/your-first-agent.md).
-- A free [Hugging Face](https://huggingface.co) account, signed in to in the same browser.
+- **Only if you follow the Hugging Face example:** a free [Hugging Face](https://huggingface.co) account, signed in in the same browser. If you choose a different first connector, follow that connector's prerequisites instead; you do not need a Hugging Face account.
 
 ## 1. Open the catalog
 
