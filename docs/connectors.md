@@ -9,7 +9,7 @@ A **connector** is a saved connection to an outside service: a Gmail mailbox, a 
 
 > **Note:** These guides cover the connector model in Paperclip **v2026.916.0**. Available methods depend on your installed version, instance configuration, and provider approval. A catalog listing does not by itself establish that provider sign-in is available.
 
-> **Warning:** New Google connector setup is paused while Paperclip completes Google verification, as [announced on September 16, 2026](https://x.com/papercliping/status/2100341600098693205). Google setup guides remain available as reference material, not a workaround for the pause. Check that announcement for updates or contact [support@paperclip.ing](mailto:support@paperclip.ing) before starting a new connection.
+> **Warning:** **Google verification pending.** Paperclip has not yet completed Google app verification. You may see an unverified-app warning during authorization. If Google offers an **Advanced** option to continue to Paperclip, you can choose to proceed after reviewing the requested access. This option is not available for every account; Workspace administrator restrictions and other Google access requirements still apply. Contact [support@paperclip.ing](mailto:support@paperclip.ing) if you cannot connect.
 
 ## Start here
 
@@ -61,7 +61,7 @@ Find an app and open its setup guide.
 | [Google Slides](connectors/google-slides.md) | Google's presentations. Agents read decks, and on a write connection edit them. | Connect with Paperclip · Your own OAuth app |
 | [Google Workspace Search](connectors/google-workspace-search.md) | One read-only search that spans Gmail, Drive, Calendar, and Chat in a single Google account. Use it when an agent needs to find something without knowing which app holds it. | Connect with Paperclip · Your own OAuth app |
 
-> **Warning:** **Pending Google verification.** New Google connector setup is paused. You may encounter an unverified-app warning or an access-blocked screen; an **Advanced** option is not a universal way to continue. Do not treat it as a workaround for the pause. See [Google setup requirements](connectors/google-setup.md) for availability updates and the separate Developer Preview prerequisites. [Google's OAuth guidance](https://developers.google.com/identity/protocols/oauth2/production-readiness/overview) explains how verification, testing status, and Workspace administrator restrictions affect authorization.
+> **Note:** Google app verification is pending. See [Google setup requirements](connectors/google-setup.md) for unverified-app warnings, account restrictions, and the separate Developer Preview prerequisites.
 
 ### Productivity and collaboration
 

@@ -10,7 +10,7 @@ Sandbox provider plugins let Paperclip provision external compute as the executi
 
 A sandbox provider plugin registers an `environmentDriver` of kind `sandbox_provider`. Once installed, the provider is available when you configure a sandbox environment under **Settings → Instance settings → Environments**.
 
-> ⚠ TODO: expand each provider section with a full `configSchema` field reference once a stable cross-provider schema reference is published. The fields below come from each provider's `README.md` in the parent repo at `v2026.512.0`.
+> **Note:** This overview covers selected configuration fields, not a complete schema reference. The fields below come from each provider's `README.md` in the parent repo at `v2026.512.0`; check your installed provider's documentation for its complete configuration.
 
 ---
 

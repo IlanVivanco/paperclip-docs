@@ -5,7 +5,7 @@ seo_description: One read-only search across Gmail, Drive, Calendar, and Chat. W
 
 # Google Workspace Search
 
-> **Warning:** New Google connector setup is paused while Paperclip completes Google verification, as [announced on September 16, 2026](https://x.com/papercliping/status/2100341600098693205). The setup instructions below are reference material, not a workaround for the pause. Check that announcement for updates or contact [support@paperclip.ing](mailto:support@paperclip.ing) before starting a new connection.
+> **Warning:** **Google verification pending.** Paperclip has not yet completed Google app verification. You may see an unverified-app warning during authorization. If Google offers an **Advanced** option to continue to Paperclip, you can choose to proceed after reviewing the requested access. This option is not available for every account; Workspace administrator restrictions and other Google access requirements still apply. Contact [support@paperclip.ing](mailto:support@paperclip.ing) if you cannot connect.
 
 One read-only search that spans Gmail, Drive, Calendar, and Chat together, so an agent can answer "where did we discuss this?" without knowing which app holds the answer.
 

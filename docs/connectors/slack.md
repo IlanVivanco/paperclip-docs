@@ -7,6 +7,8 @@ seo_description: Two independent Slack setups: Slack as an agent tool, or as a c
 
 Slack does two unrelated jobs in Paperclip, and they are separate connections with separate credentials.
 
+> **Warning:** Slack is available, but it is not yet fully functional. Follow-up fixes are planned. Review the agent-tool limitations below before relying on it for production work; the separate chat-channel route is experimental.
+
 ## Which do you want?
 
 | If you want | Set up | What it gives you |
@@ -24,7 +26,7 @@ An agent uses a Slack workspace credential to search messages, read channel list
 
 ### Agent-tool compatibility notice
 
-**Do not use the Slack agent-tool setup in v2026.916.0 as a supported production path yet.** That release configures OAuth endpoints and scopes that differ from Slack's current hosted MCP requirements. A successful bot installation does not verify an MCP connection.
+**The Slack agent-tool route is available but has known compatibility limitations in v2026.916.0.** That release configures OAuth endpoints and scopes that differ from Slack's current hosted MCP requirements. A successful bot installation does not verify an MCP connection.
 
 Slack MCP requires a registered internal or marketplace-published app, user-token OAuth endpoints, and the user scopes for the intended tools. See [Slack's MCP authentication requirements](https://docs.slack.dev/ai/slack-mcp-server/). Bot-token setup is for the separate chat-channel path below.
 

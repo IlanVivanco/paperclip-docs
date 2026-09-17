@@ -5,7 +5,7 @@ seo_description: Let agents read calendars and availability, and optionally mana
 
 # Google Calendar
 
-> **Warning:** New Google connector setup is paused while Paperclip completes Google verification, as [announced on September 16, 2026](https://x.com/papercliping/status/2100341600098693205). The setup instructions below are reference material, not a workaround for the pause. Check that announcement for updates or contact [support@paperclip.ing](mailto:support@paperclip.ing) before starting a new connection.
+> **Warning:** **Google verification pending.** Paperclip has not yet completed Google app verification. You may see an unverified-app warning during authorization. If Google offers an **Advanced** option to continue to Paperclip, you can choose to proceed after reviewing the requested access. This option is not available for every account; Workspace administrator restrictions and other Google access requirements still apply. Contact [support@paperclip.ing](mailto:support@paperclip.ing) if you cannot connect.
 
 Agents can read the calendars on your Google account, look up events, and check availability. On a managing connection they can also create, update, delete, and respond to events.
 
@@ -81,4 +81,4 @@ Limitations: one connection covers one Google account. Calendar sharing and acce
 - [Google Workspace Search](google-workspace-search.md) — one read-only search across Gmail, Drive, Calendar, and Chat.
 - [How connector access works](access-model.md)
 - [Verify a connector and fix a broken one](verify-and-troubleshoot.md)
-- [Google Calendar API MCP reference](https://developers.google.com/workspace/calendar/api/reference/mcp)
+- [Google Calendar API MCP reference](https://developers.google.com/workspace/calendar/api/v3/reference/mcp)
