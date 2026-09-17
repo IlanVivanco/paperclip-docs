@@ -138,6 +138,264 @@
     },
     {
       "tier": "Learn",
+      "title": "Connectors",
+      "icon": "unplug",
+      "desc": "Connect outside services to your agents: app integrations, model providers, and chat channels, plus the access model, per-action permissions, and a setup guide for each one.",
+      "pages": [
+        {
+          "title": "Connectors Overview",
+          "file": "../docs/connectors.md"
+        },
+        {
+          "title": "Your First Connector",
+          "file": "../docs/connectors/first-connector.md"
+        },
+        {
+          "title": "How Access Works",
+          "file": "../docs/connectors/access-model.md"
+        },
+        {
+          "title": "Shared Guides",
+          "pages": [
+            {
+              "title": "Share With People and Agents",
+              "file": "../docs/connectors/share-access.md"
+            },
+            {
+              "title": "Separate Accounts",
+              "file": "../docs/connectors/separate-accounts.md"
+            },
+            {
+              "title": "Action Permissions",
+              "file": "../docs/connectors/action-permissions.md"
+            },
+            {
+              "title": "Review Requests",
+              "file": "../docs/connectors/review-requests.md"
+            },
+            {
+              "title": "Verify and Troubleshoot",
+              "file": "../docs/connectors/verify-and-troubleshoot.md"
+            },
+            {
+              "title": "Reauthorize and Disconnect",
+              "file": "../docs/connectors/reauthorize-and-disconnect.md"
+            },
+            {
+              "title": "Custom MCP Servers",
+              "file": "../docs/connectors/custom-mcp-servers.md"
+            },
+            {
+              "title": "Google Workspace Setup",
+              "file": "../docs/connectors/google-setup.md"
+            }
+          ]
+        },
+        {
+          "title": "Recognized but Unlisted",
+          "file": "../docs/connectors/recognized-providers.md"
+        },
+        {
+          "title": "Connector Catalog",
+          "pages": [
+            {
+              "title": "AgentMail",
+              "file": "../docs/connectors/agentmail.md"
+            },
+            {
+              "title": "Airtable",
+              "file": "../docs/connectors/airtable.md"
+            },
+            {
+              "title": "Anthropic",
+              "file": "../docs/connectors/anthropic.md"
+            },
+            {
+              "title": "Asana",
+              "file": "../docs/connectors/asana.md"
+            },
+            {
+              "title": "Box",
+              "file": "../docs/connectors/box.md"
+            },
+            {
+              "title": "ClickHouse",
+              "file": "../docs/connectors/clickhouse.md"
+            },
+            {
+              "title": "Cloudflare",
+              "file": "../docs/connectors/cloudflare.md"
+            },
+            {
+              "title": "Cloudinary",
+              "file": "../docs/connectors/cloudinary.md"
+            },
+            {
+              "title": "Discord",
+              "file": "../docs/connectors/discord.md"
+            },
+            {
+              "title": "GitHub",
+              "file": "../docs/connectors/github.md"
+            },
+            {
+              "title": "GitHub Setup",
+              "file": "../docs/connectors/github-setup.md"
+            },
+            {
+              "title": "Gmail",
+              "file": "../docs/connectors/gmail.md"
+            },
+            {
+              "title": "Gmail Setup",
+              "file": "../docs/connectors/gmail-setup.md"
+            },
+            {
+              "title": "Google Calendar",
+              "file": "../docs/connectors/google-calendar.md"
+            },
+            {
+              "title": "Google Chat",
+              "file": "../docs/connectors/google-chat.md"
+            },
+            {
+              "title": "Google Docs",
+              "file": "../docs/connectors/google-docs.md"
+            },
+            {
+              "title": "Google Drive",
+              "file": "../docs/connectors/google-drive.md"
+            },
+            {
+              "title": "Google People",
+              "file": "../docs/connectors/google-people.md"
+            },
+            {
+              "title": "Google Sheets",
+              "file": "../docs/connectors/google-sheets.md"
+            },
+            {
+              "title": "Google Slides",
+              "file": "../docs/connectors/google-slides.md"
+            },
+            {
+              "title": "Google Workspace Search",
+              "file": "../docs/connectors/google-workspace-search.md"
+            },
+            {
+              "title": "Grok",
+              "file": "../docs/connectors/xai.md"
+            },
+            {
+              "title": "Hugging Face",
+              "file": "../docs/connectors/hugging-face.md"
+            },
+            {
+              "title": "iMessage Photon",
+              "file": "../docs/connectors/imessage-photon.md"
+            },
+            {
+              "title": "Jira",
+              "file": "../docs/connectors/jira.md"
+            },
+            {
+              "title": "Linear",
+              "file": "../docs/connectors/linear.md"
+            },
+            {
+              "title": "Mem0",
+              "file": "../docs/connectors/mem0.md"
+            },
+            {
+              "title": "Microsoft Teams",
+              "file": "../docs/connectors/microsoft-teams.md"
+            },
+            {
+              "title": "Miro",
+              "file": "../docs/connectors/miro.md"
+            },
+            {
+              "title": "Mixpanel",
+              "file": "../docs/connectors/mixpanel.md"
+            },
+            {
+              "title": "Netlify",
+              "file": "../docs/connectors/netlify.md"
+            },
+            {
+              "title": "Notion",
+              "file": "../docs/connectors/notion.md"
+            },
+            {
+              "title": "OpenAI",
+              "file": "../docs/connectors/openai.md"
+            },
+            {
+              "title": "OpenRouter",
+              "file": "../docs/connectors/openrouter.md"
+            },
+            {
+              "title": "PagerDuty",
+              "file": "../docs/connectors/pagerduty.md"
+            },
+            {
+              "title": "PostHog",
+              "file": "../docs/connectors/posthog.md"
+            },
+            {
+              "title": "Postman",
+              "file": "../docs/connectors/postman.md"
+            },
+            {
+              "title": "Resend",
+              "file": "../docs/connectors/resend.md"
+            },
+            {
+              "title": "Sentry",
+              "file": "../docs/connectors/sentry.md"
+            },
+            {
+              "title": "Shopify",
+              "file": "../docs/connectors/shopify.md"
+            },
+            {
+              "title": "Slack",
+              "file": "../docs/connectors/slack.md"
+            },
+            {
+              "title": "Stripe",
+              "file": "../docs/connectors/stripe.md"
+            },
+            {
+              "title": "Supabase",
+              "file": "../docs/connectors/supabase.md"
+            },
+            {
+              "title": "Telegram",
+              "file": "../docs/connectors/telegram.md"
+            },
+            {
+              "title": "Todoist",
+              "file": "../docs/connectors/todoist.md"
+            },
+            {
+              "title": "Webflow",
+              "file": "../docs/connectors/webflow.md"
+            },
+            {
+              "title": "Wix",
+              "file": "../docs/connectors/wix.md"
+            },
+            {
+              "title": "Zapier",
+              "file": "../docs/connectors/zapier.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tier": "Learn",
       "title": "Projects & Workflow",
       "icon": "kanban-square",
       "desc": "Projects, goals, routines, and execution workspaces.",

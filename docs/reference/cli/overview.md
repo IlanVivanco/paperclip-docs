@@ -194,7 +194,7 @@ If you'd rather follow a path than read a reference, these product guides cover 
 - The org: [Org structure](../../guides/org/org-structure.md) · [Delegation](../../guides/org/delegation.md) · [Projects](../../guides/projects-workflow/projects.md) · [Goals](../../guides/projects-workflow/goals.md) · [Routines](../../guides/projects-workflow/routines.md)
 - Credentials: [CLI auth](../../administration/cli-auth.md)
 
-> **Coming soon:** a dedicated CLI-operator track — driving and bootstrapping a whole company from the terminal, including handing the CLI to an AI operator — is being written. For now the command pages above plus these guides cover the full surface.
+To manage a company from the terminal, use the command reference above alongside these guides.
 
 ---
 
