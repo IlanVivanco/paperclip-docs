@@ -13,6 +13,7 @@ const SECTION_ICON_PATHS = {
   'settings-2': '<path d="M20 7h-9"/><path d="M14 17H4"/><circle cx="7" cy="7" r="3"/><circle cx="17" cy="17" r="3"/>',
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
   terminal: '<path d="m4 17 6-6-6-6"/><path d="M12 19h8"/>',
+  unplug: '<path d="m19 5 3-3"/><path d="m2 22 3-3"/><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4z"/><path d="M7.5 13.5 10 11"/><path d="M10.5 16.5 13 14"/><path d="m12 6 6 6 2.3-2.3a2.4 2.4 0 0 0 0-3.4l-2.6-2.6a2.4 2.4 0 0 0-3.4 0z"/>',
   wrench: '<path d="M14.7 6.3a4 4 0 0 0-5 5L3 18l3 3 6.7-6.7a4 4 0 0 0 5-5l-2.4 2.4-3-3z"/>',
 };
 
@@ -106,6 +107,18 @@ function resolveScreenshotSrc(src) {
   return src;
 }
 
+/* ─── Shared markdown link resolution ───────────────────────────────────── */
+// The three functions between the DOC-LINK-RESOLVER markers define what a
+// relative markdown href means, and they have a twin in site/build-release.mjs
+// (normalizeDocPath / docLinkBaseDir / resolveDocLinkTarget, used by
+// resolveDocHref). The build rewrites links into canonical routes so crawlers
+// index correct bytes; this client resolves the same links again at runtime
+// against markdown it fetched itself. When the two disagree, a link looks
+// right in the pre-render and breaks on click.
+//
+// scripts/verify-doc-link-resolution.mjs lifts this block straight out of the
+// source and pins both copies to one shared case table.
+// DOC-LINK-RESOLVER:BEGIN
 function normalizeDocPath(path) {
   const normalized = [];
   for (const segment of path.split('/')) {
@@ -122,6 +135,22 @@ function normalizeDocPath(path) {
   }
   return normalized.join('/');
 }
+
+function docLinkBaseDir(sourceFile) {
+  // A document at the docs root has no directory to resolve against. Trimming
+  // with a `/`-anchored pattern matched nothing for those files and left the
+  // filename in the base, so `connectors.md` + `connectors/access-model.md`
+  // resolved to `connectors.mdconnectors/access-model.md` (PAP-18407).
+  return typeof sourceFile === 'string' && sourceFile.includes('/')
+    ? sourceFile.replace(/\/[^/]*$/, '')
+    : '';
+}
+
+function resolveDocLinkTarget(docHref, sourceFile) {
+  const baseDir = docLinkBaseDir(sourceFile);
+  return normalizeDocPath(baseDir ? `${baseDir}/${docHref}` : docHref);
+}
+// DOC-LINK-RESOLVER:END
 
 function normalizeRouteKey(value) {
   return value.replace(/^\/+/, '').replace(/\/+$/, '');
@@ -1622,11 +1651,70 @@ function postProcessImages(root) {
   });
 }
 
+// The connector catalog is one logical table split across category headings.
+// Tagging each of those tables lets CSS give them identical column widths, so
+// a reader scanning down the page reads one set of columns rather than eleven
+// differently proportioned ones. Detection is by header row, not by page, so
+// the rule follows the content if it moves.
+const CATALOG_TABLE_HEADINGS = ['connector', 'what you can do', 'connection methods'];
+const METHODS_COLUMN = 2;
+
+// Authors write a connector's methods as "A · B". In a narrow column that
+// wraps wherever the words run out ("Connect with Paperclip · Your / own OAuth
+// app"), which reads as one broken phrase instead of two methods. Giving each
+// method its own line is the fix that cannot overflow: nowrap would push a
+// long method past the column at intermediate widths.
+function splitMethodList(cell) {
+  if (cell.children.length > 0 || cell.dataset.methodsSplit === 'true') return;
+  const parts = (cell.textContent || '').split('·').map(part => part.trim()).filter(Boolean);
+  if (parts.length < 2) return;
+  cell.dataset.methodsSplit = 'true';
+  cell.textContent = '';
+  for (const part of parts) {
+    const item = document.createElement('span');
+    item.className = 'method-item';
+    item.textContent = part;
+    cell.appendChild(item);
+  }
+}
+
+function isCatalogTable(headings) {
+  return headings.length === CATALOG_TABLE_HEADINGS.length
+    && headings.every((heading, index) => heading === CATALOG_TABLE_HEADINGS[index]);
+}
+
+// Below the stacking breakpoint these tables render as blocks, which drops the
+// implicit table semantics a browser infers from display: table. Stating the
+// roles keeps the structure in the accessibility tree at every width, so the
+// visually hidden header row is still what a screen reader announces per cell.
+function applyExplicitTableRoles(table) {
+  table.setAttribute('role', 'table');
+  table.querySelectorAll('thead, tbody, tfoot').forEach(group => group.setAttribute('role', 'rowgroup'));
+  table.querySelectorAll('tr').forEach(row => row.setAttribute('role', 'row'));
+  table.querySelectorAll('thead th').forEach(cell => cell.setAttribute('role', 'columnheader'));
+  table.querySelectorAll('tbody td').forEach(cell => cell.setAttribute('role', 'cell'));
+}
+
 function postProcessTables(root) {
   root.querySelectorAll('table').forEach(table => {
+    const headingLabels = [...table.querySelectorAll('thead th')]
+      .map(cell => (cell.textContent || '').trim());
+    if (isCatalogTable(headingLabels.map(label => label.toLowerCase()))) {
+      table.classList.add('catalog-table');
+      applyExplicitTableRoles(table);
+      // Stacked cells lose their column, so each one carries its own label.
+      table.querySelectorAll('tbody tr').forEach(row => {
+        [...row.children].forEach((cell, index) => {
+          if (headingLabels[index]) cell.setAttribute('data-label', headingLabels[index]);
+          if (index === METHODS_COLUMN) splitMethodList(cell);
+        });
+      });
+    }
+
     if (table.parentElement && table.parentElement.classList.contains('table-wrap')) return;
     const wrap = document.createElement('div');
     wrap.className = 'table-wrap';
+    if (table.classList.contains('catalog-table')) wrap.classList.add('table-wrap-catalog');
     table.parentNode.insertBefore(wrap, table);
     wrap.appendChild(table);
   });
@@ -1692,13 +1780,13 @@ function postProcessInternalLinks(root) {
     // Legacy relative markdown links, still present when the SPA renders
     // markdown it fetched at runtime.
     if (docHref && docHref.endsWith('.md')) {
-      const baseDir = currentFile.replace(/\/[^/]+$/, '/');
-      const targetFile = normalizeDocPath(baseDir + docHref);
+      const targetFile = resolveDocLinkTarget(docHref, currentFile);
       const targetPage = allPages.find(candidate => candidate.file === targetFile);
       if (targetPage) {
         a.href = headingHref ? getPageHeadingUrl(targetPage, headingHref) : getPageUrl(targetPage);
       }
       a.addEventListener('click', e => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
         e.preventDefault();
         loadPage(targetFile, headingHref || null);
       });
