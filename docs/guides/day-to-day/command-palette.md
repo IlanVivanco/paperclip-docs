@@ -1,4 +1,5 @@
 ---
+paperclip_version: v2026.916.0
 seo_title: The Command Palette
 seo_description: Press Cmd+K or Ctrl+K to jump to any project, task, or page, start common actions, and search as you type without touching the sidebar.
 ---
@@ -80,6 +81,19 @@ The palette ranks project matches so the most likely one floats up first:
 5. A loose match where your letters appear in order in the name (handy for quick abbreviations — typing `mkw` can find *Marketing Website*).
 
 It keeps the best few project matches and, when projects are showing, trims the task list slightly so the projects it found don't get pushed off the screen. Archived projects are left out.
+
+---
+
+## Recent tasks in the sidebar
+
+The palette isn't the only quick way back to a task. Whenever you open a task's detail page, Paperclip remembers it under a **Recent Tasks** heading near the bottom of the sidebar — so the handful of tasks you've been looking at stay one click away, no searching or scrolling the full Tasks list required.
+
+A few things worth knowing:
+
+- It keeps your **five** most recently opened tasks for the current company, newest first. Open a sixth and the oldest drops off the list.
+- The list is scoped to you and the company you're in, and it lives in your browser — so it follows the work *you've* personally been looking at rather than the whole team's.
+- A task that's actively running shows a live indicator, the same signal you see elsewhere in the sidebar.
+- Hover a row (on a pointer device) and a **More actions** menu appears with quick actions: **Rename** the task, **Archive** it from your inbox, or **Pause/Restart** its work.
 
 ---
 

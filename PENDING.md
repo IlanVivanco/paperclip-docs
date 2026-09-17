@@ -1,56 +1,56 @@
-# PENDING — nightly sync manifest
+# Pending — nightly sync
 
-> Regenerated from scratch each nightly run (never appended). Reflects the current cumulative diff window.
->
-> **Window:** parent release `v2026.817.0` fork-point (`8f7b8b3`, the merge-base of the tag and `master`) → `05b35d4` (24h-quarantine boundary; parent `master` HEAD `88a0f88` is newer but quarantined).
-> **Scope:** cumulative since the v2026.817.0 docs release — 276 parent commits, 1296 changed files. This run's new slice (`dc5b070` → `05b35d4`) is 7 commits / 94 changed files on top of the previously-drafted catch-up (#98, #99, #107).
-> **Drift (Phase 1.5):** none against `master`. **Reconcile (Phase 3.5):** none (cumulative window is a superset of the prior run — nothing disappeared). **Truncation:** none after the merge-base workaround (`truncated_leaves = 0`).
+_Regenerated from scratch each run by `/sync-docs` (nightly mode). Reflects the current cumulative manifest, not an append log._
 
-> ⚠️ **Tooling note — diverged release tag (unchanged from prior runs).** `v2026.817.0` (`213dabab`) is **not an ancestor of `master`**, so `compare-window.mjs` can't walk `master`'s ancestry to find the base SHA and its bisection caps at 300 files. **Workaround this run (again):** used the merge-base `8f7b8b3` as the cumulative base — semantically identical to the tag (GitHub `A...B` is already a three-dot diff against the merge-base), but lets the bisection produce the full 1296-file window with `truncated_leaves = 0`. **Fix to consider:** teach `compare-window.mjs` to fall back to `merge_base_commit.sha` from the compare response as the pagination anchor when the base isn't found in `commits?sha=B`.
+- **Window (cumulative):** merge-base `dbf05257` → parent master `f2c5e54d` (HEAD @ 2026-09-13T13:41Z), 459 commits, 24h quarantine applied (commits after 2026-09-13T14:29Z held).
+- **Base note:** the `v2026.831.1` release tag was cut off-master, so its recorded `base_release_sha` (`65ec059`) is not reachable from master. Per the "release tag diverges from master" rule, the cumulative base is the **merge-base** (`dbf05257`), not the tag SHA.
+- **Compare truncation:** two leaves remained truncated at the 300-file cap (lockfile/generated-file mega-commits). Every concrete watcher path was intersected directly against the full window and the `.env.example` / `config.ts` diffs were pulled per-file (bypassing the cap), so **no docs-relevant file was dropped**.
+- **Scope:** exhaustive.
 
-## ✅ Auto-merge tier (mechanical)
+## Applied this run
 
-- None this slice. The only `.env.example` change in the new slice is unrelated to a user-facing env var (no new `^[A-Z_]+=` rows to append to the environment-variables page).
+**Nothing drafted.** Every doc-relevant change in this window belongs to the already-deferred streamlined-UI/onboarding/connections cluster (see below), is quarantined, or is already documented. The auto-merge tier is empty: the `.env.example` additions in this window (`PAPERCLIP_ID_CONNECTOR_*`, `PAPERCLIP_HTTP_ADAPTER_PRIVATE_ENDPOINT_ALLOWLIST`) are all already present in `docs/reference/deploy/environment-variables.md` from prior runs. Drift is all false positives (re-confirmed this run). No reconciliation candidates.
 
-## 📝 PR tier — applied this run
+`main` was already merged into `nightly` at run start (no new hotfix has landed on `main` since #122, "Add unlisted hosted beta guide and FAQ"). Ancestry intact — no realign needed.
 
-- **Onboarding wizard: mission step dropped** → **updated** `docs/guides/getting-started/your-first-company.md`
-  - Parent `3ff636b` ("Drop the mission step from the wizard arc", PR #11935) cleared quarantine this run. For the **Build a new company** path the wizard now skips the "Define your mission" screen: naming the company (step 1) is the moment Paperclip *creates* it (`handleCreateCompany`, `skipsMissionStep = onboardingPath !== "grow"` in `ui/src/components/OnboardingWizard.tsx`), and the walk goes straight to the first-agent step. The mission is collected afterward, on the first task, rather than during onboarding.
-  - Edits: removed the old "### 3. Define your mission" step and its Path A/B prose; renumbered the remaining steps (Name → Create agent → Connect model → Review); reframed step 2 so naming creates the company (with a callout explaining the removed mission step); softened the Review "Mission" row note and the "Where you land" paragraph so they no longer claim you wrote a mission in the wizard.
-  - Verified (Phase 5.5) against `05b35d4`: **0 unverified, 0 suspicious.**
-  - This is the item the prior catch-up (#107) explicitly **deferred** as "volatile at this boundary" — the arc has now settled.
+## ⛔ Quarantined (held <24h — reconsider next run)
 
-## ⏸ Reviewed — no doc edit this run
+Commits after 2026-09-13T14:29Z are held. Both are fixes, not new user-visible surfaces:
 
-- **Recovery: automatic stranded-task takeovers stopped** (`server/src/services/recovery/service.ts` −752, `issue-recovery-actions.ts` +58/−20, `ui/src/components/IssueRecoveryActionCard.tsx` +1/−1; parent `f572e08`, PR #11961) — also deferred by #107, now landed. **Docs already reflect the new behaviour:** `docs/how-to/debug-stuck-heartbeat.md` states an exhausted corrective wake "hands the task to a recovery owner" and the issue "is blocked on a recovery owner" — i.e. the board owns the exhausted decision, exactly what this PR enforces. No doc claims the old manager/executive auto-takeover, so nothing is stale. No edit.
-- **Duplex bridge / sandbox transport** (`server/src/services/plugin-worker-manager.ts` +876/−209, `duplex-telemetry-recorder.ts` new, adapter `execute.ts` across all local adapters, daytona `duplex-command-stream.ts` + `pty-chunked-input.ts`; parents `10d2781`, `c505039`, `141b815`, `cc42a67`, `05b35d4`) — internal transport plumbing. No new adapter config field, no new adapter, no user-visible contract. Context-only.
-- **plugin-sdk duplex-channel protocol** (`packages/plugins/sdk/src/protocol.ts` +26, `types.ts` +10, `worker-rpc-host.ts` +19) — `sdk/src/index.ts` is **not** in this slice, so no new public export surface changed here; the internal protocol churn needs no doc rewrite.
-- **Wizard UI churn beyond the mission step** (`OnboardingWizard.tsx`, `onboarding-route.ts`, `Dashboard.tsx` −5, `App.tsx`) — covered by screenshot staleness; no additional prose beyond the applied edit.
+- **Recent Tasks storage feedback fix** — `fix(ui): stop Recent Tasks storage feedback across tabs` (#13402, `d351e08`, 2026-09-14T13:05Z).
+- **Clean-machine onboarding fix** — `fix: unblock clean-machine onboarding for api_key AI connections (nightly smoke)` (#13372, `13368c5`, 2026-09-14T00:02Z). Part of the AI-connections cluster; a fix, not new surface.
 
-## ⏳ Held candidate (carried forward — needs a judgment call)
+## Deferred — needs a scoped release-branch follow-up (NOT drafted this run)
 
-- **Operator-configurable settings visibility** (`PAPERCLIP_HIDDEN_SETTINGS`, read straight from `process.env`; `HiddenSettingsPageGate.tsx`, `useHiddenSettings.ts`) — a real operator surface that the env-vars watcher misses because the var isn't in `.env.example`. Landed before this slice; still undocumented. Candidate for a PR-tier addition to `docs/reference/deploy/environment-variables.md` + an administration note, once the hidden-page keys and admin flow are confirmed against the UI.
+The parent remains mid-flight on the **streamlined-UI + onboarding + connections refactor** flagged in prior runs. It stays feature-flagged (`*.production.tsx` vs `Legacy*`, experimental gates) and screenshot-dependent, so per nightly policy it is held for a deliberate release-branch pass with a screenshot refresh — not piecemeal nightly drafts from master. Newly aged out of quarantine since the last run, all folding into this same cluster:
 
-## ⏳ Quarantined (younger than 24h — will enter the window next run)
+- **iMessage Photon channel (experimental)** — `feat(channels): add experimental iMessage Photon` (#13299). New `server/src/services/photon/**` layer (receiver, adapter, media/attachments, cloud transport, recovery), `ui/src/pages/apps/chat/PhotonConnectStep.tsx`, and an `imessage-photon` app definition. Experimental; candidate home `docs/experimental/`. Draft on the release-branch pass.
+- **AgentMail inboxes & email tasks** — `feat(connections): add AgentMail inboxes and email tasks` (#13256) plus follow-ups. New `skills/agentmail/SKILL.md`, `server/src/services/connectors/agentmail.ts`, `server/src/routes/email.ts`, `ui/src/components/Email*`. Part of the connections cluster; entangled with the email-endpoint setup UI.
+- **AI Connections credential management** — `feat: manage AI runtime credentials through Connections` (#13247) and `feat: reuse provider sign-in across AI connection workflows` (#13248). Reworks how agents get provider credentials: `ui/src/components/ai-connections/**`, `ui/src/api/ai-connections.ts`, `server/src/routes/ai-connections.ts`. Cross-cuts onboarding and the new-agent flow; screenshot-dependent.
+- **Persistent agent chat (experimental)** — `feat: add experimental persistent agent chat` (#13284). New `ui/src/pages/AgentChat.tsx`, `SidebarAgentChats`, `agent_chat` schema/migration. Experimental; gated.
+- **Native chat connectors (experimental)** — earlier `889947c` (#13038) Slack/Discord/Teams publication + inbound wakeups; `ui/src/pages/apps/chat/**`. Gated behind the chat-connectors experimental flag. Candidate home `docs/experimental/`.
+- **Onboarding rework** — simplified agent onboarding/configuration (#13011) and chief-of-staff-first-task flow (#13317 makes hiring reliable), reuse of saved model connections. Cross-guide rewrite of `docs/guides/getting-started/*`; needs screenshots.
+- **GitHub connection & repository access** — multi-repo selection, shared-agent GitHub identity, simplified access controls, duplicate-connection resolution. Targets `docs/how-to/connect-agent-to-github.md`; entangled with `ConnectionSetupFlow`.
 
-11 commits newer than the boundary (`2026-08-23T10:06Z` cutoff), deliberately excluded so any reverts can settle first:
+Behavioural removal to reconcile on the follow-up (not a nightly drift item, it is a genuine removal):
 
-- `88a0f88` Brand lockup, no idle env-check card, **no Mission row** (#12074) — **watch:** removes the Review "Mission" row this run's edit still describes; update the Review section when it lands.
-- `a14e51d` refactor(environment): classify environment capabilities from static driver definitions
-- `fc9e9b7` fix: stop teaching agents to curl literal `{id}` route templates
-- `633e102` fix: verify issue-update writes instead of inferring success
-- `c7f4bc1` fix: survive transient sandbox exec failures in the callback bridge worker
-- `c62bb4b` feat: environment delete with agent reassignment and consented sandbox destroy
-- `627eef7` fix(plugins): retry errored plugins at boot instead of leaving them dead
-- `ae6761e` fix(server): authorize agent resume through direct grants
-- `63df7ad` feat(login): use the login pseudo-terminal for Codex device login
-- `16b59c9` feat(adapter-utils): stream duplex bridge bodies as sequenced chunks
-- `8db826d` fix(issues): cycle-aware issue_blockers_resolved after terminal reset
+- **Automatic productivity reviews removed** — `refactor: remove automatic productivity reviews` (#13263). `server/src/services/productivity-review.ts` and `ui/src/components/ProductivityReviewBadge.tsx` are gone. If any guide/day-to-day page describes automatic productivity reviews, it needs a removal edit on the release-branch pass.
 
-## Screenshots
+- **Screenshots** — **230 of 342 stale** across 46 routes (see `SCREENSHOTS_PENDING.md`). Run `npm run screenshots:refresh` in the follow-up; PNGs go to a PR for review, never auto-pushed.
 
-See `SCREENSHOTS_PENDING.md` — **120 screenshots** stale (light + dark share a row), computed against the capture base `213dabab` (v2026.817.0). Count rose from the prior run's 59 because that run scanned only its incremental slice; this run scans the full cumulative window since the release, which is the honest "changed since capture" set. Onboarding/company/dashboard shots (`company/new-company-form.png`, `company/company-goal-field.png`, `onboarding/*`, `dashboard/*`) are among them and are directly affected by the wizard change. Recaptured on the release/frozen branch, not during nightly.
+## ⚠ Drift (Phase 1.5) — all triaged, no action
 
-## Verification (Phase 5.5)
+14 records, every one a re-confirmed false positive (spot-checked against current master this run):
 
-`docs/guides/getting-started/your-first-company.md` — verified against `05b35d4`: **0 unverified, 0 suspicious.** All load-bearing claims (step order, `Next` / `Connect` / `Get started` button labels, "Name your organization" / "Create your first agent" headings, the create-on-name behaviour) resolve in `ui/src/components/OnboardingWizard.tsx` and `onboarding/Stepper.tsx`.
+- **env-var `PAPERCLIP_WORKSPACE_GIT_SCAN_*` (high, 4)** — `CONCURRENCY`, `QUEUE_CAPACITY`, `TIMEOUT_MS`, `CACHE_TTL_MS`. Present (commented) in `.env.example` and read by the workspace-git scan scheduler.
+- **env-var `PAPERCLIP_ID_CONNECTOR_*` (high, 5)** — `BASE_URL`, `ENVIRONMENT`, `INSTANCE_ID`, `SIGN_PRIVATE_KEY`, `SEAL_PRIVATE_KEY`. Present (commented) in `.env.example` + the cloud-connector service. Not reverted, so no reconciliation needed.
+- **rest-route companies `import/transfers` (medium, 5)** — `POST/PUT/GET/POST/POST /api/companies/import/transfers…`. All registered in `server/src/routes/companies.ts` via `COMPANY_IMPORT_TRANSFERS_ROUTE_PATH` (confirmed present this run).
+
+> Note: the `env-var-missing` class keeps re-flagging vars that live in `.env.example` under grouped/prefixed **commented** blocks the drift scanner can't match line-for-line. Candidate check-drift refinement, not a docs bug.
+
+## ⚠ Reconcile (Phase 3.5)
+- None. Prior runs drafted no doc edits, and nothing flagged in prior runs has been reverted upstream.
+
+## Pre-existing gaps noticed (out of scope this run)
+- The `worktree` CLI command family (`worktree:make`, `worktree init`, `worktree env`, …) is not documented on any CLI page.
+- `issues.md` does not document the `/issues/:id/work-products` route family or several `GET /issues/{id}` response fields/query params (unchanged this window).
